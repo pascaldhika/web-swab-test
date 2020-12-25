@@ -108,55 +108,57 @@
   function simpan(){
   	var form_data = new FormData();             
     
-    for (var i = 1; i <= jumlah; i++){
-  		form_data.append('name'+i, $('#name'+i).val());
-  		form_data.append('address'+i, $('#address'+i).val());
-      form_data.append('identityno'+i, $('#identityno'+i).val());
-      form_data.append('birthplace'+i, $('#birthplace'+i).val());
-      form_data.append('birthdate'+i, $('#birthdate'+i).val());
-      form_data.append('gender'+i, $('#gender'+i).val());
-      form_data.append('job'+i, $('#job'+i).val());
-      form_data.append('country'+i, $('#country'+i).val());
-  	}
+    if (jumlah >0){
+      for (var i = 1; i <= jumlah; i++){
+    		form_data.append('name'+i, $('#name'+i).val());
+    		form_data.append('address'+i, $('#address'+i).val());
+        form_data.append('identityno'+i, $('#identityno'+i).val());
+        form_data.append('birthplace'+i, $('#birthplace'+i).val());
+        form_data.append('birthdate'+i, $('#birthdate'+i).val());
+        form_data.append('gender'+i, $('#gender'+i).val());
+        form_data.append('job'+i, $('#job'+i).val());
+        form_data.append('country'+i, $('#country'+i).val());
+    	}
 
-  	form_data.append('jumlah', jumlah);
-  	form_data.append('type', $('#type').val());
-  	form_data.append('_token', "{{ csrf_token() }}");
+    	form_data.append('jumlah', jumlah);
+    	form_data.append('type', $('#type').val());
+    	form_data.append('_token', "{{ csrf_token() }}");
 
-  	$.ajax({
-  		type: 'POST',
-  		url: '{{ route("registrasi.simpan") }}',
-  		data: form_data,
-  		dataType: 'json',
-      cache: false,
-      contentType: false,
-      processData: false,
-  		success: function(data){
-        if(data.success){
-          $(document).Toasts('create', {
-            class: 'bg-success',
-            title: 'Success',
-            // subtitle: 'Subtitle',
-            body: data.message
-          });
+    	$.ajax({
+    		type: 'POST',
+    		url: '{{ route("registrasi.simpan") }}',
+    		data: form_data,
+    		dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+    		success: function(data){
+          if(data.success){
+            $(document).Toasts('create', {
+              class: 'bg-success',
+              title: 'Success',
+              // subtitle: 'Subtitle',
+              body: data.message
+            });
 
-          $(".field.fieldTEXT").empty();
-          $('#jumlah').val('');
+            $(".field.fieldTEXT").empty();
+            $('#jumlah').val('');
 
-          var base = "{!! route('registrasi.print.book') !!}";
-          var url = base+'?id='+data.id ;
+            var base = "{!! route('registrasi.print.book') !!}";
+            var url = base+'?id='+data.id ;
 
-          setTimeout(function(){
-            window.location.href = url;
-          },1000);
-        }else{        
-            toastr.error(data.message);
+            setTimeout(function(){
+              window.location.href = url;
+            },1000);
+          }else{        
+              toastr.error(data.message);
+          }
+        },
+        error: function(data){
+          toastr.error(data.statusText + ' : ' + data.status);
         }
-      },
-      error: function(data){
-        toastr.error(data.statusText + ' : ' + data.status);
-      }
-  	});
+    	});
+    }
   }
 </script>
 @endpush

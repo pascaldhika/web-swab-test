@@ -2,7 +2,7 @@
     <div class="il">
         <div class="il2">
             <div class="il3">
-                <img src="{{url('adminlte/img/spinner-200px.gif')}}" alt="Loading..." /><br />
+                <img src="{{url('public/adminlte/img/spinner-200px.gif')}}" alt="Loading..." /><br />
                 <span>Please wait</span>
             </div>
         </div>

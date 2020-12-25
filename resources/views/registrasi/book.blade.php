@@ -3,7 +3,7 @@
         <tr>
             <td width="7%">Tgl : </td>
             <td width="20%">{{ date('d M Y') }}</td>
-            <td width="15%">Swab Test : </td>
+            <td width="15%">Jenis Test : </td>
             <td width="15%">{{ $data[0]->type }}</td>
             <td width="7%">No. : </td>
             <td width="35%"><h3>#{{ $data[0]->docno }}<h3></td>

@@ -11,11 +11,11 @@
 <link rel="stylesheet" href="https://owlcarousel2.github.io/OwlCarousel2/assets/owlcarousel/assets/owl.carousel.min.css">
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css?ver=1.0">
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css" />
-<link rel="stylesheet" href="{{url('css/front.css')}}">
+<link rel="stylesheet" href="{{url('public/css/front.css')}}">
 
 <section class="banner">
 	<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light custom_header navbar-toggler py-3">
-		<a class="navbar-brand" href="#"><img src="{{url('adminlte/dist/img/logo.jpeg')}}" style="height:70px;width:70px;margin-top:10px" alt="" /> PT Taishan Alkes Indonesia</a>
+		<a class="navbar-brand" href="#"><img src="{{url('public/adminlte/dist/img/logo.jpeg')}}" style="height:70px;width:70px;margin-top:10px" alt="" /> PT Taishan Alkes Indonesia</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
@@ -44,7 +44,7 @@
 
 	<div class="search-sec bg-transparent d-none d-sm-block" style="top:27%;">
 <div class="container text-center tag_line">
-			<img src="{{url('adminlte/dist/img/qrcode.png')}}" style="height:150px;width:150px;margin-top:10px" alt="" />
+			<img src="{{url('public/adminlte/dist/img/qrcode.png')}}" style="height:150px;width:150px;margin-top:10px" alt="" />
 		</div>
 		<div class="container text-center tag_line">
 			<br><p>Scan me to register Test Covid 19<p>
