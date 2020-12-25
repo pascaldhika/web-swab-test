@@ -256,6 +256,6 @@ class RegistrasiController extends Controller
         $data = DB::SELECT($query,$params);
 
         $pdf = PDF::loadview('registrasi.book',['data'=>$data])->setPaper('a5', 'landscape');
-        return $pdf->stream($data[0]->docno);
+        return $pdf->stream($data[0]->docno.".pdf");
     }
 }
