@@ -1,6 +1,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ config('app.name', 'Laravel') }} | Home Page</title>
+<title>{{ config('app.name', 'Laravel') }} | Web Swab Test</title>
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -15,7 +15,7 @@
 
 <section class="banner">
 	<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light custom_header navbar-toggler py-3">
-		<a class="navbar-brand" href="#">Logo</a>
+		<a class="navbar-brand" href="#"><img src="{{url('adminlte/dist/img/logo.jpeg')}}" style="height:70px;width:70px;margin-top:10px" alt="" /> PT Taishan Alkes Indonesia</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
@@ -23,13 +23,13 @@
 		<div class="collapse navbar-collapse" id="navbarTogglerDemo02">
 			<ul class="navbar-nav ml-auto my-lg-0 mt-2 mt-lg-0">
 				<li class="nav-item active">
-					<a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+					<a class="nav-link" href="#"><span class="sr-only">(current)</span></a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#">About</a>
+					<a class="nav-link" href="#"></a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#">Support</a>
+					<a class="nav-link" href="#"></a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="{{ route('login') }}">Sign In</a>
@@ -38,158 +38,27 @@
 		</div>
 	</nav>
 	
-	<div class="owl-carousel owl-theme main_banner">
-		<div class="item"><img src="https://pbs.twimg.com/media/EGHYvttU4AAYKb7?format=jpg&name=large" alt="" /></div>
-		<div class="item"><img src="https://pbs.twimg.com/media/EGHYvtkUcAAuc8T?format=jpg&name=large" alt="" /></div>
-		<div class="item"><img src="https://pbs.twimg.com/media/EGHYvtjU0AAO8w1?format=jpg&name=large" alt="" /></div>
+	<div class="owl-carousel owl-theme main_banner bg-black-transparent">
+		<div class="item"><img src="https://images.unsplash.com/photo-1596978759889-91e1a654faca?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80" alt="" /></div>
 	</div>
 
-	<div class="search-sec bg-transparent d-none d-sm-block" style="top:30%;">
-		<div class="container text-center tag_line">
-			<h3>Book unique experiences</h3>
-			<p>Expolore top rated tours, hotels and restaurants around the world</p>
-		</div>
-	</div>
-	<div class="search-sec">
-		<div class="container text-center tag_line">
+	<div class="search-sec bg-transparent d-none d-sm-block" style="top:27%;">
+<div class="container text-center tag_line">
 			<img src="{{url('adminlte/dist/img/qrcode.png')}}" style="height:150px;width:150px;margin-top:10px" alt="" />
 		</div>
 		<div class="container text-center tag_line">
-			<p>Scan me to register Test Covid 19</p>
+			<br><p>Scan me to register Test Covid 19<p>
+			<br><p>OR</p>
 		</div>
 		<br>
 		<div class="container text-center tag_line">
 			<form method="GET" action="{{ route('registrasi.form') }}">
-				<button type="submit" class="btn_search btn btn-danger wrn-btn ripple" style="width:150px;margin-bottom:10px"><span>Registrasi Test</span></button>
+				<button type="submit" class="btn_search btn btn-danger wrn-btn ripple" style="width:70%;margin-bottom:10px"><span>Click to Registrasi Test</span></button>
 			</form>
 		</div>
 	</div>
 </section>
 
-<!-- <section class="container-fluid container-custom margin_80_0 py-4">
-	<div class="main_title_2 py-4 text-center">
-		<span><em></em></span>
-		<h2>Our Popular Tours</h2>
-		<p>Cum doctus civibus efficiantur in imperdiet deterruisset.</p>
-	</div>
-	<div id="places" class="owl-carousel owl-theme places pt-4 position-relative">
-		<div class="item">
-			<div class="box_grid">
-				<figure>
-					<a href="#!" class="wish_bt"></a>
-					<a href="#!"><img src="http://www.ansonika.com/panagea/img/tour_3.jpg" class="img-fluid" alt="" width="800" height="533"><div class="read_more"><span>Read more</span></div></a>
-					<small>Historic</small>
-				</figure>
-				<div class="wrapper">
-					<h3><a href="#!">Arc Triomphe</a></h3>
-					<p>Id placerat tacimates definitionem sea, prima quidam vim no. Duo nobis persecuti cu.</p>
-					<span class="price">From <strong>$54</strong> /per person</span>
-				</div>
-				<ul>
-					<li><i class="fa fa-clock-o"></i> 1h 30min</li>
-					<li><div class="score"><span>Superb<em>350 Reviews</em></span><strong>8.9</strong></div></li>
-				</ul>
-			</div>
-		</div>
-		
-		<div class="item">
-			<div class="box_grid">
-				<figure>
-					<a href="#!" class="wish_bt"></a>
-					<a href="#!"><img src="http://www.ansonika.com/panagea/img/tour_2.jpg" class="img-fluid" alt="" width="800" height="533"><div class="read_more"><span>Read more</span></div></a>
-					<small>Churches</small>
-				</figure>
-				<div class="wrapper">
-					<h3><a href="#!">Notredam</a></h3>
-					<p>Id placerat tacimates definitionem sea, prima quidam vim no. Duo nobis persecuti cu.</p>
-					<span class="price">From <strong>$124</strong> /per person</span>
-				</div>
-				<ul>
-					<li><i class="fa fa-clock-o"></i> 1h 30min</li>
-					<li><div class="score"><span>Good<em>350 Reviews</em></span><strong>7.0</strong></div></li>
-				</ul>
-			</div>
-		</div>
-		
-		<div class="item">
-			<div class="box_grid">
-				<figure>
-					<a href="#!" class="wish_bt"></a>
-					<a href="#!"><img src="http://www.ansonika.com/panagea/img/tour_1.jpg" class="img-fluid" alt="" width="800" height="533"><div class="read_more"><span>Read more</span></div></a>
-					<small>Historic</small>
-				</figure>
-				<div class="wrapper">
-					<h3><a href="#!">Versailles</a></h3>
-					<p>Id placerat tacimates definitionem sea, prima quidam vim no. Duo nobis persecuti cu.</p>
-					<span class="price">From <strong>$25</strong> /per person</span>
-				</div>
-				<ul>
-					<li><i class="fa fa-clock-o"></i> 1h 30min</li>
-					<li><div class="score"><span>Good<em>350 Reviews</em></span><strong>7.0</strong></div></li>
-				</ul>
-			</div>
-		</div>
-		
-		<div class="item">
-			<div class="box_grid">
-				<figure>
-					<a href="#!" class="wish_bt"></a>
-					<a href="#!"><img src="http://www.ansonika.com/panagea/img/tour_4.jpg" class="img-fluid" alt="" width="800" height="533"><div class="read_more"><span>Read more</span></div></a>
-					<small>Historic</small>
-				</figure>
-				<div class="wrapper">
-					<h3><a href="#!">Versailles</a></h3>
-					<p>Id placerat tacimates definitionem sea, prima quidam vim no. Duo nobis persecuti cu.</p>
-					<span class="price">From <strong>$25</strong> /per person</span>
-				</div>
-				<ul>
-					<li><i class="fa fa-clock-o"></i> 1h 30min</li>
-					<li><div class="score"><span>Good<em>350 Reviews</em></span><strong>7.0</strong></div></li>
-				</ul>
-			</div>
-		</div>
-		
-		<div class="item">
-			<div class="box_grid">
-				<figure>
-					<a href="#!" class="wish_bt"></a>
-					<a href="#!"><img src="http://www.ansonika.com/panagea/img/tour_3.jpg" class="img-fluid" alt="" width="800" height="533"><div class="read_more"><span>Read more</span></div></a>
-					<small>Museum</small>
-				</figure>
-				<div class="wrapper">
-					<h3><a href="#!">Pompidue Museum</a></h3>
-					<p>Id placerat tacimates definitionem sea, prima quidam vim no. Duo nobis persecuti cu.</p>
-					<span class="price">From <strong>$45</strong> /per person</span>
-				</div>
-				<ul>
-					<li><i class="fa fa-clock-o"></i> 2h 30min</li>
-					<li><div class="score"><span>Superb<em>350 Reviews</em></span><strong>9.0</strong></div></li>
-				</ul>
-			</div>
-		</div>
-		
-		<div class="item">
-			<div class="box_grid">
-				<figure>
-					<a href="#!" class="wish_bt"></a>
-					<a href="#!"><img src="http://www.ansonika.com/panagea/img/tour_1.jpg" class="img-fluid" alt="" width="800" height="533"><div class="read_more"><span>Read more</span></div></a>
-					<small>Walking</small>
-				</figure>
-				<div class="wrapper">
-					<h3><a href="#!">Tour Eiffel</a></h3>
-					<p>Id placerat tacimates definitionem sea, prima quidam vim no. Duo nobis persecuti cu.</p>
-					<span class="price">From <strong>$65</strong> /per person</span>
-				</div>
-				<ul>
-					<li><i class="fa fa-clock-o"></i> 1h 30min</li>
-					<li><div class="score"><span>Good<em>350 Reviews</em></span><strong>7.5</strong></div></li>
-				</ul>
-			</div>
-		</div>
-	</div>
-</section> -->
-
-<div class="backdrop" style="display: none;"></div>
 		
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
