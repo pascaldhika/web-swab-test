@@ -30,7 +30,8 @@ Route::group(['middleware' => ['auth']],function(){
 	// REGISTRASI
 	Route::get('/transaction/registrasi','RegistrasiController@index')->name('registrasi.index');
 	Route::get('/transaction/registrasi/data','RegistrasiController@getData')->name('registrasi.data');
-	Route::get('/transaction/registrasi/detail/{id}','RegistrasiController@getDetail')->name('registrasi.detail');
+	Route::get('/transaction/registrasi/detail','RegistrasiController@formDetail')->name('registrasi.detail');
+	Route::post('/transaction/registrasi/detail/data','RegistrasiController@getDetail')->name('registrasi.detail.data');
 	Route::post('/transaction/registrasi/simpanstatus','RegistrasiController@simpanStatus')->name('registrasi.simpanstatus');
 	Route::post('/transaction/registrasi/simpanpayment','RegistrasiController@simpanPayment')->name('registrasi.simpanpayment');
 	Route::get('/transaction/registrasi/print/excel','RegistrasiController@printExcel')->name('registrasi.print.excel');

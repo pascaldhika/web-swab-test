@@ -26,7 +26,7 @@
         @endif
 
         <li class="nav-header">REPORT</li>
-        @if(Gate::check('isManager') || Gate::check('isMedis') || Gate::check('isKasir'))
+        @if(Gate::check('isManager') || Gate::check('isAdmin'))
         <li class="nav-item">
           <a href="{{ route('report.pasien.index') }}" class="nav-link">
             <i class="nav-icon fas fa-book"></i>
@@ -36,7 +36,7 @@
         @endif
 
         <li class="nav-header">SECURITY</li>
-        @can('isManager')
+        @if(Gate::check('isManager'))
         <li class="nav-item">
           <a href="{{ route('user.index') }}" class="nav-link">
             <i class="nav-icon far fa-user"></i>
@@ -44,7 +44,7 @@
           </a>
         </li>
         @endcan
-        @can('isManager')
+        @if(Gate::check('isManager'))
         <li class="nav-item">
           <a href="{{ route('role.index') }}" class="nav-link">
             <i class="nav-icon fas fa-users"></i>

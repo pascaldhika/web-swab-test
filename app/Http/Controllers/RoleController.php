@@ -29,7 +29,7 @@ class RoleController extends Controller
 
         return Datatables::of($data)
         ->addColumn("action", function($data){
-            return '<a href="'.url('security/role/user',$data->id).'" class="btn btn-xs btn-info no-margin-action" title="Role User"><i class="fas fa-eye"></i>';
+            return '<a href="'.url('security/role/user',$data->id).'" class="btn btn-xs btn-info no-margin-action" title="Role User"><i class="fas fa-eye"></i></a>';
         })
         ->make(true);
     }

@@ -24,7 +24,7 @@ class UserController extends Controller
                 GROUP_CONCAT(C.name SEPARATOR ', ') AS role 
             FROM users A
             LEFT JOIN roleuser B ON B.user_id = A.id
-            INNER JOIN roles C ON B.role_id = C.id
+            LEFT JOIN roles C ON B.role_id = C.id
             GROUP BY A.id, A.name, A.email, A.active, A.created_at, A.updated_at
         ";
 

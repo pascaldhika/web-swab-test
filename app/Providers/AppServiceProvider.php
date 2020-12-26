@@ -41,5 +41,11 @@ class AppServiceProvider extends ServiceProvider
                 return $value->name == 'kasir';
             }
         });
+
+        Gate::define('isAdmin', function($user) {
+            foreach ($user->role as $key => $value) {
+                return $value->name == 'admin';
+            }
+        });
     }
 }

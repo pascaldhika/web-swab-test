@@ -106,7 +106,7 @@
   }
 
   function simpan(){
-  	var form_data = new FormData();             
+  	var form_data = new FormData();
     
     if (jumlah >0){
       for (var i = 1; i <= jumlah; i++){
