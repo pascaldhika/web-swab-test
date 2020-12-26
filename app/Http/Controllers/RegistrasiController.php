@@ -51,16 +51,29 @@ class RegistrasiController extends Controller
             $dataNotPayment = DB::SELECT($queryPayment, $params);
             $action = "";
             if ($dataNotPayment[0]->total > 0){
-                $action = '<div onclick="detail('.$data->id.')" class="btn btn-xs btn-info no-margin-action" title="Detail"><i class="fa fa-eye"></i></div>';
-            }
+                if (Gate::allows('isKasir')) {
+                    $action = '<div onclick="detail('.$data->id.')" class="btn btn-xs btn-info no-margin-action" title="Detail"><i class="fa fa-eye"></i></div>';
+                }
+            } else{
+                if (Gate::allows('isNakes')) {
+                    $action .= '<div onclick="ubahStatus('.$data->id.', this)" data-type="'.$data->type.'" data-notpayment="'.$dataNotPayment[0]->total.'" class="btn btn-xs btn-warning no-margin-action" title="Ubah Status / Hasil Pemeriksaan Lab"><i class="fas fa-edit"></i></div>';
+                }
 
-            if (Gate::allows('isNakes')) {
-                $action .= '<div onclick="ubahStatus('.$data->id.', this)" data-type="'.$data->type.'" data-notpayment="'.$dataNotPayment[0]->total.'" class="btn btn-xs btn-warning no-margin-action" title="Ubah Status"><i class="fas fa-edit"></i></div>';
+                if (Gate::allows('isAdmin')) {
+                    $action .= '<a href="'.url('transaction/registrasi/print/pdf?id='.$data->id).'" class="btn btn-xs btn-default no-margin-action" title="Role User"><i class="fas fa-print"></i></a>';
+                    $action .= '<div onclick="edit('.$data->id.')" class="btn btn-xs btn-default no-margin-action" title="Edit"><i class="fa fa-edit"></i></div>';
+                }
             }
 
             return $action;
         })
         ->make(true);
+    }
+
+    public function formEdit(Request $req)
+    {
+        $id = $req->id;
+        return view('registrasi.edit', compact('id'));
     }
 
     public function formDetail(Request $req)
@@ -80,7 +93,6 @@ class RegistrasiController extends Controller
             FROM registrasidetail A
             INNER JOIN registrasi B ON A.registrasiid = B.id
             WHERE B.id = :id
-            AND A.paymentid IS NULL
         ";
 
         $data = DB::SELECT($query,$params);
@@ -298,6 +310,60 @@ class RegistrasiController extends Controller
         }
     }
 
+    public function simpanEdit(Request $req){
+        DB::beginTransaction();
+        try{
+            $jumlah = (int) $req->input('jumlah');
+            $rules = [];
+            
+            for ($i=1; $i <= $jumlah ; $i++) {
+                $rules['id' . $i] = 'required';
+                $rules['name' . $i] = 'required';
+                $rules['address' . $i] = 'required';
+                $rules['identityno' . $i] = 'required';
+            }
+            
+            $vali = Validator::make($req->all(),$rules);
+
+            if ($vali->fails()) {
+                throw new \Exception($vali->errors());   
+            }
+
+            for ($i=1; $i <= $jumlah ; $i++) {
+                $gender = strip_tags($req->input('gender'.$i));
+                if ($gender == 'Laki-laki'){
+                    $name = 'Tn. ' . strip_tags($req->input('name'.$i));
+                } else{
+                    $name = 'Ny. ' . strip_tags($req->input('name'.$i));
+                }
+
+                $id = strip_tags($req->input('id'.$i));
+                $registrasiDetail = RegistrasiDetail::find($id);
+                if ($registrasiDetail == null){
+                    throw new \Exception('Registrasi Detail with ID '.$id.' not found');
+                }
+
+                $registrasiDetail->name = strip_tags($req->input('name'.$i));
+                $registrasiDetail->address = strip_tags($req->input('address'.$i));
+                $registrasiDetail->identityno = strip_tags($req->input('identityno'.$i));
+                $registrasiDetail->updatedby = $req->user()->id;
+                $registrasiDetail->save();                
+            }
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil disimpan',
+            ]); 
+        } catch(\Exception $ex) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => $ex->getMessage().$ex->getLine(),
+            ]);
+        }
+    }
+
     public function printExcel(Request $req){
         
         $title = "SWAB Visit";
@@ -307,6 +373,7 @@ class RegistrasiController extends Controller
         $id = strip_tags($req->id);
         $registrasi = Registrasi::find($id);
         $registrasi->print     = $registrasi->print + 1;
+        $registrasi->print_at  = date('Y-m-d H:i:s');
         $registrasi->updatedby = $req->user()->id;
         $registrasi->save();
 
@@ -329,6 +396,7 @@ class RegistrasiController extends Controller
         $id = strip_tags($req->id);
         $registrasi = Registrasi::find($id);
         $registrasi->print     = $registrasi->print + 1;
+        $registrasi->print_at  = date('Y-m-d H:i:s');
         $registrasi->updatedby = $req->user()->id;
         $registrasi->save();
 

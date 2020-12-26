@@ -35,6 +35,15 @@
         </li>
         @endif
 
+        @if(Gate::check('isAdmin'))
+        <li class="nav-item">
+          <a href="{{ route('registrasi.index') }}" class="nav-link">
+            <i class="nav-icon fas fa-book"></i>
+            <p>Cetak Hasil</p>
+          </a>
+        </li>
+        @endif
+
         <li class="nav-header">SECURITY</li>
         @if(Gate::check('isSuperAdmin'))
         <li class="nav-item">

@@ -150,6 +150,12 @@
         window.location.href = url;
     }
 
+    function edit(id){
+        var base = "{!! route('registrasi.edit') !!}";
+        var url = base+'?id='+id ;
+        window.location.href = url;
+    }
+
     function ubahStatus(id, e){
         @can('isNakes')
             var type  = $(e).data('type');
@@ -157,7 +163,7 @@
 
             if (notpayment == 0){
                 clear_column('modalUbahStatus');
-                $('#modalUbahStatus #myModalLabel').text("Ubah Status");
+                $('#modalUbahStatus #myModalLabel').text("Ubah Status / Hasil Pemeriksaan Lab");
                 $('#modalUbahStatus #id').val(id);
 
                 var sts, sts2, sts3 = "";
@@ -194,7 +200,7 @@
                                 break;
 
                               default:
-                                if (type == 'Antibodi Test'){
+                                if (type == 'Antigen Test'){
                                     sts2 = "<option value='Positif'>Positif</option><option value='Negatif'>Negatif</option>";
                                 } else{
                                     sts2 = "<option value='Reaktif'>Reaktif</option><option value='Nonreaktif'>Non-Reaktif</option>"
