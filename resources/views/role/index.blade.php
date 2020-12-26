@@ -116,7 +116,7 @@
     });
 
     function tambahRole(){
-        @can('isManager')
+        @can('isSuperAdmin')
             clear_column('modalTambahRole');
             $('#modalTambahRole #myModalLabel').text("Tambah Role");
             $('#modalTambahRole').modal("show");

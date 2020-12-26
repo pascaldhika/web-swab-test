@@ -113,7 +113,7 @@
                 <a href="{{route('registrasi.print.excel', ['id' => $data[0]->registrasiid ])}}" class="btn btn-default"><i class="fas fa-print"></i> Print Excel</a>
                 <a href="{{route('registrasi.print.pdf', ['id' => $data[0]->registrasiid ])}}" class="btn btn-default"><i class="fas fa-print"></i> Print Pdf</a>
 
-                @if(Gate::check('isManager') || Gate::check('isMedis'))
+                @if(Gate::check('isManager') || Gate::check('isNakes'))
                     <button type="button" class="btn btn-primary float-right" onclick="submitStatus()">Submit Status</button>
                 @endif
 
@@ -159,7 +159,7 @@
       }
 
       var cannotMedis = "";
-      @cannot('isMedis')
+      @cannot('isNakes')
       var cannotMedis = "disabled";
       @endcan
 

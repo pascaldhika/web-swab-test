@@ -151,7 +151,7 @@
     }
 
     function ubahStatus(id, e){
-        @can('isMedis')
+        @can('isNakes')
             var type  = $(e).data('type');
             var notpayment  = $(e).data('notpayment');
 

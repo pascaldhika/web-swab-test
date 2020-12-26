@@ -79,7 +79,7 @@
             <div class="col-12">
                 <a href="{{route('registrasi.index')}}" class="btn btn-warning">Back</a>
 
-                @if(Gate::check('isManager') || Gate::check('isKasir'))
+                @if(Gate::check('isKasir'))
                     <button type="button" class="btn btn-success float-right" onclick="submitPayment()" style="margin-right: 5px;"><i class="far fa-credit-card"></i> Submit Payment</button>
                 @endif
             </div>

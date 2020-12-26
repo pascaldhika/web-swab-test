@@ -148,7 +148,7 @@
     });
 
     function addRole(id){
-        @can('isManager')
+        @can('isSuperAdmin')
             clear_column('modalTambahRole');
             $('#modalTambahRole #myModalLabel').text("Tambah Role");
             $('#modalTambahRole #id').val(id);
@@ -159,7 +159,7 @@
     }
 
     function editUser(id, e){
-        @can('isManager')
+        @can('isSuperAdmin')
             var name  = $(e).data('name');
             var active  = $(e).data('active');
             clear_column('modalUser');

@@ -24,15 +24,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Gate::define('isManager', function($user) {
+        Gate::define('isSuperAdmin', function($user) {
             foreach ($user->role as $key => $value) {
-                return $value->name == 'manager';
+                return $value->name == 'super admin';
             }
         });
 
-        Gate::define('isMedis', function($user) {
+        Gate::define('isNakes', function($user) {
             foreach ($user->role as $key => $value) {
-                return $value->name == 'medis';
+                return $value->name == 'nakes';
             }
         });
 

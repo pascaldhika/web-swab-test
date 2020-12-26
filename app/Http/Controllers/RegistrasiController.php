@@ -54,7 +54,7 @@ class RegistrasiController extends Controller
                 $action = '<div onclick="detail('.$data->id.')" class="btn btn-xs btn-info no-margin-action" title="Detail"><i class="fa fa-eye"></i></div>';
             }
 
-            if (Gate::allows('isMedis')) {
+            if (Gate::allows('isNakes')) {
                 $action .= '<div onclick="ubahStatus('.$data->id.', this)" data-type="'.$data->type.'" data-notpayment="'.$dataNotPayment[0]->total.'" class="btn btn-xs btn-warning no-margin-action" title="Ubah Status"><i class="fas fa-edit"></i></div>';
             }
 
@@ -80,7 +80,7 @@ class RegistrasiController extends Controller
             FROM registrasidetail A
             INNER JOIN registrasi B ON A.registrasiid = B.id
             WHERE B.id = :id
-            AND B.paymentid IS NULL
+            AND A.paymentid IS NULL
         ";
 
         $data = DB::SELECT($query,$params);
@@ -154,6 +154,7 @@ class RegistrasiController extends Controller
                 $registrasiDetail->birthplace= strip_tags($req->input('birthplace'.$i));
                 $registrasiDetail->birthdate = strip_tags($req->input('birthdate'.$i));
                 $registrasiDetail->gender    = $gender;
+                $registrasiDetail->amount    = 0;
                 $registrasiDetail->job       = strip_tags($req->input('job'.$i));
                 $registrasiDetail->country   = strip_tags($req->input('country'.$i));
                 $registrasiDetail->createdby = -1;

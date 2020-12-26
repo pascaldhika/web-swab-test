@@ -16,7 +16,7 @@
              with font-awesome or any other icon font library -->
 
         <li class="nav-header">TRANSACTION</li>
-        @if(Gate::check('isManager') || Gate::check('isMedis') || Gate::check('isKasir'))
+        @if(Gate::check('isSuperAdmin') || Gate::check('isNakes') || Gate::check('isKasir'))
         <li class="nav-item">
           <a href="{{ route('registrasi.index') }}" class="nav-link">
             <i class="nav-icon far fa-calendar-alt"></i>
@@ -26,7 +26,7 @@
         @endif
 
         <li class="nav-header">REPORT</li>
-        @if(Gate::check('isManager') || Gate::check('isAdmin'))
+        @if(Gate::check('isSuperAdmin') || Gate::check('isAdmin'))
         <li class="nav-item">
           <a href="{{ route('report.pasien.index') }}" class="nav-link">
             <i class="nav-icon fas fa-book"></i>
@@ -36,7 +36,7 @@
         @endif
 
         <li class="nav-header">SECURITY</li>
-        @if(Gate::check('isManager'))
+        @if(Gate::check('isSuperAdmin'))
         <li class="nav-item">
           <a href="{{ route('user.index') }}" class="nav-link">
             <i class="nav-icon far fa-user"></i>
@@ -44,7 +44,7 @@
           </a>
         </li>
         @endcan
-        @if(Gate::check('isManager'))
+        @if(Gate::check('isSuperAdmin'))
         <li class="nav-item">
           <a href="{{ route('role.index') }}" class="nav-link">
             <i class="nav-icon fas fa-users"></i>
