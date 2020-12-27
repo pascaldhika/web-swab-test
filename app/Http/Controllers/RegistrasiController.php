@@ -25,16 +25,15 @@ class RegistrasiController extends Controller
     public function getData(Datatables $datatables, Request $req) {
         $query = "
             SELECT
-                A.id, A.docno, DATE_FORMAT(A.docdate, '%d %M %Y') AS docdate,
+                A.id, A.docno, DATE_FORMAT(A.docdate, '%d %M %Y %H:%i:%s') AS docdate,
                 A.type, A.print, A.print_at, GROUP_CONCAT(B.name SEPARATOR ', ') AS pasien,
                 U.name AS paid_by, B.status_at,
                 (
                     SELECT
-                            COUNT(*) AS total
-                    FROM registrasidetail B 
-                    WHERE B.registrasiid = A.id
-                    AND B.paymentid IS NULL
-                ) AS unpaid, NULL AS paid,
+                        COUNT(*)
+                    FROM registrasidetailpayment C
+                    WHERE C.registrasiid = A.id
+                ) AS paid,
                 GROUP_CONCAT(B.status SEPARATOR ', ') AS hasil
             FROM registrasi A
             INNER JOIN registrasidetail B ON B.registrasiid = A.id
@@ -49,13 +48,13 @@ class RegistrasiController extends Controller
         ->addColumn("action", function($data){
 
             $action = "";
-            if ($data->unpaid > 0){
+            if ($data->paid <= 0){
                 if (Gate::allows('isKasir') || Gate::allows('isSuperAdmin')) {
                     $action = '<div onclick="detail('.$data->id.')" class="btn btn-xs btn-info no-margin-action" title="Detail"><i class="fa fa-eye"></i></div>';
                 }
             } else{
                 if (Gate::allows('isNakes') || Gate::allows('isSuperAdmin')) {
-                    $action .= '<div onclick="ubahStatus('.$data->id.', this)" data-type="'.$data->type.'" data-notpayment="'.$data->unpaid.'" class="btn btn-xs btn-success no-margin-action" title="Ubah Status / Hasil Pemeriksaan Lab"><i class="fas fa-check"></i></div>';
+                    $action .= '<div onclick="ubahStatus('.$data->id.', this)" data-type="'.$data->type.'" data-paid="'.$data->paid.'" class="btn btn-xs btn-success no-margin-action" title="Ubah Status / Hasil Pemeriksaan Lab"><i class="fas fa-check"></i></div>';
                 }
 
                 if (Gate::allows('isAdmin') || Gate::allows('isSuperAdmin')) {
@@ -95,7 +94,12 @@ class RegistrasiController extends Controller
         $query = "
             SELECT 
                 B.docno, B.type, A.*,
-                DATE_FORMAT(B.docdate, '%d %M %Y') AS newdocdate
+                DATE_FORMAT(B.docdate, '%d %M %Y') AS newdocdate,
+                (
+                    SELECT GROUP_CONCAT(C.name SEPARATOR ',')
+                    FROM registrasidetailpayment C
+                    WHERE C.registrasidetailid = A.id
+                ) AS paymentlist
             FROM registrasidetail A
             INNER JOIN registrasi B ON A.registrasiid = B.id
             WHERE B.id = :id
@@ -220,7 +224,7 @@ class RegistrasiController extends Controller
         }
     }
 
-    public function simpanPayment(Request $req){dd($req->all());
+    public function simpanPayment(Request $req){
         DB::beginTransaction();
         try{
             $jumlah = (int) $req->input('jumlah');
@@ -247,24 +251,39 @@ class RegistrasiController extends Controller
                     throw new \Exception('Registrasi Detail with ID '.$id.' not found');
                 }
 
-                $firstPayment = strip_tags($req->input('payment'.$i));
-
                 $registrasiDetail->branch = strip_tags($req->input('branch'.$i));
                 $registrasiDetail->paid = (strip_tags($req->input('paid'.$i)) == 'Paid') ? 'Y' : 'N';
                 $registrasiDetail->paid_at = date('Y-m-d H:i:s');
                 $registrasiDetail->paid_by = $req->user()->id;
-                $registrasiDetail->paymentid = $firstPayment;
                 $registrasiDetail->amount = strip_tags($req->input('amount'.$i));
                 $registrasiDetail->updatedby = $req->user()->id;
                 $registrasiDetail->save();
 
+                $firstPayment = strip_tags($req->input('payment'.$i));
                 $secondPayment = strip_tags($req->input('secondpayment'.$i));
                 $thirdPayment = strip_tags($req->input('thirdpayment'.$i));
                 $fourPayment = strip_tags($req->input('fourpayment'.$i));
 
+                // Delete Insert
+                $checkRegistrasiDetailPayment = RegistrasiDetailPayment::where('registrasidetailid', $id);
+                if ($checkRegistrasiDetailPayment != null){
+                    $checkRegistrasiDetailPayment->delete();
+                }
+
+                if ($firstPayment != 'undefined'){
+                    $registrasiDetailPayment = new RegistrasiDetailPayment();
+                    $registrasiDetailPayment->registrasiid = $registrasiDetail->registrasiid;
+                    $registrasiDetailPayment->registrasidetailid = $id;
+                    $registrasiDetailPayment->name = $firstPayment;
+                    $registrasiDetailPayment->createdby = $req->user()->id;
+                    $registrasiDetailPayment->updatedby = $req->user()->id;
+                    $registrasiDetailPayment->save();    
+                }
+
                 if ($secondPayment != 'undefined'){
                     $registrasiDetailPayment = new RegistrasiDetailPayment();
-                    $registrasiDetailPayment->paymentid = $firstPayment;
+                    $registrasiDetailPayment->registrasiid = $registrasiDetail->registrasiid;
+                    $registrasiDetailPayment->registrasidetailid = $id;
                     $registrasiDetailPayment->name = $secondPayment;
                     $registrasiDetailPayment->createdby = $req->user()->id;
                     $registrasiDetailPayment->updatedby = $req->user()->id;
@@ -273,7 +292,8 @@ class RegistrasiController extends Controller
 
                 if ($thirdPayment != 'undefined'){
                     $registrasiDetailPayment = new RegistrasiDetailPayment();
-                    $registrasiDetailPayment->paymentid = $firstPayment;
+                    $registrasiDetailPayment->registrasiid = $registrasiDetail->registrasiid;
+                    $registrasiDetailPayment->registrasidetailid = $id;
                     $registrasiDetailPayment->name = $thirdPayment;
                     $registrasiDetailPayment->createdby = $req->user()->id;
                     $registrasiDetailPayment->updatedby = $req->user()->id;
@@ -282,7 +302,8 @@ class RegistrasiController extends Controller
 
                 if ($fourPayment != 'undefined'){
                     $registrasiDetailPayment = new RegistrasiDetailPayment();
-                    $registrasiDetailPayment->paymentid = $firstPayment;
+                    $registrasiDetailPayment->registrasiid = $registrasiDetail->registrasiid;
+                    $registrasiDetailPayment->registrasidetailid = $id;
                     $registrasiDetailPayment->name = $fourPayment;
                     $registrasiDetailPayment->createdby = $req->user()->id;
                     $registrasiDetailPayment->updatedby = $req->user()->id;

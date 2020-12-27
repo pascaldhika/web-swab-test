@@ -95,17 +95,30 @@
 <script type="text/javascript">
     var table = false;
     var jumlah = 0;
+    var arrSecondPayment = [];
+    var arrThirdPayment = [];
+    var arrFourPayment = [];
+
+    var objSecond = {};
+    var objThird = {};
+    var objFour = {};
+
     generateForm();
     $(document).ready(function(){
-
       $('#total').on('keyup',function(event) {
-          // skip for arrow keys
-          if(event.which >= 100 && event.which <= 100) return;
+        // skip for arrow keys
+        if(event.which >= 100 && event.which <= 100) return;
 
-          // format number
-          $(this).val(function(index, value) {
-              return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-          });
+        // format number
+        $(this).val(function(index, value) {
+            return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        });
+
+        if ($(this).val() == ""){
+          $(this).val("0");
+          $(this)[0].setSelectionRange(0, 0);
+        }
+
       });
     });
 
@@ -153,69 +166,100 @@
                 html +=       '<div class="form-group">';
                 html +=         '<label for="branch'+i+'">Branch</label>';
                 html +=         '<div class="form-check">';
-                
-                if (v.branch == 'SBP'){
-                  html +=           '<input class="form-check-input" type="radio" name="branch'+i+'" value="SBP" checked>';
-                } else{
-                  html +=           '<input class="form-check-input" type="radio" name="branch'+i+'" value="SBP">';
-                }
-
+                html +=           '<input class="form-check-input" type="radio" name="branch'+i+'" value="SBP" checked>';
                 html +=           '<label class="form-check-label"> SPB</label>';
                 html +=         '</div>';
                 html +=         '<div class="form-check">';
                 
+                var checkedVisit = "";
                 if (v.branch == 'Visit'){
-                  html +=           '<input class="form-check-input" type="radio" name="branch'+i+'" value="Visit" checked>';
-                } else{
-                  html +=           '<input class="form-check-input" type="radio" name="branch'+i+'" value="Visit">';
+                  checkedVisit ="checked";
                 }
 
+                html +=           '<input class="form-check-input" type="radio" name="branch'+i+'" value="Visit" '+checkedVisit+'>';
                 html +=           '<label class="form-check-label"> Visit</label>';
                 html +=         '</div>';
                 html +=       '</div>';
                 html +=       '<div class="form-group">';
                 html +=         '<label for="paid'+i+'">Payment Status</label>';
                 html +=         '<div class="form-check">';
-                
-                if (v.paid == 'Y'){
-                  html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Paid" checked>';
-                } else{
-                  html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Paid">';
-                }
-
+                html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Paid" checked>';
                 html +=           '<label class="form-check-label"> Paid</label>';
                 html +=         '</div>';
                 html +=         '<div class="form-check">';
                 
+                var checkedUnPaid = "";
                 if (v.paid == 'N'){
-                  html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Unpaid" checked>';
-                } else{
-                  html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Unpaid">';
+                  checkedUnPaid ="checked";
                 }
 
+                html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Unpaid" '+checkedUnPaid+'>';
                 html +=           '<label class="form-check-label"> Unpaid</label>';
                 html +=         '</div>';
-
-                // if (v.paid == 'Y'){
-                //   html +=           '<option value="Paid" selected>Paid</option>';
-                //   html +=           '<option value="Unpaid">Unpaid</option></select>';
-                // } else{
-                //   html +=           '<option value="Paid">Paid</option>';
-                //   html +=           '<option value="Unpaid" selected>Unpaid</option></select>';
-                // }
 
                 html +=       '</div>';
                 html +=       '<div class="form-group">';
                 html +=         '<label for="payment'+i+'">Payment Method</label>';
                 html +=         '<select id="payment'+i+'" name="payment'+i+'" class="form-control" onchange="return getSecondPayment(payment'+i+', '+i+')">';
+
+                var arrPayment = [];
+                if (v.paymentlist){
+                  arrPayment = v.paymentlist.split(',');
+                
+                  objSecond['payment'+i] = arrPayment[1];
+                  arrSecondPayment.push(objSecond);
+
+                  objThird['payment'+i] = arrPayment[2];
+                  arrThirdPayment.push(objThird);
+
+                  objFour['payment'+i] = arrPayment[3];
+                  arrFourPayment.push(objFour);
+                }
+                
                 html +=           '<option value="">Pilih Payment</option>';
-                html +=           '<option value="1">Cash</option>';
-                html +=           '<option value="2">Qris</option>';
-                html +=           '<option value="3">Mobile Banking</option>';
-                html +=           '<option value="4">Partners</option>';
-                html +=           '<option value="5">Airlines</option>';
-                html +=           '<option value="6">Debit</option>';
-                html +=           '<option value="7">Kartu Kredit</option>';
+
+                var selected1 = "";
+                if (arrPayment[0] == 'Cash'){
+                  selected1 = "selected"
+                }
+
+                var selected2 = "";
+                if (arrPayment[0] == 'Qris'){
+                  selected2 = "selected"
+                }
+
+                var selected3 = "";
+                if (arrPayment[0] == 'Mobile Banking'){
+                  selected3 = "selected"
+                }
+
+                var selected4 = "";
+                if (arrPayment[0] == 'Partners'){
+                  selected4 = "selected"
+                }
+
+                var selected5 = "";
+                if (arrPayment[0] == 'Airlines'){
+                  selected5 = "selected"
+                }
+
+                var selected6 = "";
+                if (arrPayment[0] == 'Debit'){
+                  selected6 = "selected"
+                }
+
+                var selected7 = "";
+                if (arrPayment[0] == 'Kartu Kredit'){
+                  selected7 = "selected"
+                }
+                
+                html +=           '<option value="Cash" '+selected1+'>Cash</option>';
+                html +=           '<option value="Qris" '+selected2+'>Qris</option>';
+                html +=           '<option value="Mobile Banking" '+selected3+'>Mobile Banking</option>';
+                html +=           '<option value="Partners" '+selected4+'>Partners</option>';
+                html +=           '<option value="Airlines" '+selected5+'>Airlines</option>';
+                html +=           '<option value="Debit" '+selected6+'>Debit</option>';
+                html +=           '<option value="Kartu Kredit" '+selected7+'>Kartu Kredit</option>';
                 html +=         '</select>';
                 html +=       '</div>';
 
@@ -227,18 +271,24 @@
 
                 html +=       '<div class="form-group">';
                 html +=         '<label for="amount'+i+'">Amount</label>';
-                html +=         '<input type="text" class="form-control amount" id="amount'+i+'" value="'+v.amount+'" placeholder="Amount" onkeypress="return hanyaAngka(event)">';
+                html +=         '<input type="text" class="form-control amount" id="amount'+i+'" value="'+v.amount+'" placeholder="Amount" onkeypress="return hanyaAngka(event)" onkeyup="return separatorRibuan(amount'+i+')">';
                 html +=       '</div>';
                 html +=     '</div>';
                 html += '</div>';
 
-                i++;
                 total = total + parseInt(v.amount);
+
+                i++;
               });
 
               newRow.append(html);
 
               jumlah = i-1;
+
+              for (var i = 1; i <= jumlah; i++){
+                $('#payment'+i).trigger('change');
+              }
+
               $('#docdate').html(data.data[0].newdocdate);
               $('#docno').html(data.data[0].docno);
               $('#type').html(data.data[0].type);
@@ -257,47 +307,47 @@
     }
 
     function submitPayment(){
-        var form_data = new FormData();
+      var form_data = new FormData();
 
-        for (var i = 1; i <= jumlah; i++){
-          form_data.append('id'+i, $('#id'+i).val());
-          form_data.append('branch'+i, $('input[name="branch'+i+'"]:checked').val());
-          form_data.append('paid'+i, $('input[name="paid'+i+'"]:checked').val());
-          form_data.append('payment'+i, $('#payment'+i).val());
-          form_data.append('secondpayment'+i, $('#secondpayment'+i).val());
-          form_data.append('thirdpayment'+i, $('#thirdpayment'+i).val());
-          form_data.append('fourpayment'+i, $('#fourpayment'+i).val());
-          form_data.append('amount'+i, $('#amount'+i).val());
-        }
+      for (var i = 1; i <= jumlah; i++){
+        form_data.append('id'+i, $('#id'+i).val());
+        form_data.append('branch'+i, $('input[name="branch'+i+'"]:checked').val());
+        form_data.append('paid'+i, $('input[name="paid'+i+'"]:checked').val());
+        form_data.append('payment'+i, $('#payment'+i).val());
+        form_data.append('secondpayment'+i, $('#secondpayment'+i).val());
+        form_data.append('thirdpayment'+i, $('#thirdpayment'+i).val());
+        form_data.append('fourpayment'+i, $('#fourpayment'+i).val());
+        form_data.append('amount'+i, $('#amount'+i).val().replace(/\./g,''));
+      }
 
-        form_data.append('jumlah', jumlah);
-        form_data.append('_token', "{{ csrf_token() }}");
+      form_data.append('jumlah', jumlah);
+      form_data.append('_token', "{{ csrf_token() }}");
 
-        $.ajax({
-            type: 'POST',
-            url: '{{ route("registrasi.simpanpayment") }}',
-            data: form_data,
-            dataType: 'json',
-            cache: false,
-            contentType: false,
-            processData: false,
-            success: function(data){
-                if(data.success){
-                    toastr.success(data.message);
-                    setTimeout(function(){
-                        var url = "{!! route('registrasi.index') !!}";
-                        window.location.href = url;
-                    },1000);
-                }else{        
-                    toastr.error(data.message);
-                }
-            },
-            error: function(data){
-                toastr.error(data.statusText + ' : ' + data.status);
+      $.ajax({
+        type: 'POST',
+        url: '{{ route("registrasi.simpanpayment") }}',
+        data: form_data,
+        dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function(data){
+            if(data.success){
+                toastr.success(data.message);
+                setTimeout(function(){
+                    var url = "{!! route('registrasi.index') !!}";
+                    window.location.href = url;
+                },1000);
+            }else{        
+                toastr.error(data.message);
             }
-        });
+        },
+        error: function(data){
+            toastr.error(data.statusText + ' : ' + data.status);
+        }
+      });
 
-        return false;
+      return false;
     }
 
     function getSecondPayment(ele, i) {
@@ -306,49 +356,129 @@
       var newRow  = $(".form-group.fieldSecondPayment"+i);
       var html = "";
 
+      var obj;
+      for (var key in arrSecondPayment) {
+        obj = arrSecondPayment[key];
+      }
+
       switch(x) {
-        case '2':
+        case 'Qris':
           html += '<select id="secondpayment'+i+'" class="form-control">';
           html +=   '<option value="">Pilih Qris</option>';
-          html +=   '<option value="Linkaja">LinkAja</option>';
-          html +=   '<option value="Gopay">Gopay</option>';
-          html +=   '<option value="Dana">Dana</option>';
-          html +=   '<option value="Ovo">Ovo</option>';
-          html +=   '<option value="Shoppepay">ShoppePay</option>';
+
+          var selectedLinkAja, selectedGopay, selectedDana, selectedOvo, selectedShopeepay = "";
+          for (var prop in obj) {
+            if (obj[prop] == "LinkAja"){
+              selectedLinkAja = "selected";
+              break;
+            } else if(obj[prop] == "Dana"){
+              selectedDana = "selected";
+              break;
+            } else if(obj[prop] == "Dana"){
+              selectedDana = "selected";
+              break;
+            } else if(obj[prop] == "Ovo"){
+              selectedOvo = "selected";
+              break;
+            } else if(obj[prop] == "Shopeepay"){
+              selectedShopeepay = "selected";
+              break;
+            }
+          }
+
+          html +=   '<option value="Linkaja" '+selectedLinkAja+'>LinkAja</option>';
+          html +=   '<option value="Gopay" '+selectedGopay+'>Gopay</option>';
+          html +=   '<option value="Dana" '+selectedDana+'>Dana</option>';
+          html +=   '<option value="Ovo" '+selectedOvo+'>Ovo</option>';
+          html +=   '<option value="Shopeepay" '+selectedShopeepay+'>Shopeepay</option>';
           html +=  '</select>';
           break;
 
-        case '4':
+        case 'Partners':
           html += '<select id="secondpayment'+i+'" class="form-control">';
           html +=   '<option value="">Pilih Partners</option>';
-          html +=   '<option value="Traveloka">Traveloka</option>';
-          html +=   '<option value="Blibli">Blibli</option>';
-          html +=   '<option value="Favebiz">Favebiz</option>';
-          html +=   '<option value="Docuspace">Docuspace</option>';
+
+          var selectedTraveloka, selectedBlibli, selectedFavebiz, selectedDocuspace = "";
+          for (var prop in obj) {
+            if (obj[prop] == "Traveloka"){
+              selectedTraveloka = "selected";
+              break;
+            } else if(obj[prop] == "Blibli"){
+              selectedBlibli = "selected";
+              break;
+            } else if(obj[prop] == "Favebiz"){
+              selectedFavebiz = "selected";
+              break;
+            } else if(obj[prop] == "Docuspace"){
+              selectedDocuspace = "selected";
+              break;
+            }
+          }
+
+          html +=   '<option value="Traveloka" '+selectedTraveloka+'>Traveloka</option>';
+          html +=   '<option value="Blibli" '+selectedBlibli+'>Blibli</option>';
+          html +=   '<option value="Favebiz" '+selectedFavebiz+'>Favebiz</option>';
+          html +=   '<option value="Docuspace" '+selectedDocuspace+'>Docuspace</option>';
           html +=  '</select>';
           break;
 
-        case '5':
+        case 'Airlines':
           html += '<select id="secondpayment'+i+'" class="form-control" onchange="return getThirdPayment(secondpayment'+i+', '+i+')">';
           html +=   '<option value="">Pilih Airlines</option>';
-          html +=   '<option value="Airasia">Airasia</option>';
-          html +=   '<option value="Liongroup">Liongroup</option>';
+
+          var selectedAirAsia, selectedLionGroup = "";
+          for (var prop in obj) {
+            if (obj[prop] == "Airasia"){
+              selectedAirAsia = "selected";
+              break;
+            } else if(obj[prop] == "Liongroup"){
+              selectedLionGroup = "selected";
+              break;
+            }
+          }
+
+          html +=   '<option value="Airasia" '+selectedAirAsia+'>Airasia</option>';
+          html +=   '<option value="Liongroup" '+selectedLionGroup+'>Liongroup</option>';
           html +=  '</select>';
           break;
 
-        case '6':
+        case 'Debit':
           html += '<select id="secondpayment'+i+'" class="form-control">';
           html +=   '<option value="">Pilih Debit</option>';
-          html +=   '<option value="BCA">BCA</option>';
-          html +=   '<option value="Mandiri">Mandiri</option>';
+
+          var selectedBCA, selectedMandiri = "";
+          for (var prop in obj) {
+            if (obj[prop] == "BCA"){
+              selectedBCA = "selected";
+              break;
+            } else if(obj[prop] == "Mandiri"){
+              selectedMandiri = "selected";
+              break;
+            }
+          }
+
+          html +=   '<option value="BCA" '+selectedBCA+'>BCA</option>';
+          html +=   '<option value="Mandiri" '+selectedMandiri+'>Mandiri</option>';
           html +=  '</select>';
           break;
 
-        case '7':
+        case 'Kartu Kredit':
           html += '<select id="secondpayment'+i+'" class="form-control">';
-          html +=   '<option value="">Pilih Credit</option>';
-          html +=   '<option value="Visa">Visa</option>';
-          html +=   '<option value="Master">Master</option>';
+          html +=   '<option value="">Pilih Kartu Kredit</option>';
+
+          var selectedVisa, selectedMaster = "";
+          for (var prop in obj) {
+            if (obj[prop] == "Visa"){
+              selectedVisa = "selected";
+              break;
+            } else if(obj[prop] == "Master"){
+              selectedMaster = "selected";
+              break;
+            }
+          }
+
+          html +=   '<option value="Visa" '+selectedVisa+'>Visa</option>';
+          html +=   '<option value="Master" '+selectedMaster+'>Master</option>';
           html +=  '</select>';
           break;
 
@@ -358,6 +488,10 @@
 
       newRow.empty();
       newRow.append(html);
+
+      for (var i = 1; i <= jumlah; i++){
+        $('#secondpayment'+i).trigger('change');
+      }
     }
 
     function getThirdPayment(ele, i) {
@@ -365,14 +499,35 @@
       var newRow  = $(".form-group.fieldThirdPayment"+i);
       var html = "";
 
+      var obj;
+      for (var key in arrThirdPayment) {
+        obj = arrThirdPayment[key];
+      }
+
       html += '<select id="thirdpayment'+i+'" class="form-control" onchange="return getFourPayment(thirdpayment'+i+', '+i+')">';
       html +=   '<option value="">Pilih Payment</option>';
-      html +=   '<option value="Directpayment">Direct Payment</option>';
-      html +=   '<option value="AR">A/R</option>';
+
+      var selectedDirectPayment, selectedAR = "";
+      for (var prop in obj) {
+        if (obj[prop] == "Direct Payment"){
+          selectedDirectPayment = "selected";
+          break;
+        } else if(obj[prop] == "A/R"){
+          selectedAR = "selected";
+          break;
+        }
+      }
+
+      html +=   '<option value="Direct Payment" '+selectedDirectPayment+'>Direct Payment</option>';
+      html +=   '<option value="A/R" '+selectedAR+'>A/R</option>';
       html +=  '</select>';
 
       newRow.empty();
       newRow.append(html);
+
+      for (var i = 1; i <= jumlah; i++){
+        $('#thirdpayment'+i).trigger('change');
+      }
     }
 
     function getFourPayment(ele, i) {
@@ -380,10 +535,27 @@
       var newRow  = $(".form-group.fieldFourPayment"+i);
       var html = "";
 
+      var obj;
+      for (var key in arrFourPayment) {
+        obj = arrFourPayment[key];
+      }
+
       html += '<select id="fourpayment'+i+'" class="form-control">';
       html +=   '<option value="">Pilih Tipe Payment</option>';
-      html +=   '<option value="Cash">Cash</option>';
-      html +=   '<option value="Qris">Qris</option>';
+
+      var selectedCash, selectedQris = "";
+      for (var prop in obj) {
+        if (obj[prop] == "Cash"){
+          selectedCash = "selected";
+          break;
+        } else if(obj[prop] == "Qris"){
+          selectedQris = "selected";
+          break;
+        }
+      }
+
+      html +=   '<option value="Cash" '+selectedCash+'>Cash</option>';
+      html +=   '<option value="Qris" '+selectedQris+'>Qris</option>';
       html +=  '</select>';
 
       newRow.empty();
@@ -399,6 +571,36 @@
 
       var newRowFour  = $(".form-group.fieldFourPayment"+i);
       newRowFour.empty();
+    }
+
+    function separatorRibuan(ele){
+      $(ele).on('keyup',function(event) {
+        // skip for arrow keys
+        if(event.which >= 100 && event.which <= 100) return;
+
+        // format number
+        $(this).val(function(index, value) {
+            return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        });
+
+        if ($(this).val() == ""){
+          $(this).val("0");
+          $(this)[0].setSelectionRange(0, 0);
+        }
+
+        // Calculate
+        var total = 0;
+        for (var i = 1; i <= jumlah; i++){
+          total = total + parseInt($('#amount'+i).val().replace(/\./g,''));
+        }
+        $('#total').val(total).trigger('keyup');
+      });
+
+      // $(ele).on('focus click', function() {
+      //   if ($(ele).val() == "" || $(ele).val() == "0"){
+      //     $(this)[0].setSelectionRange(0, 0);
+      //   }
+      // });
     }
         
 </script>

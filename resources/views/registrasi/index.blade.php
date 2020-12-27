@@ -118,8 +118,8 @@
                     "className": "menufilter textfilter",
                     "orderable" : false,
                     render : function(data, type, row) {
-                        var data = row.unpaid;
-                        if (data > 0) {
+                        var data = row.paid;
+                        if (data <= 0) {
                             return '<input type="checkbox" class="editor-active" onclick="return false;">';
                         } else {
                             return '<input type="checkbox" onclick="return false;" class="editor-active" checked>';
@@ -225,9 +225,9 @@
     function ubahStatus(id, e){
         @can('isNakes')
             var type  = $(e).data('type');
-            var notpayment  = $(e).data('notpayment');
+            var paid = $(e).data('paid');
 
-            if (notpayment == 0){
+            if (paid > 0){
                 clear_column('modalUbahStatus');
                 $('#modalUbahStatus #myModalLabel').text("Ubah Status / Hasil Pemeriksaan Lab");
                 $('#modalUbahStatus #id').val(id);
