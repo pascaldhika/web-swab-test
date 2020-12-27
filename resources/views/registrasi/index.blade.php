@@ -55,22 +55,19 @@
         <div class="modal-body">
             <div class="card-body">
                 <input type="hidden" id="id" value="" class="form-control form-clear">
-                <div class="form-group">
-                    <div class="col-12 table-responsive">
-                      <table id="table2" class="table table-striped">
-                        <thead>
-                        <tr>
-                          <th>ID</th>
-                          <th>Nama</th>
-                          <th>Alamat</th>
-                          <th>No. Identitas</th>
-                          <th>Status</th>
-                        </tr>
-                        </thead>
-                        <tbody></tbody>
-                      </table>
-                    </div>
-                </div>
+                <table id="table2" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Nama</th>
+                      <th>Alamat</th>
+                      <th>No. Identitas</th>
+                      <th>Status</th>
+                      <!-- <th>Detail</th> -->
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
         <div class="modal-footer justify-content-between">
@@ -92,6 +89,10 @@
             serverSide: true,
             processing: true,
             searchDelay: 1000,
+            "lengthChange": false,
+            "info": true,
+            "autoWidth": false,
+            "responsive": true,
             ajax       : {
                 type: 'GET',
                 url : '{{ route("registrasi.data") }}',
@@ -128,6 +129,10 @@
                     }, 
                 },
                 {
+                    "data" : "paid_by",
+                    "className": "menufilter textfilter"
+                },
+                {
                     "data" : "status_at",
                     "className": "menufilter textfilter",
                     render : function(data, type, row) {
@@ -139,10 +144,6 @@
                         }
                         return data;    
                     }, 
-                },
-                {
-                    "data" : "paid_by",
-                    "className": "menufilter textfilter"
                 },
                 {
                     "data" : "print",
@@ -181,9 +182,13 @@
         @endif
 
         table2 = $('#table2').DataTable({
-            dom         : 'lrtp',
-            paging      : false,
-            order       : [[ 1, 'asc' ]],
+            "paging": true,
+            "lengthChange": false,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "responsive": true,
             columns     : [
                 {
                     data : 'id',
@@ -200,8 +205,26 @@
                 {
                     data : 'status',
                 },
+                // {
+                //     data : 'detailstatus',
+                // },
             ],
         });
+
+        // $('#table2').on('change', 'select.mySelect', function() {
+        //     var colIndex = +$(this).data('col');
+        //     var row = $(this).closest('tr')[0];
+        //     var data = table2.row(row).data();
+        //     data[colIndex] = this.value;
+
+        //     if (this.value == "Reaktif"){
+        //         table2.column(5).visible(true);
+        //     } else{
+        //         table2.column(5).visible(false);
+        //     }
+
+        //     table2.row(row).data(data).draw();
+        // });
     });
 
     function detail(id){
@@ -232,8 +255,8 @@
                 $('#modalUbahStatus #myModalLabel').text("Ubah Status / Hasil Pemeriksaan Lab");
                 $('#modalUbahStatus #id').val(id);
 
-                var sts, sts2, sts3 = "";
-                sts = "<select id='status' name='status' class='form-control' placeholder='Status'><option value=''>Pilih Status</option>";
+                var sts, sts2, sts3, dsts = "";
+                sts = "<select id='status' name='status' class='mySelect' placeholder='Status'><option value=''>Pilih Status</option>";
                 sts3 = "</select>";
 
                 $.ajax({
@@ -246,7 +269,7 @@
                     dataType: "json",
                     success: function(data){
                         if(data.success){
-                          table2.clear();console.log(data.data);
+                          table2.clear();
                           $.each(data.data, function (k, v) {
                             switch(v.status) {
                               case 'Positif':
@@ -270,6 +293,13 @@
                                     sts2 = "<option value='Positif'>Positif</option><option value='Negatif'>Negatif</option>";
                                 } else{
                                     sts2 = "<option value='Reaktif'>Reaktif</option><option value='Nonreaktif'>Non-Reaktif</option>"
+
+                                    dsts = "<div class='form-check'>";
+                                    dsts += "<input class='form-check-input' id='detailstatus' type='checkbox'><label class='form-check-label'>IGG</label>";
+                                    dsts += "</div>";
+                                    dsts += "<div class='form-check'>";
+                                    dsts += "<input class='form-check-input' id='detailstatus' type='checkbox'><label class='form-check-label'>IGM</label>";
+                                    dsts += "</div>";
                                 }
                             } 
                             
@@ -278,11 +308,13 @@
                                 'name':v.name,
                                 'address':v.address,
                                 'identityno':v.identityno,
-                                'status':sts+sts2+sts3
+                                'status':sts+sts2+sts3,
+                                // 'detailstatus':dsts,
                             }]);
                           });
 
                          table2.draw();
+                         
                          $('#modalUbahStatus').modal("show");
                           
                         }else{        
@@ -307,13 +339,21 @@
 
         $.each(rowData, function(index, value){
             table2.column(4).nodes().each(function (node, index, dt) {
-                var status = $(table2.cell(node).node()).find('.form-control').val();
+                var status = $(table2.cell(node).node()).find('.mySelect').val();
                 
                 data[index] = {
                     'id'        : rowData[index].id,
                     'status'    : status
                 };
             });
+
+            // table2.column(5).nodes().each(function (node, index, dt) {
+            //     var detailstatus = $(table2.cell(node).node()).find('#detailstatus').val();
+                
+            //     data[index] = {
+            //         'detailstatus'    : status
+            //     };
+            // });
         });
 
         $.ajax({
