@@ -371,8 +371,8 @@
             if (obj[prop] == "LinkAja"){
               selectedLinkAja = "selected";
               break;
-            } else if(obj[prop] == "Dana"){
-              selectedDana = "selected";
+            } else if(obj[prop] == "Gopay"){
+              selectedGopay = "selected";
               break;
             } else if(obj[prop] == "Dana"){
               selectedDana = "selected";

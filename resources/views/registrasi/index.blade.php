@@ -93,6 +93,7 @@
             "info": true,
             "autoWidth": false,
             "responsive": true,
+            "order": [[ 1, "desc" ]],
             ajax       : {
                 type: 'GET',
                 url : '{{ route("registrasi.data") }}',

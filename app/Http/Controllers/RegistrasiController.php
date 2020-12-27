@@ -58,7 +58,7 @@ class RegistrasiController extends Controller
                 }
 
                 if (Gate::allows('isAdmin') || Gate::allows('isSuperAdmin')) {
-                    $action .= '<a href="'.url('transaction/registrasi/print/pdf?id='.$data->id).'" class="btn btn-xs btn-default no-margin-action" title="Role User"><i class="fas fa-print"></i></a>';
+                    $action .= '<a href="'.url('transaction/registrasi/print/pdf?id='.$data->id).'" class="btn btn-xs btn-default no-margin-action" title="Print"><i class="fas fa-print"></i></a>';
                 }
 
                 if (Gate::allows('isKasir') || Gate::allows('isSuperAdmin')) {
@@ -400,8 +400,14 @@ class RegistrasiController extends Controller
     }
 
     public function printPdf(Request $req){
+        $id = strip_tags($req->id);
+        $registrasi = Registrasi::find($id);
+        $registrasi->print     = $registrasi->print + 1;
+        $registrasi->print_at  = date('Y-m-d H:i:s');
+        $registrasi->updatedby = $req->user()->id;
+        $registrasi->save();
 
-        $title = "SWAB Visit";
+        $title = $registrasi->docno;
         $namasheet    = str_slug($title);
         $namafile     = $namasheet."-".uniqid().".pdf";
         
@@ -411,13 +417,6 @@ class RegistrasiController extends Controller
         $query = "CALL fn_get_detail_registrasi(:id)";
 
         $data = DB::SELECT($query,$params);
-
-        $id = strip_tags($req->id);
-        $registrasi = Registrasi::find($id);
-        $registrasi->print     = $registrasi->print + 1;
-        $registrasi->print_at  = date('Y-m-d H:i:s');
-        $registrasi->updatedby = $req->user()->id;
-        $registrasi->save();
 
         $pdf = PDF::loadview('registrasi.pdf',['data'=>$data])->setPaper('a4', 'portrait');
         return $pdf->download($namafile);

@@ -24,7 +24,7 @@
         <tr>
             <td>Nama</td>
             <td style="text-align: center;"> : </td>
-            <td colspan="6">{{ $v->name }}</td>
+            <td colspan="6">{{ ($v->gender == 'Laki-laki') ? 'Tn. ' : 'Ny. ' }} {{ $v->name }}</td>
             <td colspan="4"></td>
         </tr>
 

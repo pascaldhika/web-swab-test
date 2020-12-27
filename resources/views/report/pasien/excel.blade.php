@@ -28,7 +28,7 @@
         @foreach($data as $v)
         <tr>
             <td style="text-align:center; border: 1px solid #000;">{{ $n }}</td>
-            <td style="border: 1px solid #000;">{{ $v->name }}</td>
+            <td style="border: 1px solid #000;">{{ ($v->gender == 'Laki-laki') ? 'Tn. ' : 'Ny. ' }} {{ $v->name }}</td>
             <td style="border: 1px solid #000;">{{ $v->identityno }}</td>
             <td style="border: 1px solid #000;">{{ $v->birthplace }}</td>
             <td style="border: 1px solid #000;">{{ $v->birthdate }}</td>
