@@ -111,8 +111,9 @@
 
         $('#table').dataTable().fnDestroy();
         table = $('#table').DataTable({
-            responsive: true,
+            serverSide: true,
             processing: true,
+            searchDelay: 1000,
             ajax       : {
                 type: 'GET',
                 url : '{{ route("user.data") }}',

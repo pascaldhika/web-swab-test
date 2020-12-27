@@ -79,7 +79,7 @@
             <div class="col-12">
                 <a href="{{route('registrasi.index')}}" class="btn btn-warning">Back</a>
 
-                @if(Gate::check('isKasir'))
+                @if(Gate::check('isKasir') || Gate::check('isSuperAdmin'))
                     <button type="button" class="btn btn-success float-right" onclick="submitPayment()" style="margin-right: 5px;"><i class="far fa-credit-card"></i> Submit Payment</button>
                 @endif
             </div>
@@ -152,31 +152,58 @@
                 html +=       '</div>';
                 html +=       '<div class="form-group">';
                 html +=         '<label for="branch'+i+'">Branch</label>';
-                html +=         '<select id="branch'+i+'" class="form-control">';
-
-                if (v.branch == 'Visit'){
-                  html +=           '<option value="SBP">SBP</option>';
-                  html +=           '<option value="Visit" selected>Visit</option></select>';
+                html +=         '<div class="form-check">';
+                
+                if (v.branch == 'SBP'){
+                  html +=           '<input class="form-check-input" type="radio" name="branch'+i+'" value="SBP" checked>';
                 } else{
-                  html +=           '<option value="SBP" selected>SBP</option>';
-                  html +=           '<option value="Visit">Visit</option></select>';
+                  html +=           '<input class="form-check-input" type="radio" name="branch'+i+'" value="SBP">';
                 }
 
-                html +=         '</select>';
+                html +=           '<label class="form-check-label"> SPB</label>';
+                html +=         '</div>';
+                html +=         '<div class="form-check">';
+                
+                if (v.branch == 'Visit'){
+                  html +=           '<input class="form-check-input" type="radio" name="branch'+i+'" value="Visit" checked>';
+                } else{
+                  html +=           '<input class="form-check-input" type="radio" name="branch'+i+'" value="Visit">';
+                }
+
+                html +=           '<label class="form-check-label"> Visit</label>';
+                html +=         '</div>';
                 html +=       '</div>';
                 html +=       '<div class="form-group">';
                 html +=         '<label for="paid'+i+'">Payment Status</label>';
-                html +=         '<select id="paid'+i+'" class="form-control">';
-
+                html +=         '<div class="form-check">';
+                
                 if (v.paid == 'Y'){
-                  html +=           '<option value="Paid" selected>Paid</option>';
-                  html +=           '<option value="Unpaid">Unpaid</option></select>';
+                  html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Paid" checked>';
                 } else{
-                  html +=           '<option value="Paid">Paid</option>';
-                  html +=           '<option value="Unpaid" selected>Unpaid</option></select>';
+                  html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Paid">';
                 }
 
-                html +=         '</select>';
+                html +=           '<label class="form-check-label"> Paid</label>';
+                html +=         '</div>';
+                html +=         '<div class="form-check">';
+                
+                if (v.paid == 'N'){
+                  html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Unpaid" checked>';
+                } else{
+                  html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Unpaid">';
+                }
+
+                html +=           '<label class="form-check-label"> Unpaid</label>';
+                html +=         '</div>';
+
+                // if (v.paid == 'Y'){
+                //   html +=           '<option value="Paid" selected>Paid</option>';
+                //   html +=           '<option value="Unpaid">Unpaid</option></select>';
+                // } else{
+                //   html +=           '<option value="Paid">Paid</option>';
+                //   html +=           '<option value="Unpaid" selected>Unpaid</option></select>';
+                // }
+
                 html +=       '</div>';
                 html +=       '<div class="form-group">';
                 html +=         '<label for="payment'+i+'">Payment Method</label>';
@@ -200,7 +227,7 @@
 
                 html +=       '<div class="form-group">';
                 html +=         '<label for="amount'+i+'">Amount</label>';
-                html +=         '<input type="text" class="form-control" id="amount'+i+'" value="'+v.amount+'" placeholder="Amount" onkeypress="return hanyaAngka(event)">';
+                html +=         '<input type="text" class="form-control amount" id="amount'+i+'" value="'+v.amount+'" placeholder="Amount" onkeypress="return hanyaAngka(event)">';
                 html +=       '</div>';
                 html +=     '</div>';
                 html += '</div>';
@@ -234,8 +261,8 @@
 
         for (var i = 1; i <= jumlah; i++){
           form_data.append('id'+i, $('#id'+i).val());
-          form_data.append('branch'+i, $('#branch'+i).val());
-          form_data.append('paid'+i, $('#paid'+i).val());
+          form_data.append('branch'+i, $('input[name="branch'+i+'"]:checked').val());
+          form_data.append('paid'+i, $('input[name="paid'+i+'"]:checked').val());
           form_data.append('payment'+i, $('#payment'+i).val());
           form_data.append('secondpayment'+i, $('#secondpayment'+i).val());
           form_data.append('thirdpayment'+i, $('#thirdpayment'+i).val());

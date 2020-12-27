@@ -23,8 +23,12 @@
                     <th>Tgl. Booking</th>
                     <th>Pasien</th>
                     <th>Type</th>
+                    <th>Paid</th>
+                    <th>Paid By</th>
+                    <th>Sudah Input</th>
                     <th>Print</th>
-                    <th>Print_at</th>
+                    <th>Print At</th>
+                    <th>Hasil Periksa</th>
                     <th>Action</th>
                   </tr>
                   </thead>
@@ -85,8 +89,9 @@
     $(document).ready(function(){
         $('#table').dataTable().fnDestroy();
         table = $('#table').DataTable({
-            responsive: true,
+            serverSide: true,
             processing: true,
+            searchDelay: 1000,
             ajax       : {
                 type: 'GET',
                 url : '{{ route("registrasi.data") }}',
@@ -109,6 +114,37 @@
                     "className": "menufilter textfilter"
                 },
                 {
+                    "data" : "paid",
+                    "className": "menufilter textfilter",
+                    "orderable" : false,
+                    render : function(data, type, row) {
+                        var data = row.unpaid;
+                        if (data > 0) {
+                            return '<input type="checkbox" class="editor-active" onclick="return false;">';
+                        } else {
+                            return '<input type="checkbox" onclick="return false;" class="editor-active" checked>';
+                        }
+                        return data;    
+                    }, 
+                },
+                {
+                    "data" : "status_at",
+                    "className": "menufilter textfilter",
+                    render : function(data, type, row) {
+                        var data = row.status_at;
+                        if (data) {
+                            return '<input type="checkbox" onclick="return false;" class="editor-active" checked>';
+                        } else {
+                            return '<input type="checkbox" class="editor-active" onclick="return false;">';
+                        }
+                        return data;    
+                    }, 
+                },
+                {
+                    "data" : "paid_by",
+                    "className": "menufilter textfilter"
+                },
+                {
                     "data" : "print",
                     "className": "menufilter textfilter"
                 },
@@ -116,9 +152,33 @@
                     "data" : "print_at",
                     "className": "menufilter textfilter"
                 },
+                {
+                    "data" : "hasil",
+                    "className": "menufilter textfilter"
+                },
                 {data: 'action', orderable: false, searchable: false},
             ],
         });
+
+        @if(Gate::check('isSuperAdmin') || Gate::check('isNakes'))
+            table.column(6).visible(true);
+        @else
+            table.column(6).visible(false);
+        @endif
+
+        @if(Gate::check('isSuperAdmin') || Gate::check('isAdmin'))
+            table.column(7).visible(true);
+            table.column(8).visible(true);
+            table.column(9).visible(true);
+        @elseif(Gate::check('isNakes'))
+            table.column(7).visible(false);
+            table.column(8).visible(true);
+            table.column(9).visible(true);
+        @else
+            table.column(7).visible(false);
+            table.column(8).visible(false);
+            table.column(9).visible(false);
+        @endif
 
         table2 = $('#table2').DataTable({
             dom         : 'lrtp',
@@ -152,6 +212,12 @@
 
     function edit(id){
         var base = "{!! route('registrasi.edit') !!}";
+        var url = base+'?id='+id ;
+        window.location.href = url;
+    }
+
+    function editPayment(id){
+        var base = "{!! route('registrasi.detail') !!}";
         var url = base+'?id='+id ;
         window.location.href = url;
     }

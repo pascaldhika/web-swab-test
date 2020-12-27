@@ -22,13 +22,13 @@
 						<div class="col-sm-2">
 						  <label>From:</label>
 						  <div class="input-group input-group-sm">
-						    <input type="date" class="form-control" id="tglawal" placeholder="Tgl. Awal">
+						    <input type="date" class="form-control" id="tglawal" value="{{ date('Y-m-d') }}" placeholder="Tgl. Awal">
 						  </div>
 						</div>
 						<div class="col-sm-2">
 						  <label>To:</label>
 						  <div class="input-group input-group-sm">
-						    <input type="date" class="form-control" id="tglakhir" placeholder="Tgl. Akhir">
+						    <input type="date" class="form-control" id="tglakhir" value="{{ date('Y-m-d') }}" placeholder="Tgl. Akhir">
 						  </div>
 						</div>
 						<div class="col-sm-4">
@@ -52,6 +52,7 @@
 
 @push('scripts')
 <script type="text/javascript">
+
 	function proses(){
 		var base = "{!! route('report.pasien.print.excel') !!}";
 		var tglawal = $('#tglawal').val();

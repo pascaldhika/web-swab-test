@@ -4,7 +4,7 @@
 <!-- general form elements -->
 <div class="card card-danger">
   <div class="card-header">
-    <h3 class="card-title">Pilih Jenis Swab Test</h3>
+    <h3 class="card-title">Pilih Jenis Test</h3>
   </div>
   <div class="card-body">
     <div class="row">
@@ -38,7 +38,7 @@
 
 @push('scripts')
 <script type="text/javascript">
-	var jumlah = 0;
+  var jumlah = 0;
 
   $(document).ready(function(){
     var Toast = Swal.mixin({
@@ -51,88 +51,88 @@
   });
 
   function proses(){
-  	jumlah = $('#jumlah').val();
+    jumlah = $('#jumlah').val();
 
-  	var newRow 	= $(".field.fieldTEXT");
-  	var html = "";
+    var newRow  = $(".field.fieldTEXT");
+    var html = "";
 
-  	newRow.empty();
+    newRow.empty();
 
-  	for (var i = 1; i <= jumlah; i++) {
-  		html +=	'<div id="field'+i+'" class="card card-secondary">';
+    for (var i = 1; i <= jumlah; i++) {
+      html += '<div id="field'+i+'" class="card card-secondary">';
       html +=    '<div class="card-header"><h3 class="card-title">Data Peserta '+i+'</h3>';
       html +=     '<div class="card-tools">';
       html +=       '<button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>';
       html +=     '</div>';
       html +=    '</div>';
       html +=    '<div class="card-body">';
-      html +=    		'<div class="form-group">';
-      html +=    			'<label for="name'+i+'">Nama</label>';
-      html +=    			'<input type="text" class="form-control" id="name'+i+'" placeholder="Nama">';
-      html +=    		'</div>';
-      html +=    		'<div class="form-group">';
-      html +=    			'<label for="address'+i+'">Alamat</label>';
-      html +=    			'<input type="text" class="form-control" id="address'+i+'" placeholder="Alamat">';
-      html +=    		'</div>';
       html +=       '<div class="form-group">';
-      html +=         '<label for="identityno'+i+'">No. Identitas</label>';
+      html +=         '<label for="name'+i+'">Nama *Sesuai Kartu Identitas</label>';
+      html +=         '<input type="text-area" class="form-control" id="name'+i+'" placeholder="Nama Sesuai Kartu Identitas">';
+      html +=       '</div>';
+      html +=       '<div class="form-group">';
+      html +=         '<label for="address'+i+'">Alamat *Sesuai Kartu Identitas</label>';
+      html +=         '<input type="text" class="form-control" id="address'+i+'" placeholder="Alamat Sesuai Kartu Identitas">';
+      html +=       '</div>';
+      html +=       '<div class="form-group">';
+      html +=         '<label for="identityno'+i+'">No. Identitas KTP/SIM/Passport</label>';
       html +=         '<input type="text" class="form-control" id="identityno'+i+'" placeholder="No. Identitas" onkeypress="return hanyaAngka(event)">';
       html +=       '</div>';
       html +=       '<div class="form-group">';
-      html +=         '<label for="birthplace'+i+'">Tempat Lahir</label>';
-      html +=         '<input type="text" class="form-control" id="birthplace'+i+'" placeholder="Tempat Lahir">';
+      html +=         '<label for="birthplace'+i+'">Tempat Lahir *Sesuai Kartu Identitas</label>';
+      html +=         '<input type="text" class="form-control" id="birthplace'+i+'" placeholder="Tempat Lahir *Sesuai Kartu Identitas">';
       html +=       '</div>';
       html +=       '<div class="form-group">';
-      html +=         '<label for="birthdate'+i+'">Tgl. Lahir</label>';
-      html +=           '<input type="date" class="form-control calendar" id="birthdate'+i+'" placeholder="Tgl. Lahir">';
+      html +=         '<label for="birthdate'+i+'">Tgl. Lahir *Sesuai Kartu Identitas</label>';
+      html +=           '<input type="date" class="form-control calendar" id="birthdate'+i+'" placeholder="Tgl. Lahir *Sesuai Kartu Identitas">';
       html +=       '</div>';
       html +=       '<div class="form-group">';
       html +=         '<label for="gender'+i+'">Jenis Kelamin</label>';
       html +=         '<select id="gender'+i+'" class="form-control"><option value="Laki-laki">Laki-laki</option><option value="Perempuan">Perempuan</option></select>';
       html +=       '</div>';
       html +=       '<div class="form-group">';
-      html +=         '<label for="job'+i+'">Pekerjaan</label>';
-      html +=         '<input type="text" class="form-control" id="job'+i+'" placeholder="Pekerjaan">';
+      html +=         '<label for="job'+i+'">Pekerjaan *Sesuai Kartu Identitas</label>';
+      html +=         '<input type="text" class="form-control" id="job'+i+'" placeholder="Pekerjaan *Sesuai Kartu Identitas">';
       html +=       '</div>';
       html +=       '<div class="form-group">';
-      html +=         '<label for="country'+i+'">Warga Negara</label>';
-      html +=         '<input type="text" class="form-control" id="country'+i+'" placeholder="Warga Negara">';
+      html +=         '<label for="country'+i+'">Warga Negara *Sesuai Kartu Identitas</label>';
+      html +=         '<input type="text" class="form-control" id="country'+i+'" placeholder="Warga Negara *Sesuai Kartu Identitas">';
       html +=       '</div>';
-      html +=    	'</div>';
+      html +=     '</div>';
       html += '</div>';
-  	}
+    }
 
-	  newRow.append(html);
+    newRow.append(html);
   }
 
   function simpan(){
-  	var form_data = new FormData();
+    var form_data = new FormData();
     
     if (jumlah >0){
       for (var i = 1; i <= jumlah; i++){
-    		form_data.append('name'+i, $('#name'+i).val());
-    		form_data.append('address'+i, $('#address'+i).val());
+        form_data.append('name'+i, $('#name'+i).val());
+        form_data.append('address'+i, $('#address'+i).val());
         form_data.append('identityno'+i, $('#identityno'+i).val());
         form_data.append('birthplace'+i, $('#birthplace'+i).val());
         form_data.append('birthdate'+i, $('#birthdate'+i).val());
         form_data.append('gender'+i, $('#gender'+i).val());
         form_data.append('job'+i, $('#job'+i).val());
         form_data.append('country'+i, $('#country'+i).val());
-    	}
+      }
 
-    	form_data.append('jumlah', jumlah);
-    	form_data.append('type', $('#type').val());
-    	form_data.append('_token', "{{ csrf_token() }}");
+      form_data.append('jumlah', jumlah);
+      form_data.append('type', $('#type').val());
+      form_data.append('_token', "{{ csrf_token() }}");
 
-    	$.ajax({
-    		type: 'POST',
-    		url: '{{ route("registrasi.simpan") }}',
-    		data: form_data,
-    		dataType: 'json',
+      $.ajax({
+        type: 'POST',
+        url: '{{ route("registrasi.simpan") }}',
+        data: form_data,
+        dataType: 'json',
         cache: false,
         contentType: false,
         processData: false,
-    		success: function(data){
+        success: function(data){
           if(data.success){
             $(document).Toasts('create', {
               class: 'bg-success',
@@ -157,7 +157,7 @@
         error: function(data){
           toastr.error(data.statusText + ' : ' + data.status);
         }
-    	});
+      });
     }
   }
 </script>

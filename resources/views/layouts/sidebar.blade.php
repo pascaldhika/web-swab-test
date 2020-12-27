@@ -35,7 +35,7 @@
         </li>
         @endif
 
-        @if(Gate::check('isAdmin'))
+        @if(Gate::check('isSuperAdmin') || Gate::check('isAdmin'))
         <li class="nav-item">
           <a href="{{ route('registrasi.index') }}" class="nav-link">
             <i class="nav-icon fas fa-book"></i>

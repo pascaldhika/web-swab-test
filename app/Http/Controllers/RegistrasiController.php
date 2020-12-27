@@ -26,43 +26,49 @@ class RegistrasiController extends Controller
         $query = "
             SELECT
                 A.id, A.docno, DATE_FORMAT(A.docdate, '%d %M %Y') AS docdate,
-                A.type, A.print, A.print_at, GROUP_CONCAT(B.name SEPARATOR ', ') AS pasien 
+                A.type, A.print, A.print_at, GROUP_CONCAT(B.name SEPARATOR ', ') AS pasien,
+                U.name AS paid_by, B.status_at,
+                (
+                    SELECT
+                            COUNT(*) AS total
+                    FROM registrasidetail B 
+                    WHERE B.registrasiid = A.id
+                    AND B.paymentid IS NULL
+                ) AS unpaid, NULL AS paid,
+                GROUP_CONCAT(B.status SEPARATOR ', ') AS hasil
             FROM registrasi A
             INNER JOIN registrasidetail B ON B.registrasiid = A.id
-            GROUP BY A.id, A.docno, A.docdate, A.type, A.print, A.print_at
-            ORDER BY A.docno
+            LEFT JOIN users U ON B.paid_by = U.id
+            GROUP BY A.id, A.docno, A.docdate, A.type, A.print, A.print_at, U.name, B.status_at
+            ORDER BY A.docdate DESC LIMIT 500
         ";
 
         $data = DB::SELECT($query);
 
         return Datatables::of($data)
         ->addColumn("action", function($data){
-            $params = [
-                'id' => $data->id
-            ];
-            $queryPayment = "
-                SELECT
-                    COUNT(*) AS total
-                FROM registrasidetail B 
-                WHERE B.registrasiid = :id
-                AND B.paymentid IS NULL
-            ";
 
-            $dataNotPayment = DB::SELECT($queryPayment, $params);
             $action = "";
-            if ($dataNotPayment[0]->total > 0){
-                if (Gate::allows('isKasir')) {
+            if ($data->unpaid > 0){
+                if (Gate::allows('isKasir') || Gate::allows('isSuperAdmin')) {
                     $action = '<div onclick="detail('.$data->id.')" class="btn btn-xs btn-info no-margin-action" title="Detail"><i class="fa fa-eye"></i></div>';
                 }
             } else{
-                if (Gate::allows('isNakes')) {
-                    $action .= '<div onclick="ubahStatus('.$data->id.', this)" data-type="'.$data->type.'" data-notpayment="'.$dataNotPayment[0]->total.'" class="btn btn-xs btn-warning no-margin-action" title="Ubah Status / Hasil Pemeriksaan Lab"><i class="fas fa-edit"></i></div>';
+                if (Gate::allows('isNakes') || Gate::allows('isSuperAdmin')) {
+                    $action .= '<div onclick="ubahStatus('.$data->id.', this)" data-type="'.$data->type.'" data-notpayment="'.$data->unpaid.'" class="btn btn-xs btn-success no-margin-action" title="Ubah Status / Hasil Pemeriksaan Lab"><i class="fas fa-check"></i></div>';
                 }
 
-                if (Gate::allows('isAdmin')) {
+                if (Gate::allows('isAdmin') || Gate::allows('isSuperAdmin')) {
                     $action .= '<a href="'.url('transaction/registrasi/print/pdf?id='.$data->id).'" class="btn btn-xs btn-default no-margin-action" title="Role User"><i class="fas fa-print"></i></a>';
-                    $action .= '<div onclick="edit('.$data->id.')" class="btn btn-xs btn-default no-margin-action" title="Edit"><i class="fa fa-edit"></i></div>';
                 }
+
+                if (Gate::allows('isKasir') || Gate::allows('isSuperAdmin')) {
+                    $action = '<div onclick="editPayment('.$data->id.')" class="btn btn-xs btn-primary no-margin-action" title="Edit Pembayaran"><i class="far fa-credit-card"></i></div>';
+                }
+            }
+
+            if (Gate::allows('isAdmin') || Gate::allows('isSuperAdmin')) {
+                $action .= '<div onclick="edit('.$data->id.')" class="btn btn-xs btn-warning no-margin-action" title="Edit Data Pasien"><i class="fa fa-edit"></i></div>';
             }
 
             return $action;
@@ -133,10 +139,11 @@ class RegistrasiController extends Controller
         	}
 
             $month = date('m');
+            $type = strip_tags($req->input('type'));
             $romawi =  DB::select("CALL f_gen_romawi(:angka)", ['angka' => (int) $month]);
         	$autoNum = DB::select("CALL f_gen_autonum(:prefix,:datatype,:romawi)", [
-                'prefix' => 'SWAB',
-                'datatype' => 'SwabTest',
+                'prefix' => ($type == 'Antibodi Test') ? 'AB' : 'AG',
+                'datatype' => $type,
                 'romawi' => $romawi[0]->romawi
             ]);
             $docNo = $autoNum[0]->docno;
@@ -144,29 +151,23 @@ class RegistrasiController extends Controller
             $registrasi = new Registrasi();
             $registrasi->docno     = $docNo;
             $registrasi->docdate   = date('Y-m-d H:i:s');
-            $registrasi->type      = strip_tags($req->input('type'));
+            $registrasi->type      = $type;
             $registrasi->print     = 0;
             $registrasi->createdby = -1;
             $registrasi->updatedby = -1;
             $registrasi->save();
 
         	for ($i=1; $i <= $jumlah ; $i++) {
-                $gender = strip_tags($req->input('gender'.$i));
-                if ($gender == 'Laki-laki'){
-                    $name = 'Tn. ' . strip_tags($req->input('name'.$i));
-                } else{
-                    $name = 'Ny. ' . strip_tags($req->input('name'.$i));
-                }
-
                 $registrasiDetail = new RegistrasiDetail();
                 $registrasiDetail->registrasiid = $registrasi->id;
-                $registrasiDetail->name      = $name;
+                $registrasiDetail->name      = strip_tags($req->input('name'.$i));
                 $registrasiDetail->address   = strip_tags($req->input('address'.$i));
                 $registrasiDetail->identityno= strip_tags($req->input('identityno'.$i));
                 $registrasiDetail->birthplace= strip_tags($req->input('birthplace'.$i));
                 $registrasiDetail->birthdate = strip_tags($req->input('birthdate'.$i));
-                $registrasiDetail->gender    = $gender;
+                $registrasiDetail->gender    = strip_tags($req->input('gender'.$i));
                 $registrasiDetail->amount    = 0;
+                $registrasiDetail->paid      = 'N';
                 $registrasiDetail->job       = strip_tags($req->input('job'.$i));
                 $registrasiDetail->country   = strip_tags($req->input('country'.$i));
                 $registrasiDetail->createdby = -1;
@@ -219,7 +220,7 @@ class RegistrasiController extends Controller
         }
     }
 
-    public function simpanPayment(Request $req){
+    public function simpanPayment(Request $req){dd($req->all());
         DB::beginTransaction();
         try{
             $jumlah = (int) $req->input('jumlah');
@@ -240,13 +241,6 @@ class RegistrasiController extends Controller
             }
 
             for ($i=1; $i <= $jumlah ; $i++) {
-                $gender = strip_tags($req->input('gender'.$i));
-                if ($gender == 'Laki-laki'){
-                    $name = 'Tn. ' . strip_tags($req->input('name'.$i));
-                } else{
-                    $name = 'Ny. ' . strip_tags($req->input('name'.$i));
-                }
-
                 $id = strip_tags($req->input('id'.$i));
                 $registrasiDetail = RegistrasiDetail::find($id);
                 if ($registrasiDetail == null){
@@ -258,6 +252,7 @@ class RegistrasiController extends Controller
                 $registrasiDetail->branch = strip_tags($req->input('branch'.$i));
                 $registrasiDetail->paid = (strip_tags($req->input('paid'.$i)) == 'Paid') ? 'Y' : 'N';
                 $registrasiDetail->paid_at = date('Y-m-d H:i:s');
+                $registrasiDetail->paid_by = $req->user()->id;
                 $registrasiDetail->paymentid = $firstPayment;
                 $registrasiDetail->amount = strip_tags($req->input('amount'.$i));
                 $registrasiDetail->updatedby = $req->user()->id;
@@ -321,6 +316,11 @@ class RegistrasiController extends Controller
                 $rules['name' . $i] = 'required';
                 $rules['address' . $i] = 'required';
                 $rules['identityno' . $i] = 'required';
+                $rules['birthplace' . $i] = 'required';
+                $rules['birthdate' . $i] = 'required';
+                $rules['gender' . $i] = 'required';
+                $rules['job' . $i] = 'required';
+                $rules['country' . $i] = 'required';
             }
             
             $vali = Validator::make($req->all(),$rules);
@@ -330,13 +330,6 @@ class RegistrasiController extends Controller
             }
 
             for ($i=1; $i <= $jumlah ; $i++) {
-                $gender = strip_tags($req->input('gender'.$i));
-                if ($gender == 'Laki-laki'){
-                    $name = 'Tn. ' . strip_tags($req->input('name'.$i));
-                } else{
-                    $name = 'Ny. ' . strip_tags($req->input('name'.$i));
-                }
-
                 $id = strip_tags($req->input('id'.$i));
                 $registrasiDetail = RegistrasiDetail::find($id);
                 if ($registrasiDetail == null){
@@ -346,6 +339,11 @@ class RegistrasiController extends Controller
                 $registrasiDetail->name = strip_tags($req->input('name'.$i));
                 $registrasiDetail->address = strip_tags($req->input('address'.$i));
                 $registrasiDetail->identityno = strip_tags($req->input('identityno'.$i));
+                $registrasiDetail->birthplace = strip_tags($req->input('birthplace'.$i));
+                $registrasiDetail->birthdate = strip_tags($req->input('birthdate'.$i));
+                $registrasiDetail->gender = strip_tags($req->input('gender'.$i));
+                $registrasiDetail->job = strip_tags($req->input('job'.$i));
+                $registrasiDetail->country = strip_tags($req->input('country'.$i));
                 $registrasiDetail->updatedby = $req->user()->id;
                 $registrasiDetail->save();                
             }
