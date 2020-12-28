@@ -16,20 +16,21 @@
         <div class="col-md-12">
             <div class="card card-primary card-outline">
               <div class="card-body">
-                <table id="table" class="table table-bordered table-striped">
+                <table id="table" class="table table-bordered table-striped nowrap">
                   <thead>
                   <tr>
+                    <th>Action</th>
                     <th>No. Booking</th>
                     <th>Tgl. Booking</th>
                     <th>Pasien</th>
+                    <th>Jumlah</th>
                     <th>Type</th>
                     <th>Paid</th>
                     <th>Paid By</th>
                     <th>Sudah Input</th>
                     <th>Print</th>
                     <th>Print At</th>
-                    <th>Hasil Periksa</th>
-                    <th>Action</th>
+                    <th>Hasil Pemeriksaan</th>
                   </tr>
                   </thead>
                   <tbody>
@@ -63,7 +64,7 @@
                       <th>Alamat</th>
                       <th>No. Identitas</th>
                       <th>Status</th>
-                      <!-- <th>Detail</th> -->
+                      <th>Jenis Reaktif</th>
                     </tr>
                     </thead>
                     <tbody></tbody>
@@ -89,16 +90,14 @@
             serverSide: true,
             processing: true,
             searchDelay: 1000,
-            "lengthChange": false,
-            "info": true,
-            "autoWidth": false,
-            "responsive": true,
+            "scrollX" : true,
             "order": [[ 1, "desc" ]],
             ajax       : {
                 type: 'GET',
                 url : '{{ route("registrasi.data") }}',
             },
             columns: [
+                {data: 'action', orderable: false, searchable: false},
                 {
                     "data" : "docno",
                     "className": "menufilter textfilter"
@@ -109,6 +108,10 @@
                 },
                 {
                     "data" : "pasien",
+                    "className": "menufilter textfilter"
+                },
+                {
+                    "data" : "jumlah",
                     "className": "menufilter textfilter"
                 },
                 {
@@ -158,28 +161,27 @@
                     "data" : "hasil",
                     "className": "menufilter textfilter"
                 },
-                {data: 'action', orderable: false, searchable: false},
             ],
         });
 
         @if(Gate::check('isSuperAdmin') || Gate::check('isNakes'))
-            table.column(6).visible(true);
+            table.column(8).visible(true);
         @else
-            table.column(6).visible(false);
+            table.column(8).visible(false);
         @endif
 
         @if(Gate::check('isSuperAdmin') || Gate::check('isAdmin'))
-            table.column(7).visible(true);
-            table.column(8).visible(true);
             table.column(9).visible(true);
+            table.column(10).visible(true);
+            table.column(11).visible(true);
         @elseif(Gate::check('isNakes'))
-            table.column(7).visible(false);
-            table.column(8).visible(true);
-            table.column(9).visible(true);
-        @else
-            table.column(7).visible(false);
-            table.column(8).visible(false);
             table.column(9).visible(false);
+            table.column(10).visible(true);
+            table.column(11).visible(true);
+        @else
+            table.column(9).visible(false);
+            table.column(10).visible(false);
+            table.column(11).visible(false);
         @endif
 
         table2 = $('#table2').DataTable({
@@ -206,26 +208,29 @@
                 {
                     data : 'status',
                 },
-                // {
-                //     data : 'detailstatus',
-                // },
+                {
+                    data : 'jenisreaktif',
+                },
             ],
         });
 
-        // $('#table2').on('change', 'select.mySelect', function() {
-        //     var colIndex = +$(this).data('col');
-        //     var row = $(this).closest('tr')[0];
-        //     var data = table2.row(row).data();
-        //     data[colIndex] = this.value;
+        table2.column(5).visible(false);
 
-        //     if (this.value == "Reaktif"){
-        //         table2.column(5).visible(true);
-        //     } else{
-        //         table2.column(5).visible(false);
-        //     }
+        $('#table2').on('change', 'select.mySelect1', function() {
+            // var colIndex = +$(this).data('col');
+            // var row = $(this).closest('tr')[0];
+            // var data = table2.row(row).data();
+            // data[colIndex] = this.value;
 
-        //     table2.row(row).data(data).draw();
-        // });
+            if (this.value == "Reaktif"){
+                table2.column(5).visible(true);
+            } else{
+                $("#jenisreaktif").val($("#jenisreaktif option:first").val());
+                table2.column(5).visible(false);
+            }
+
+            // table2.row(row).data(data).draw();
+        });
     });
 
     function detail(id){
@@ -240,6 +245,16 @@
         window.location.href = url;
     }
 
+    function print(id){
+        var base = "{!! route('registrasi.print.pdf') !!}";
+        var url = base+'?id='+id ;
+        window.location.replace(url);
+
+        setTimeout(function(){
+          table.ajax.reload(null, true);
+        },2000);
+    }
+
     function editPayment(id){
         var base = "{!! route('registrasi.detail') !!}";
         var url = base+'?id='+id ;
@@ -250,15 +265,13 @@
         @can('isNakes')
             var type  = $(e).data('type');
             var paid = $(e).data('paid');
+            var sts = "";
+            var dsts = "";
 
             if (paid > 0){
                 clear_column('modalUbahStatus');
                 $('#modalUbahStatus #myModalLabel').text("Ubah Status / Hasil Pemeriksaan Lab");
                 $('#modalUbahStatus #id').val(id);
-
-                var sts, sts2, sts3, dsts = "";
-                sts = "<select id='status' name='status' class='mySelect' placeholder='Status'><option value=''>Pilih Status</option>";
-                sts3 = "</select>";
 
                 $.ajax({
                     type: 'POST',
@@ -272,45 +285,17 @@
                         if(data.success){
                           table2.clear();
                           $.each(data.data, function (k, v) {
-                            switch(v.status) {
-                              case 'Positif':
-                                sts2 = "<option value='Positif' selected>Positif</option><option value='Negatif'>Negatif</option>";
-                                break;
 
-                              case 'Negatif':
-                                sts2 = "<option value='Positif'>Positif</option><option value='Negatif' selected>Negatif</option>";
-                                break;
-
-                              case 'Reaktif':
-                                sts2 = "<option value='Reaktif' selected>Reaktif</option><option value='Nonreaktif'>Non-Reaktif</option>";
-                                break;
-
-                              case 'Nonreaktif':
-                                sts2 = "<option value='Reaktif'>Reaktif</option><option value='Nonreaktif' selected>Non-Reaktif</option>";
-                                break;
-
-                              default:
-                                if (type == 'Antigen Test'){
-                                    sts2 = "<option value='Positif'>Positif</option><option value='Negatif'>Negatif</option>";
-                                } else{
-                                    sts2 = "<option value='Reaktif'>Reaktif</option><option value='Nonreaktif'>Non-Reaktif</option>"
-
-                                    dsts = "<div class='form-check'>";
-                                    dsts += "<input class='form-check-input' id='detailstatus' type='checkbox'><label class='form-check-label'>IGG</label>";
-                                    dsts += "</div>";
-                                    dsts += "<div class='form-check'>";
-                                    dsts += "<input class='form-check-input' id='detailstatus' type='checkbox'><label class='form-check-label'>IGM</label>";
-                                    dsts += "</div>";
-                                }
-                            } 
+                            sts = "<select id='status' class='mySelect1' data-col='" + k + "'>" + getStatusSelectOptions(type, v.status) + "</select>";
+                            dsts = "<select id='jenisreaktif' class='mySelect2' data-col='" + k + "'>" + getDetailStatusSelectOptions(v.detailstatus) + "</select>";
                             
                             table2.rows.add([{
                                 'id':v.id,
                                 'name':v.name,
                                 'address':v.address,
                                 'identityno':v.identityno,
-                                'status':sts+sts2+sts3,
-                                // 'detailstatus':dsts,
+                                'status':sts,
+                                'jenisreaktif':dsts,
                             }]);
                           });
 
@@ -334,28 +319,56 @@
         @endcan
     }
 
+    function getStatusSelectOptions(type, value) {
+        if (type == 'Antibodi Test'){
+            var select = $("<select class='form-control'><option value=''>Pilih Status</option><option value='Reaktif'>Reaktif</option><option value='Nonreaktif'>Non-Reaktif</option></select>");
+        } else{
+            table2.column(5).visible(false);
+            var select = $("<select class='form-control'><option value=''>Pilih Status</option><option value='Positif'>Positif</option><option value='Negatif'>Negatif</option></select>");
+        }
+
+        if (value) {
+            if (value == 'Reaktif') table2.column(5).visible(true);
+            select.val(value).find(':selected').attr('selected', true);
+        }
+        return select.html();
+    }
+
+    function getDetailStatusSelectOptions(value) {
+        var select = $("<select class='form-control'><option value=''>Pilih Detail Status</option><option value='IGG'>IGG</option><option value='IGM'>IGM</option><option value='IGG,IGM'>IGG & IGM</option></select>");
+        if (value) {
+            select.val(value).find(':selected').attr('selected', true);
+        }
+        return select.html();
+    }
+
     function submitStatus(){
         var rowData = table2.rows().data().toArray();
+        var arrStatus = [];
+        var arrReaktif = [];
         var data = [];
 
         $.each(rowData, function(index, value){
             table2.column(4).nodes().each(function (node, index, dt) {
-                var status = $(table2.cell(node).node()).find('.mySelect').val();
+                var status = $(table2.cell(node).node()).find('.mySelect1').val();
                 
-                data[index] = {
+                arrStatus[index] = {
                     'id'        : rowData[index].id,
                     'status'    : status
                 };
             });
 
-            // table2.column(5).nodes().each(function (node, index, dt) {
-            //     var detailstatus = $(table2.cell(node).node()).find('#detailstatus').val();
+            table2.column(5).nodes().each(function (node, index, dt) {
+                var detailstatus = $(table2.cell(node).node()).find('.mySelect2').val();
                 
-            //     data[index] = {
-            //         'detailstatus'    : status
-            //     };
-            // });
+                arrReaktif[index] = {
+                    'id'        : rowData[index].id,
+                    'detailstatus'    : detailstatus
+                };
+            });
         });
+        
+        data = arrStatus.map((item, i) => Object.assign({}, item, arrReaktif[i]));
 
         $.ajax({
             type: 'POST',
@@ -367,6 +380,7 @@
             dataType: "json",
             success: function(data){
                 if(data.success){
+                    toastr.success(data.message);
                     $('#modalUbahStatus').modal('hide');
                     table.ajax.reload(null, true);
                 }else{        

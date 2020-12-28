@@ -145,7 +145,7 @@
             $('#jumlah').val('');
 
             var base = "{!! route('registrasi.print.book') !!}";
-            var url = base+'?id='+data.id ;
+            var url = base+'?id='+data.id;
 
             setTimeout(function(){
               window.location.href = url;

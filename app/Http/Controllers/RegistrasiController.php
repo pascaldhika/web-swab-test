@@ -27,6 +27,10 @@ class RegistrasiController extends Controller
             SELECT
                 A.id, A.docno, DATE_FORMAT(A.docdate, '%d %M %Y %H:%i:%s') AS docdate,
                 A.type, A.print, A.print_at, GROUP_CONCAT(B.name SEPARATOR ', ') AS pasien,
+                (
+                    SELECT COUNT(*) FROM registrasidetail
+                    WHERE registrasiid = A.id
+                ) AS jumlah,
                 U.name AS paid_by, B.status_at,
                 (
                     SELECT
@@ -50,7 +54,7 @@ class RegistrasiController extends Controller
             $action = "";
             if ($data->paid <= 0){
                 if (Gate::allows('isKasir') || Gate::allows('isSuperAdmin')) {
-                    $action = '<div onclick="detail('.$data->id.')" class="btn btn-xs btn-info no-margin-action" title="Detail"><i class="fa fa-eye"></i></div>';
+                    $action .= '<div onclick="detail('.$data->id.')" class="btn btn-xs btn-info no-margin-action" title="Detail" style="margin-right:10px;><i class="fa fa-eye"></i></div>';
                 }
             } else{
                 if (Gate::allows('isNakes') || Gate::allows('isSuperAdmin')) {
@@ -58,11 +62,11 @@ class RegistrasiController extends Controller
                 }
 
                 if (Gate::allows('isAdmin') || Gate::allows('isSuperAdmin')) {
-                    $action .= '<a href="'.url('transaction/registrasi/print/pdf?id='.$data->id).'" class="btn btn-xs btn-default no-margin-action" title="Print"><i class="fas fa-print"></i></a>';
+                    $action .= '<div onclick="print('.$data->id.')" class="btn btn-xs btn-danger no-margin-action" title="Print"><i class="fas fa-print"></i></div>';
                 }
 
                 if (Gate::allows('isKasir') || Gate::allows('isSuperAdmin')) {
-                    $action = '<div onclick="editPayment('.$data->id.')" class="btn btn-xs btn-primary no-margin-action" title="Edit Pembayaran"><i class="far fa-credit-card"></i></div>';
+                    $action .= '<div onclick="editPayment('.$data->id.')" class="btn btn-xs btn-primary no-margin-action" title="Edit Pembayaran"><i class="far fa-credit-card"></i></div>';
                 }
             }
 
@@ -205,6 +209,7 @@ class RegistrasiController extends Controller
                 }
 
                 $registrasiDetail->status = $value['status'];
+                $registrasiDetail->detailstatus = $value['detailstatus'];
                 $registrasiDetail->status_at = date('Y-m-d H:i:s');
                 $registrasiDetail->updatedby = $req->user()->id;
                 $registrasiDetail->save();
