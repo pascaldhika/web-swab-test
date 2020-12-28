@@ -27,7 +27,7 @@
             <!-- /.col -->
             <div class="col-sm-4 invoice-col">
               <b>No. Booking #<span id="docno"></span></b><br>
-              <b>Jenis Swab Test:</b> <span id="type"></span><br>
+              <b>Jenis Test:</b> <span id="type"></span><br>
             </div>
             <!-- /.col -->
           </div>

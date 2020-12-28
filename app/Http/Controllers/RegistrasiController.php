@@ -26,23 +26,21 @@ class RegistrasiController extends Controller
         $query = "
             SELECT
                 A.id, A.docno, DATE_FORMAT(A.docdate, '%d %M %Y %H:%i:%s') AS docdate,
-                A.type, A.print, A.print_at, GROUP_CONCAT(B.name SEPARATOR ', ') AS pasien,
+                A.type, A.print, A.print_at, U.name AS paid_by,
+                DATE_FORMAT(A.status_at, '%d %M %Y %H:%i:%s') AS status_at, S.name AS status_by,
+                GROUP_CONCAT(B.name SEPARATOR ', ') AS pasien,
                 (
-                    SELECT COUNT(*) FROM registrasidetail
-                    WHERE registrasiid = A.id
+                    SELECT COUNT(*) FROM registrasidetail WHERE registrasiid = A.id
                 ) AS jumlah,
-                U.name AS paid_by, B.status_at,
+                GROUP_CONCAT(CONCAT(B.status, ' ', IFNULL(B.detailstatus, '')) SEPARATOR ', ') AS hasil,
                 (
-                    SELECT
-                        COUNT(*)
-                    FROM registrasidetailpayment C
-                    WHERE C.registrasiid = A.id
-                ) AS paid,
-                GROUP_CONCAT(B.status SEPARATOR ', ') AS hasil
+                    SELECT COUNT(*) FROM registrasidetailpayment C WHERE C.registrasiid = A.id
+                ) AS paid
             FROM registrasi A
             INNER JOIN registrasidetail B ON B.registrasiid = A.id
-            LEFT JOIN users U ON B.paid_by = U.id
-            GROUP BY A.id, A.docno, A.docdate, A.type, A.print, A.print_at, U.name, B.status_at
+            LEFT JOIN users U ON A.paid_by = U.id
+            LEFT JOIN users S ON A.status_by = S.id
+            GROUP BY A.id, A.docno, A.docdate, A.type, A.print, A.print_at, U.name, A.status_at, S.name
             ORDER BY A.docdate DESC LIMIT 500
         ";
 
@@ -54,24 +52,24 @@ class RegistrasiController extends Controller
             $action = "";
             if ($data->paid <= 0){
                 if (Gate::allows('isKasir') || Gate::allows('isSuperAdmin')) {
-                    $action .= '<div onclick="detail('.$data->id.')" class="btn btn-xs btn-info no-margin-action" title="Detail" style="margin-right:10px;><i class="fa fa-eye"></i></div>';
+                    $action .= '<div onclick="detail('.$data->id.')" class="btn btn-xs btn-info no-margin-action" title="Detail" style="margin-right:5px;"><i class="fa fa-eye"></i></div>';
                 }
             } else{
                 if (Gate::allows('isNakes') || Gate::allows('isSuperAdmin')) {
-                    $action .= '<div onclick="ubahStatus('.$data->id.', this)" data-type="'.$data->type.'" data-paid="'.$data->paid.'" class="btn btn-xs btn-success no-margin-action" title="Ubah Status / Hasil Pemeriksaan Lab"><i class="fas fa-check"></i></div>';
+                    $action .= '<div onclick="ubahStatus('.$data->id.', this)" data-type="'.$data->type.'" data-paid="'.$data->paid.'" class="btn btn-xs btn-success no-margin-action" title="Ubah Status / Hasil Pemeriksaan Lab" style="margin-right:5px;"><i class="fas fa-check"></i></div>';
                 }
 
                 if (Gate::allows('isAdmin') || Gate::allows('isSuperAdmin')) {
-                    $action .= '<div onclick="print('.$data->id.')" class="btn btn-xs btn-danger no-margin-action" title="Print"><i class="fas fa-print"></i></div>';
+                    $action .= '<div onclick="print('.$data->id.')" class="btn btn-xs btn-danger no-margin-action" title="Print" style="margin-right:5px;"><i class="fas fa-print"></i></div>';
                 }
 
                 if (Gate::allows('isKasir') || Gate::allows('isSuperAdmin')) {
-                    $action .= '<div onclick="editPayment('.$data->id.')" class="btn btn-xs btn-primary no-margin-action" title="Edit Pembayaran"><i class="far fa-credit-card"></i></div>';
+                    $action .= '<div onclick="editPayment('.$data->id.')" class="btn btn-xs btn-primary no-margin-action" title="Edit Pembayaran" style="margin-right:5px;"><i class="far fa-credit-card"></i></div>';
                 }
             }
 
             if (Gate::allows('isAdmin') || Gate::allows('isSuperAdmin')) {
-                $action .= '<div onclick="edit('.$data->id.')" class="btn btn-xs btn-warning no-margin-action" title="Edit Data Pasien"><i class="fa fa-edit"></i></div>';
+                $action .= '<div onclick="edit('.$data->id.')" class="btn btn-xs btn-warning no-margin-action" title="Edit Data Pasien" style="margin-right:5px;"><i class="fa fa-edit"></i></div>';
             }
 
             return $action;
@@ -98,7 +96,7 @@ class RegistrasiController extends Controller
         $query = "
             SELECT 
                 B.docno, B.type, A.*,
-                DATE_FORMAT(B.docdate, '%d %M %Y') AS newdocdate,
+                DATE_FORMAT(B.docdate, '%d %M %Y %H:%i:%s') AS newdocdate,
                 (
                     SELECT GROUP_CONCAT(C.name SEPARATOR ',')
                     FROM registrasidetailpayment C
@@ -208,9 +206,14 @@ class RegistrasiController extends Controller
                     throw new \Exception('Registrasi detail not found');
                 }
 
+                $registrasi = Registrasi::find($registrasiDetail->registrasiid);
+                $registrasi->status_at = date('Y-m-d H:i:s');
+                $registrasi->status_by = $req->user()->id;
+                $registrasi->save();
+
+                $registrasiDetail->doctor = $value['doctor'];
                 $registrasiDetail->status = $value['status'];
                 $registrasiDetail->detailstatus = $value['detailstatus'];
-                $registrasiDetail->status_at = date('Y-m-d H:i:s');
                 $registrasiDetail->updatedby = $req->user()->id;
                 $registrasiDetail->save();
             }
@@ -256,10 +259,13 @@ class RegistrasiController extends Controller
                     throw new \Exception('Registrasi Detail with ID '.$id.' not found');
                 }
 
+                $registrasi = Registrasi::find($registrasiDetail->registrasiid);
+                $registrasi->paid_at = date('Y-m-d H:i:s');
+                $registrasi->paid_by = $req->user()->id;
+                $registrasi->save();
+
                 $registrasiDetail->branch = strip_tags($req->input('branch'.$i));
                 $registrasiDetail->paid = (strip_tags($req->input('paid'.$i)) == 'Paid') ? 'Y' : 'N';
-                $registrasiDetail->paid_at = date('Y-m-d H:i:s');
-                $registrasiDetail->paid_by = $req->user()->id;
                 $registrasiDetail->amount = strip_tags($req->input('amount'.$i));
                 $registrasiDetail->updatedby = $req->user()->id;
                 $registrasiDetail->save();
@@ -415,6 +421,11 @@ class RegistrasiController extends Controller
         $title = $registrasi->docno;
         $namasheet    = str_slug($title);
         $namafile     = $namasheet."-".uniqid().".pdf";
+
+        $view = 'registrasi.pdfswab';
+        if ($registrasi->type == 'Antibodi Test'){
+            $view = 'registrasi.pdfrapid';
+        }
         
         $params = [
             'id' => $req->id
@@ -423,7 +434,7 @@ class RegistrasiController extends Controller
 
         $data = DB::SELECT($query,$params);
 
-        $pdf = PDF::loadview('registrasi.pdf',['data'=>$data])->setPaper('a4', 'portrait');
+        $pdf = PDF::loadview($view, ['data'=>$data])->setPaper('a4', 'portrait');
         return $pdf->download($namafile);
     }
 

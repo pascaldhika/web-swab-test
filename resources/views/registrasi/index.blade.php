@@ -28,6 +28,8 @@
                     <th>Paid</th>
                     <th>Paid By</th>
                     <th>Sudah Input</th>
+                    <th>Input By</th>
+                    <th>Input At</th>
                     <th>Print</th>
                     <th>Print At</th>
                     <th>Hasil Pemeriksaan</th>
@@ -56,13 +58,14 @@
         <div class="modal-body">
             <div class="card-body">
                 <input type="hidden" id="id" value="" class="form-control form-clear">
-                <table id="table2" class="table table-bordered table-striped">
+                <table id="table2" class="table table-bordered table-striped nowrap">
                     <thead>
                     <tr>
                       <th>ID</th>
                       <th>Nama</th>
                       <th>Alamat</th>
                       <th>No. Identitas</th>
+                      <th>Doctor</th>
                       <th>Status</th>
                       <th>Jenis Reaktif</th>
                     </tr>
@@ -91,7 +94,7 @@
             processing: true,
             searchDelay: 1000,
             "scrollX" : true,
-            "order": [[ 1, "desc" ]],
+            "order": [[ 2, "desc" ]],
             ajax       : {
                 type: 'GET',
                 url : '{{ route("registrasi.data") }}',
@@ -150,6 +153,14 @@
                     }, 
                 },
                 {
+                    "data" : "status_by",
+                    "className": "menufilter textfilter"
+                },
+                {
+                    "data" : "status_at",
+                    "className": "menufilter textfilter"
+                },
+                {
                     "data" : "print",
                     "className": "menufilter textfilter"
                 },
@@ -166,32 +177,30 @@
 
         @if(Gate::check('isSuperAdmin') || Gate::check('isNakes'))
             table.column(8).visible(true);
+            table.column(9).visible(true);
+            table.column(10).visible(true);
         @else
             table.column(8).visible(false);
+            table.column(9).visible(false);
+            table.column(10).visible(false);
         @endif
 
         @if(Gate::check('isSuperAdmin') || Gate::check('isAdmin'))
-            table.column(9).visible(true);
-            table.column(10).visible(true);
             table.column(11).visible(true);
+            table.column(12).visible(true);
+            table.column(13).visible(true);
         @elseif(Gate::check('isNakes'))
-            table.column(9).visible(false);
-            table.column(10).visible(true);
-            table.column(11).visible(true);
-        @else
-            table.column(9).visible(false);
-            table.column(10).visible(false);
             table.column(11).visible(false);
+            table.column(12).visible(true);
+            table.column(13).visible(true);
+        @else
+            table.column(11).visible(false);
+            table.column(12).visible(false);
+            table.column(13).visible(false);
         @endif
 
         table2 = $('#table2').DataTable({
-            "paging": true,
-            "lengthChange": false,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            "responsive": true,
+            "scrollX" : true,
             columns     : [
                 {
                     data : 'id',
@@ -206,6 +215,9 @@
                     data : 'identityno',
                 },
                 {
+                    data : 'doctor',
+                },
+                {
                     data : 'status',
                 },
                 {
@@ -214,22 +226,21 @@
             ],
         });
 
-        table2.column(5).visible(false);
-
         $('#table2').on('change', 'select.mySelect1', function() {
-            // var colIndex = +$(this).data('col');
-            // var row = $(this).closest('tr')[0];
-            // var data = table2.row(row).data();
-            // data[colIndex] = this.value;
-
+            var colIndex = $(this).data('col');
+            
             if (this.value == "Reaktif"){
-                table2.column(5).visible(true);
+                $("#jenisreaktif").show();
             } else{
-                $("#jenisreaktif").val($("#jenisreaktif option:first").val());
-                table2.column(5).visible(false);
-            }
+                var row = $(this).closest('tr')[0];
+                var data = table2.row(row).data();
+                console.log(data);
+                data[colIndex] = "";
+                console.log(data);
+                // table2.row(row).data(data).draw();
 
-            // table2.row(row).data(data).draw();
+                // $("#jenisreaktif").val($("#jenisreaktif option:first").val());
+            }
         });
     });
 
@@ -265,6 +276,7 @@
         @can('isNakes')
             var type  = $(e).data('type');
             var paid = $(e).data('paid');
+            var doc = "";
             var sts = "";
             var dsts = "";
 
@@ -286,14 +298,16 @@
                           table2.clear();
                           $.each(data.data, function (k, v) {
 
-                            sts = "<select id='status' class='mySelect1' data-col='" + k + "'>" + getStatusSelectOptions(type, v.status) + "</select>";
-                            dsts = "<select id='jenisreaktif' class='mySelect2' data-col='" + k + "'>" + getDetailStatusSelectOptions(v.detailstatus) + "</select>";
+                            doc = "<select id='doctor' class='mySelect'>" + getDoctorSelectOptions(v.doctor) + "</select>";
+                            sts = "<select id='status' class='mySelect1' data-col='jenisreaktif'>" + getStatusSelectOptions(type, v.status) + "</select>";
+                            dsts = "<select id='jenisreaktif' class='mySelect2'>" + getDetailStatusSelectOptions(v.detailstatus) + "</select>";
                             
                             table2.rows.add([{
                                 'id':v.id,
                                 'name':v.name,
                                 'address':v.address,
                                 'identityno':v.identityno,
+                                'doctor':doc,
                                 'status':sts,
                                 'jenisreaktif':dsts,
                             }]);
@@ -319,16 +333,22 @@
         @endcan
     }
 
+    function getDoctorSelectOptions(value) {
+        var select = $("<select class='form-control'><option value=''>Pilih Dokter</option><option value='Adam S.A.K Hardiyanto'>dr. Adam S.A.K Hardiyanto</option><option value='Muhammad Hanif'>dr. Muhammad Hanif</option></select>");
+        if (value) {
+            select.val(value).find(':selected').attr('selected', true);
+        }
+        return select.html();
+    }
+
     function getStatusSelectOptions(type, value) {
         if (type == 'Antibodi Test'){
             var select = $("<select class='form-control'><option value=''>Pilih Status</option><option value='Reaktif'>Reaktif</option><option value='Nonreaktif'>Non-Reaktif</option></select>");
         } else{
-            table2.column(5).visible(false);
             var select = $("<select class='form-control'><option value=''>Pilih Status</option><option value='Positif'>Positif</option><option value='Negatif'>Negatif</option></select>");
         }
 
         if (value) {
-            if (value == 'Reaktif') table2.column(5).visible(true);
             select.val(value).find(':selected').attr('selected', true);
         }
         return select.html();
@@ -344,12 +364,22 @@
 
     function submitStatus(){
         var rowData = table2.rows().data().toArray();
+        var arrDoctor = [];
         var arrStatus = [];
         var arrReaktif = [];
         var data = [];
 
         $.each(rowData, function(index, value){
             table2.column(4).nodes().each(function (node, index, dt) {
+                var doctor = $(table2.cell(node).node()).find('.mySelect').val();
+                
+                arrDoctor[index] = {
+                    'id'        : rowData[index].id,
+                    'doctor'    : doctor
+                };
+            });
+
+            table2.column(5).nodes().each(function (node, index, dt) {
                 var status = $(table2.cell(node).node()).find('.mySelect1').val();
                 
                 arrStatus[index] = {
@@ -358,7 +388,7 @@
                 };
             });
 
-            table2.column(5).nodes().each(function (node, index, dt) {
+            table2.column(6).nodes().each(function (node, index, dt) {
                 var detailstatus = $(table2.cell(node).node()).find('.mySelect2').val();
                 
                 arrReaktif[index] = {
@@ -368,7 +398,8 @@
             });
         });
         
-        data = arrStatus.map((item, i) => Object.assign({}, item, arrReaktif[i]));
+        data = arrDoctor.map((item, i) => Object.assign({}, item, arrStatus[i]));
+        data = data.map((item, i) => Object.assign({}, item, arrReaktif[i]));
 
         $.ajax({
             type: 'POST',
