@@ -29,7 +29,7 @@ class RegistrasiController extends Controller
                 A.id, A.docno, (SELECT sf_formatTanggal(A.docdate)) AS docdate,
                 A.type, A.print, (SELECT sf_formatTanggal(A.print_at)) AS print_at, U.name AS paid_by,
                 (SELECT sf_formatTanggal(A.status_at)) AS status_at, S.name AS status_by,
-                GROUP_CONCAT(B.name SEPARATOR ', ') AS pasien,
+                GROUP_CONCAT(B.name SEPARATOR ',') AS pasien,
                 (
                     SELECT COUNT(*) FROM registrasidetail WHERE registrasiid = A.id
                 ) AS jumlah,

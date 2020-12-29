@@ -111,7 +111,16 @@
                 },
                 {
                     "data" : "pasien",
-                    "className": "menufilter textfilter"
+                    "className": "menufilter textfilter",
+                    render:  function(data, type, row){
+                        var html="";
+                        var array = row.pasien.split(',');
+                        for (var i = 0; i < array.length; i++) {
+                            html += '- ' + array[i] + '<br>';
+                        }
+
+                        return html;
+                    }
                 },
                 {
                     "data" : "jumlah",
