@@ -196,6 +196,16 @@
                 html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Unpaid" '+checkedUnPaid+'>';
                 html +=           '<label class="form-check-label"> Unpaid</label>';
                 html +=         '</div>';
+                html +=         '<div class="form-check">';
+
+                var checkedCancel = "";
+                if (v.paid == 'C'){
+                  checkedCancel ="checked";
+                }
+
+                html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Cancel" '+checkedCancel+'>';
+                html +=           '<label class="form-check-label"> Cancel</label>';
+                html +=         '</div>';
 
                 html +=       '</div>';
                 html +=       '<div class="form-group">';

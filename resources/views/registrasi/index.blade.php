@@ -227,19 +227,16 @@
         });
 
         $('#table2').on('change', 'select.mySelect1', function() {
-            var colIndex = $(this).data('col');
-            
-            if (this.value == "Reaktif"){
-                $("#jenisreaktif").show();
-            } else{
-                var row = $(this).closest('tr')[0];
-                var data = table2.row(row).data();
-                console.log(data);
-                data[colIndex] = "";
-                console.log(data);
-                // table2.row(row).data(data).draw();
+            var colType = $(this).data('col');
+            var colIndex = $(this).data('index');
 
-                // $("#jenisreaktif").val($("#jenisreaktif option:first").val());
+            hideJenisReaktif(colType);
+
+            if (this.value == 'Reaktif'){
+                var dsts = "<select id='jenisreaktif' class='mySelect2'>" + getDetailStatusSelectOptions(null) + "</select>";
+                table2.cell({row:colIndex, column:6}).data(dsts);
+            } else{
+                table2.cell({row:colIndex, column:6}).data("");
             }
         });
     });
@@ -285,6 +282,8 @@
                 $('#modalUbahStatus #myModalLabel').text("Ubah Status / Hasil Pemeriksaan Lab");
                 $('#modalUbahStatus #id').val(id);
 
+                hideJenisReaktif(type);
+
                 $.ajax({
                     type: 'POST',
                     url: '{{ route("registrasi.detail.data") }}',
@@ -299,7 +298,7 @@
                           $.each(data.data, function (k, v) {
 
                             doc = "<select id='doctor' class='mySelect'>" + getDoctorSelectOptions(v.doctor) + "</select>";
-                            sts = "<select id='status' class='mySelect1' data-col='jenisreaktif'>" + getStatusSelectOptions(type, v.status) + "</select>";
+                            sts = "<select id='status' class='mySelect1' data-index='"+k+"' data-col='"+type+"'>" + getStatusSelectOptions(type, v.status) + "</select>";
                             dsts = "<select id='jenisreaktif' class='mySelect2'>" + getDetailStatusSelectOptions(v.detailstatus) + "</select>";
                             
                             table2.rows.add([{
@@ -343,7 +342,7 @@
 
     function getStatusSelectOptions(type, value) {
         if (type == 'Antibodi Test'){
-            var select = $("<select class='form-control'><option value=''>Pilih Status</option><option value='Reaktif'>Reaktif</option><option value='Nonreaktif'>Non-Reaktif</option></select>");
+            var select = $("<select class='form-control'><option value=''>Pilih Status</option><option value='Reaktif'>Reaktif</option><option value='Non Reaktif'>Non-Reaktif</option></select>");
         } else{
             var select = $("<select class='form-control'><option value=''>Pilih Status</option><option value='Positif'>Positif</option><option value='Negatif'>Negatif</option></select>");
         }
@@ -360,6 +359,15 @@
             select.val(value).find(':selected').attr('selected', true);
         }
         return select.html();
+    }
+
+    function hideJenisReaktif(type){
+        if (type == "Antibodi Test"){
+            table2.column(6).visible(true);
+        } else{
+            table2.column(6).visible(false);
+            $("#jenisreaktif").val($("#jenisreaktif option:first").val());
+        }
     }
 
     function submitStatus(){
@@ -393,8 +401,8 @@
                 
                 arrReaktif[index] = {
                     'id'        : rowData[index].id,
-                    'detailstatus'    : detailstatus
-                };
+                    'detailstatus'    : (detailstatus != undefined) ? detailstatus : null
+                };console.log(arrReaktif);
             });
         });
         

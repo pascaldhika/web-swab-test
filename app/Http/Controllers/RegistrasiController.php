@@ -14,6 +14,7 @@ use App\Exports\RegistrasiReport;
 use Excel;
 use PDF;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Carbon;
 
 class RegistrasiController extends Controller
 {
@@ -25,9 +26,9 @@ class RegistrasiController extends Controller
     public function getData(Datatables $datatables, Request $req) {
         $query = "
             SELECT
-                A.id, A.docno, DATE_FORMAT(A.docdate, '%d %M %Y %H:%i:%s') AS docdate,
+                A.id, A.docno, (SELECT sf_formatTanggal(A.docdate)) AS docdate,
                 A.type, A.print, A.print_at, U.name AS paid_by,
-                DATE_FORMAT(A.status_at, '%d %M %Y %H:%i:%s') AS status_at, S.name AS status_by,
+                (SELECT sf_formatTanggal(A.status_at)) AS status_at, S.name AS status_by,
                 GROUP_CONCAT(B.name SEPARATOR ', ') AS pasien,
                 (
                     SELECT COUNT(*) FROM registrasidetail WHERE registrasiid = A.id
@@ -96,7 +97,7 @@ class RegistrasiController extends Controller
         $query = "
             SELECT 
                 B.docno, B.type, A.*,
-                DATE_FORMAT(B.docdate, '%d %M %Y %H:%i:%s') AS newdocdate,
+                (SELECT sf_formatTanggal(B.docdate)) AS newdocdate,
                 (
                     SELECT GROUP_CONCAT(C.name SEPARATOR ',')
                     FROM registrasidetailpayment C
@@ -265,7 +266,15 @@ class RegistrasiController extends Controller
                 $registrasi->save();
 
                 $registrasiDetail->branch = strip_tags($req->input('branch'.$i));
-                $registrasiDetail->paid = (strip_tags($req->input('paid'.$i)) == 'Paid') ? 'Y' : 'N';
+
+                $paid = "N";
+                if (strip_tags($req->input('paid'.$i)) == 'Paid'){
+                    $paid = "Y";
+                } else{
+                    $paid = "C";
+                }
+
+                $registrasiDetail->paid = $paid;
                 $registrasiDetail->amount = strip_tags($req->input('amount'.$i));
                 $registrasiDetail->updatedby = $req->user()->id;
                 $registrasiDetail->save();

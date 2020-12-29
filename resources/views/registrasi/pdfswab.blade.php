@@ -1,16 +1,21 @@
-<html>  
-    <table style="margin-top:10%;margin-bottom:26%;margin-left:7%;">
+<table style="margin-bottom:60px;width:100%;margin-left:36px;margin-right:36px;">
         @foreach($data as $v)
-
         <!------header----->
-
         <tr>
-            <td style="text-align: center;" colspan="12"><strong>HASIL PEMERIKSAAN </strong></td>
+            <td>
+            <br><br><br><br><br><br>
+            </td>
+        </tr>
+        
+        <tr>
+            <td style="text-align: center;" colspan="12">
+                <strong>HASIL PEMERIKSAAN </strong>
+            </td>
         </tr>
 
         <tr >
             <td colspan="12">
-            <br></br><br></br>
+            <br><br>
             </td>
         </tr>
 
@@ -44,21 +49,23 @@
         </tr>
 
         <tr >
-            <td colspan="12"><br></br><br></td>
+            <td colspan="12"><br><br><br></td>
         </tr>
+        
         <tr>
             <td style="text-align: center;" colspan="12"><strong>PELAPORAN</strong></td>
         </tr>
 
         <tr >
-            <td colspan="12"><br></br></td>
+            <td colspan="12"><br></td>
         </tr>
+        
         <tr>
             <td style="text-align: center;" colspan="12"><strong>Hasil deteksi Antigen SARS-CoV 2 : {{ $v->status }}</strong></td>
         </tr>
         
         <tr >
-            <td colspan="12"><br></br></td>
+            <td colspan="12"><br><br></td>
         </tr>
 
         <tr>
@@ -67,14 +74,16 @@
 
         <tr >
             <td colspan="12"></td>
-        </tr>        
+        </tr>
+        
         <tr>
             <td colspan="12">a) Hasil deteksi antigen SARS-CoV 2 : positif</td>
         </tr>
 
         <tr >
             <td colspan="12"></td>
-        </tr>        
+        </tr>
+        
         <tr>
             <td colspan="12">- Pemeriksaan konfirmasi dengan pemeriksaan RT PCR sebanyak 2 kali dalam 2 hari berturut-turut</td>
         </tr>
@@ -88,7 +97,7 @@
         </tr>
         
         <tr >
-            <td colspan="12"></td>
+            <td colspan="12"><br><br></td>
         </tr>
         
         <tr>
@@ -107,20 +116,17 @@
         <tr>
             <td colspan="12">- Hasil negatif dapat terjadi pada kondisi kuantitas antigen pada spesimen dibawah level deteksi alat</td>
         </tr>
-        
-        
-        
         <tr >
-            <td colspan="12"><br></br></td>
+            <td colspan="12"><br><br></td>
         </tr>
         <tr >
-            <td colspan="12"><br></br></td>
+            <td colspan="12"><br><br></td>
         </tr>
        
         <tr>
             <td colspan="8"></td>
             <td>Jakarta,</td>
-            <td colspan="3">{{ date('d M Y') }}</td>
+            <td colspan="3">{{ \Carbon\Carbon::now()->isoFormat('D MMMM Y') }}</td>
         </tr>
         @endforeach
     </table>
@@ -131,23 +137,30 @@
     
     
 
- <table style="margin-top:10%;margin-bottom:16%;margin-left:7%;">
+<table style="margin-bottom:60px;width:100%;margin-left:36px;margin-right:36px;">
         @foreach($data as $v)
+
+        <!------header----->
+
         <tr>
-            <td colspan="12" style="text-align: center;"><strong>SURAT KETERANGAN HASIL PEMERIKSAAAN ANTIBODY</strong></td>
+            <td colspan="12" style="text-align: center;">
+                <br><br><br><br><br><br>
+            </td>
         </tr>
         <tr>
-            <td colspan="12" style="text-align: center;"><strong>LETTER OF STATEMENT ANTIBODY TEST RESULT</strong></td>
+            <td colspan="12" style="text-align: center;"><strong>SURAT KETERANGAN</strong></td>
+        </tr>
+        <tr>
+            <td colspan="12" style="text-align: center;"><strong>LETTER OF STATEMENT</strong></td>
         </tr>
         <tr >
-            <td colspan="12"><br><br><br></td>
+            <td colspan="12" style="text-align: center;">{{ $v->docno }}<br><br></td>
         </tr>
         <tr>
             <td colspan="12">Yang bertanda tangan dibawah ini menerangkan bahwa / The undersigned below explains that :</td>
         </tr>
         <tr >
-            <td colspan="12"><br><br><br></td>
-        </tr>
+            <td colspan="12"><br></td>
         </tr>
         <tr>
             <td style="text-align: center;">1.</td>
@@ -197,10 +210,10 @@
             <td colspan="12"></td>
         </tr>        
         <tr>
-            <td colspan="12">- Pasien telah menjalani pemeriksaan yang di lakukan oleh tim Klinik Tridatama Husada di kota</td>
+            <td colspan="12">Pasien telah menjalani pemeriksaan yang di lakukan oleh tim Klinik Tridatama Husada di kota</td>
         </tr>
         <tr>
-            <td colspan="12">- Tangerang Selatan meliputi / Patient underwent the following examination at Tridatama Husada batuk, menggunakan masker saat sakit, menjaga stamina), dan physical distancing Clinical in South Tangerang City</td>
+            <td colspan="12">Tangerang Selatan meliputi / Patient underwent the following examination at Tridatama Husada batuk, menggunakan masker saat sakit, menjaga stamina), dan physical distancing Clinical in South Tangerang City</td>
         </tr>
         <tr >
             <td colspan="12"></td>
@@ -212,7 +225,7 @@
         </tr>
         <tr><td></td></tr>
         <tr>
-            <td colspan="3" rowspan="2" style="text-align: center;border: 1px solid #000;">23 Desember 2020</td>
+            <td colspan="3" rowspan="2" style="text-align: center;border: 1px solid #000;">{{ date('d M Y') }}</td>
             <td colspan="5" rowspan="2" style="text-align: center;border: 1px solid #000;">Rapid Test Antigen SARS-COV-2</td>
             <td colspan="4" rowspan="2" style="text-align: center;border: 1px solid #000;">{{ $v->status }}</td>
         </tr>
@@ -224,15 +237,15 @@
         </tr>
         
         
-        <tr >
-            <td colspan="12"><br></br></td>
+        <tr>
+            <td colspan="12"><br><br></td>
         </tr>
         <tr style="margin-top: 3%;"><td colspan="12"></td></tr>
         
         <tr>
             <td colspan="8"></td>
             <td>Jakarta,</td>
-            <td colspan="3">{{ date('d M Y') }}</td>
+            <td colspan="3">{{ \Carbon\Carbon::now()->isoFormat('D MMMM Y') }}</td>
         </tr>
         <tr >
             <td><br><br><br>
