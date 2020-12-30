@@ -179,7 +179,19 @@
                 },
                 {
                     "data" : "hasil",
-                    "className": "menufilter textfilter"
+                    "className": "menufilter textfilter",
+                    render:  function(data, type, row){
+                        var html="";
+
+                        if (row.hasil){
+                            var array = row.hasil.split('|');
+                            for (var i = 0; i < array.length; i++) {
+                                html += '- ' + array[i] + '<br>';
+                            }
+                        }
+
+                        return html;
+                    }
                 },
             ],
         });

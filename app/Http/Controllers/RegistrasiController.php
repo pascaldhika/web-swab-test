@@ -33,7 +33,7 @@ class RegistrasiController extends Controller
                 (
                     SELECT COUNT(*) FROM registrasidetail WHERE registrasiid = A.id
                 ) AS jumlah,
-                GROUP_CONCAT(CONCAT(B.status, ' ', IFNULL(B.detailstatus, '')) SEPARATOR ', ') AS hasil,
+                GROUP_CONCAT(CONCAT(B.status, ' ', IFNULL(B.detailstatus, '')) SEPARATOR '|') AS hasil,
                 (
                     SELECT COUNT(*) FROM registrasidetailpayment C WHERE C.registrasiid = A.id
                 ) AS paid

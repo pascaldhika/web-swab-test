@@ -28,7 +28,7 @@
         <tr>
             <td colspan="4">Nama</td>
             <td style="text-align: center;"> : </td>
-            <td colspan="6">{{ ($v->gender == 'Laki-laki') ? 'Tn. ' : 'Ny. ' }} {{ $v->name }}</td>
+            <td colspan="6">{{ ($v->gender == 'Laki-laki') ? ' ' : ' ' }} {{ $v->name }}</td>
             <td></td>
         </tr>
 
@@ -66,15 +66,11 @@
         </tr>
 
         <tr>
-            <td colspan="12"><br></td>
-        </tr>
-
-        <tr>
             <td colspan="12" style="text-align: center;">Anti SARS-CoV2 (Rapid)</td>
         </tr>
 
         <tr>
-            <td colspan="12" style="text-align: center;"><br><br></td>
+            <td colspan="12" style="text-align: center;"><br></td>
         </tr>
 
         <tr >
@@ -84,7 +80,7 @@
         </tr>
 
         <tr>
-            <td colspan="12"><br><br></td>
+            <td colspan="12"><br></td>
         </tr>
 
         <tr >
@@ -236,10 +232,7 @@
             <td colspan="12"></td>
         </tr>        
         <tr>
-            <td colspan="12">Pasien telah menjalani pemeriksaan yang di lakukan oleh tim Klinik Tridatama Husada di kota</td>
-        </tr>
-        <tr>
-            <td colspan="12">Tangerang Selatan meliputi / Patient underwent the following examination at Tridatama Husada batuk, menggunakan masker saat sakit, menjaga stamina), dan physical distancing Clinical in South Tangerang City</td>
+            <td colspan="12" style="height:95px;" >Pasien telah menjalani pemeriksaan yang di lakukan oleh tim Klinik Tridatama Husada di kota Tangerang Selatan meliputi / Patient underwent the following examination at Tridatama Husada Clinical in South Tangerang City</td>
         </tr>
         <tr >
             <td colspan="12"></td>
@@ -251,7 +244,7 @@
         </tr>
         <tr><td></td></tr>
         <tr>
-            <td colspan="3" rowspan="2" style="text-align: center;border: 1px solid #000;">{{ date('d M Y') }}</td>
+            <td colspan="3" rowspan="2" style="text-align: center;border: 1px solid #000;">{{ $v->status_at }}</td>
             <td colspan="6" rowspan="2" style="text-align: center;border: 1px solid #000;">Rapid Test Antibody SARS-COV-2</td>
             <td colspan="3" rowspan="2" style="text-align: center;border: 1px solid #000;">{{ $v->status }}</td>
         </tr>
