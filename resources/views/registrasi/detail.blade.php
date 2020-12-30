@@ -180,34 +180,40 @@
                 html +=           '<label class="form-check-label"> Visit</label>';
                 html +=         '</div>';
                 html +=       '</div>';
-                html +=       '<div class="form-group">';
-                html +=         '<label for="paid'+i+'">Payment Status</label>';
-                html +=         '<div class="form-check">';
-                html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Paid" checked>';
-                html +=           '<label class="form-check-label"> Paid</label>';
-                html +=         '</div>';
-                html +=         '<div class="form-check">';
-                
+
                 var checkedUnPaid = "";
                 if (v.paid == 'N'){
                   checkedUnPaid ="checked";
                 }
-
-                html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Unpaid" '+checkedUnPaid+'>';
-                html +=           '<label class="form-check-label"> Unpaid</label>';
-                html +=         '</div>';
-                html +=         '<div class="form-check">';
 
                 var checkedCancel = "";
                 if (v.paid == 'C'){
                   checkedCancel ="checked";
                 }
 
-                html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Cancel" '+checkedCancel+'>';
+                var disabledPaid, disabledUnpaid, disabledCancel = "";
+                if (v.status){
+                  disabledPaid = "disabled";
+                  disabledUnpaid = "disabled";
+                  disabledCancel = "disabled";
+                }
+
+                html +=       '<div class="form-group">';
+                html +=         '<label for="paid'+i+'">Payment Status</label>';
+                html +=         '<div class="form-check">';
+                html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Paid" checked '+disabledPaid+' onchange="return getPaidChange(this,'+i+')">';
+                html +=           '<label class="form-check-label"> Paid</label>';
+                html +=         '</div>';
+                html +=         '<div class="form-check">';
+                html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Unpaid" '+checkedUnPaid+' '+disabledUnpaid+' onchange="return getPaidChange(this,'+i+')">';
+                html +=           '<label class="form-check-label"> Unpaid</label>';
+                html +=         '</div>';
+                html +=         '<div class="form-check">';
+                html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Cancel" '+checkedCancel+' '+disabledCancel+' onchange="return getPaidChange(this,'+i+')">';
                 html +=           '<label class="form-check-label"> Cancel</label>';
                 html +=         '</div>';
-
                 html +=       '</div>';
+
                 html +=       '<div class="form-group">';
                 html +=         '<label for="payment'+i+'">Payment Method</label>';
                 html +=         '<select id="payment'+i+'" name="payment'+i+'" class="form-control" onchange="return getSecondPayment(payment'+i+', '+i+')">';
@@ -296,6 +302,7 @@
               jumlah = i-1;
 
               for (var i = 1; i <= jumlah; i++){
+                $('input:radio[name=paid'+i+']:checked').trigger("change");
                 $('#payment'+i).trigger('change');
               }
 
@@ -349,7 +356,10 @@
                     window.location.href = url;
                 },1000);
             }else{        
-                toastr.error(data.message);
+              var obj = JSON.parse(data.message);
+              for (var i = 0; i < obj.length; i++) {
+                toastr.error(obj[i]); 
+              }
             }
         },
         error: function(data){
@@ -358,6 +368,20 @@
       });
 
       return false;
+    }
+
+    function getPaidChange(ele, i) {
+      var value = ele.value;
+      if (value == 'Cancel' || value == 'Unpaid'){
+        resetFieldPayment(i);
+        $('#payment'+i).val($('#payment'+i+' option:first').val()).attr('disabled', true);
+        $('#amount'+i).val('0').attr('disabled', true);
+      } else{
+        $('#payment'+i).attr('disabled', false);
+        $('#amount'+i).attr('disabled', false);
+      }
+
+      separatorRibuan('amount'+i);
     }
 
     function getSecondPayment(ele, i) {
@@ -597,14 +621,14 @@
           $(this).val("0");
           $(this)[0].setSelectionRange(0, 0);
         }
-
-        // Calculate
-        var total = 0;
-        for (var i = 1; i <= jumlah; i++){
-          total = total + parseInt($('#amount'+i).val().replace(/\./g,''));
-        }
-        $('#total').val(total).trigger('keyup');
       });
+
+      // Calculate
+      var total = 0;
+      for (var i = 1; i <= jumlah; i++){
+        total = total + parseInt($('#amount'+i).val().replace(/\./g,''));
+      }
+      $('#total').val(total).trigger('keyup');
 
       // $(ele).on('focus click', function() {
       //   if ($(ele).val() == "" || $(ele).val() == "0"){

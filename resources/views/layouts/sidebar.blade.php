@@ -44,6 +44,15 @@
         </li>
         @endif
 
+        @if(Gate::check('isSuperAdmin') || Gate::check('isAdmin'))
+        <li class="nav-item">
+          <a href="{{ route('report.pembayaran.index') }}" class="nav-link">
+            <i class="nav-icon fas fa-book"></i>
+            <p>Rekap Pembayaran</p>
+          </a>
+        </li>
+        @endif
+
         <li class="nav-header">SECURITY</li>
         @if(Gate::check('isSuperAdmin'))
         <li class="nav-item">

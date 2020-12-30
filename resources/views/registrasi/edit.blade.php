@@ -184,7 +184,10 @@
                         window.location.reload();
                     },1000);
                 }else{        
-                    toastr.error(data.message);
+                  var obj = JSON.parse(data.message);
+                  for (var i = 0; i < obj.length; i++) {
+                    toastr.error(obj[i]); 
+                  }
                 }
             },
             error: function(data){

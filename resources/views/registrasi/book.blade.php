@@ -1,8 +1,8 @@
 <div style="padding-top: 1pt;">
     <table width="100%" cellspacing="0" cellpadding="2">
         <tr>
-            <td width="7%">Tgl : </td>
-            <td width="23%">{{ \Carbon\Carbon::now()->isoFormat('D MMMM Y HH:mm:ss') }}</td>
+            <td width="6%">Tgl : </td>
+            <td width="30%">{{ \Carbon\Carbon::now()->isoFormat('D MMMM Y HH:mm:ss') }}</td>
             <td width="13%">Jenis Test : </td>
             <td width="15%">{{ $data[0]->type }}</td>
             <td width="7%">No. : </td>

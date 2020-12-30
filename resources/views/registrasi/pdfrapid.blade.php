@@ -1,6 +1,7 @@
 <html>  
     <table style="margin-bottom:60px;width:100%;margin-left:36px;margin-right:36px;">
-        @foreach($data as $v)
+    @foreach($data as $v)
+        @if ($v->status)
 
         <!------header----->
 
@@ -153,8 +154,8 @@
             <td colspan="3">{{ \Carbon\Carbon::now()->isoFormat('D MMMM Y') }}</td>
             
         </tr>
-       
-        @endforeach
+        @endif   
+    @endforeach
     </table>
     
     
@@ -163,10 +164,10 @@
     
     
 
- <table style="margin-bottom:60px;margin-left:36px;margin-right:36px;width:100%;">
-        @foreach($data as $v)
-
-               <tr>
+    <table style="margin-bottom:60px;margin-left:36px;margin-right:36px;width:100%;">
+    @foreach($data as $v)
+        @if ($v->status)
+        <tr>
             <td colspan="12" style="text-align: center;"><br><br><br><br><br><br></td>
         </tr>
        <tr>
@@ -277,6 +278,7 @@
             <td colspan="8"></td>
             <td colspan="4">(Resident Medical Officer)</td>
         </tr>
-        @endforeach
+        @endif
+    @endforeach
     </table>
 </html>

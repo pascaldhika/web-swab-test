@@ -41,7 +41,9 @@ Route::group(['middleware' => ['auth']],function(){
 
 	// REPORT
 	Route::get('/report/pasien','ReportController@indexPasien')->name('report.pasien.index');
-	Route::get('/report/pasien/print/excel','ReportController@printExcelPasien')->name('report.pasien.print.excel');
+	Route::get('/report/pasien/print','ReportController@printPasien')->name('report.pasien.print');
+	Route::get('/report/pembayaran','ReportController@indexPembayaran')->name('report.pembayaran.index');
+	Route::get('/report/pembayaran/print','ReportController@printPembayaran')->name('report.pembayaran.print');
 
 	// USER
 	Route::get('/security/user','UserController@index')->name('user.index');

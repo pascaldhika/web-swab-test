@@ -96,7 +96,7 @@ class RegistrasiController extends Controller
         ];
         $query = "
             SELECT 
-                B.docno, B.type, A.*,
+                B.docno, B.type, B.status_at, A.*,
                 (SELECT sf_formatTanggal(B.docdate)) AS newdocdate,
                 (
                     SELECT GROUP_CONCAT(C.name SEPARATOR ',')
@@ -142,7 +142,12 @@ class RegistrasiController extends Controller
         	$vali = Validator::make($req->all(),$rules);
 
         	if ($vali->fails()) {
-          		throw new \Exception($vali->errors());   
+                $err = [];
+                $errors = $vali->messages()->get('*');
+                foreach ($errors as $key => $value) {
+                    $err[] = $value[0];
+                }
+          		throw new \Exception(json_encode($err));   
         	}
 
             $month = date('m');
@@ -207,6 +212,14 @@ class RegistrasiController extends Controller
                     throw new \Exception('Registrasi detail not found');
                 }
 
+                if ($value['status'] == null){
+                    throw new \Exception('Status harus diisi.');   
+                }
+
+                if ($value['status'] == 'Reaktif' && $value['detailstatus'] == null){
+                    throw new \Exception('Jenis Reaktif harus diisi.');   
+                }
+
                 $registrasi = Registrasi::find($registrasiDetail->registrasiid);
                 $registrasi->status_at = date('Y-m-d H:i:s');
                 $registrasi->status_by = $req->user()->id;
@@ -243,14 +256,22 @@ class RegistrasiController extends Controller
                 $rules['id' . $i] = 'required';
                 $rules['branch' . $i] = 'required';
                 $rules['paid' . $i] = 'required';
-                $rules['payment' . $i] = 'required';
-                $rules['amount' . $i] = 'required';
+                
+                if ($req->input('paid'.$i) == "Paid"){
+                    $rules['payment' . $i] = 'required';
+                    $rules['amount' . $i] = 'required|numeric|gt:0';
+                }
             }
             
             $vali = Validator::make($req->all(),$rules);
 
             if ($vali->fails()) {
-                throw new \Exception($vali->errors());   
+                $err = [];
+                $errors = $vali->messages()->get('*');
+                foreach ($errors as $key => $value) {
+                    $err[] = $value[0];
+                }
+                throw new \Exception(json_encode($err));   
             }
 
             for ($i=1; $i <= $jumlah ; $i++) {
@@ -341,7 +362,7 @@ class RegistrasiController extends Controller
             DB::rollback();
             return response()->json([
                 'success' => false,
-                'message' => $ex->getMessage().$ex->getLine(),
+                'message' => $ex->getMessage(),
             ]);
         }
     }
@@ -367,7 +388,12 @@ class RegistrasiController extends Controller
             $vali = Validator::make($req->all(),$rules);
 
             if ($vali->fails()) {
-                throw new \Exception($vali->errors());   
+                $err = [];
+                $errors = $vali->messages()->get('*');
+                foreach ($errors as $key => $value) {
+                    $err[] = $value[0];
+                }
+                throw new \Exception(json_encode($err));
             }
 
             for ($i=1; $i <= $jumlah ; $i++) {
@@ -398,7 +424,7 @@ class RegistrasiController extends Controller
             DB::rollback();
             return response()->json([
                 'success' => false,
-                'message' => $ex->getMessage().$ex->getLine(),
+                'message' => $ex->getMessage(),
             ]);
         }
     }

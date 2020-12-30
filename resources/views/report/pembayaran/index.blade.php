@@ -6,7 +6,7 @@
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-left">
           <li class="breadcrumb-item">Report</li>
-          <li class="breadcrumb-item active"><a href="{{ route('report.pasien.index') }}">Data Pasien</a></li>
+          <li class="breadcrumb-item active"><a href="{{ route('report.pembayaran.index') }}">Rekap Pembayaran</a></li>
         </ol>
       </div>
     </div>
@@ -54,7 +54,7 @@
 <script type="text/javascript">
 
 	function proses(){
-		var base = "{!! route('report.pasien.print') !!}";
+		var base = "{!! route('report.pembayaran.print') !!}";
 		var tglawal = $('#tglawal').val();
 		var tglakhir = $('#tglakhir').val();
 		var name = $('#name').val();

@@ -15,6 +15,13 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card card-primary card-outline">
+              @if(Gate::check('isSuperAdmin') || Gate::check('isAdmin'))
+              <div class="card-header">
+                <div class="card-tools">
+                  <a onclick="refresh()" class="btn btn-success">Refresh</a>
+                </div>
+              </div>
+              @endif
               <div class="card-body">
                 <table id="table" class="table table-bordered table-striped nowrap">
                   <thead>
@@ -262,6 +269,10 @@
         });
     });
 
+    function refresh(){
+        table.ajax.reload(null, true);
+    }
+
     function detail(id){
         var base = "{!! route('registrasi.detail') !!}";
         var url = base+'?id='+id ;
@@ -318,19 +329,21 @@
                           table2.clear();
                           $.each(data.data, function (k, v) {
 
-                            doc = "<select id='doctor' class='mySelect'>" + getDoctorSelectOptions(v.doctor) + "</select>";
-                            sts = "<select id='status' class='mySelect1' data-index='"+k+"' data-col='"+type+"'>" + getStatusSelectOptions(type, v.status) + "</select>";
-                            dsts = "<select id='jenisreaktif' class='mySelect2'>" + getDetailStatusSelectOptions(v.detailstatus) + "</select>";
-                            
-                            table2.rows.add([{
-                                'id':v.id,
-                                'name':v.name,
-                                'address':v.address,
-                                'identityno':v.identityno,
-                                'doctor':doc,
-                                'status':sts,
-                                'jenisreaktif':dsts,
-                            }]);
+                            if (v.paid == 'Y'){
+                                doc = "<select id='doctor' class='mySelect'>" + getDoctorSelectOptions(v.doctor) + "</select>";
+                                sts = "<select id='status' class='mySelect1' data-index='"+k+"' data-col='"+type+"'>" + getStatusSelectOptions(type, v.status) + "</select>";
+                                dsts = "<select id='jenisreaktif' class='mySelect2'>" + getDetailStatusSelectOptions(v.detailstatus) + "</select>";
+                                
+                                table2.rows.add([{
+                                    'id':v.id,
+                                    'name':v.name,
+                                    'address':v.address,
+                                    'identityno':v.identityno,
+                                    'doctor':doc,
+                                    'status':sts,
+                                    'jenisreaktif':dsts,
+                                }]);
+                            }
                           });
 
                          table2.draw();
