@@ -63,7 +63,10 @@
           </button>
         </div>
         <div class="modal-body">
-            <div class="card-body">
+            <div class="field fieldTEXT" id="fieldDynamic">
+
+            </div>
+            <!-- <div class="card-body">
                 <input type="hidden" id="id" value="" class="form-control form-clear">
                 <table id="table2" class="table table-bordered table-striped nowrap">
                     <thead>
@@ -79,7 +82,7 @@
                     </thead>
                     <tbody></tbody>
                 </table>
-            </div>
+            </div> -->
         </div>
         <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -94,6 +97,7 @@
 @push('scripts')
 <script type="text/javascript">
     var table, table2;
+    var jumlah = 0;
     $(document).ready(function(){
         $('#table').dataTable().fnDestroy();
         table = $('#table').DataTable({
@@ -254,19 +258,19 @@
             ],
         });
 
-        $('#table2').on('change', 'select.mySelect1', function() {
-            var colType = $(this).data('col');
-            var colIndex = $(this).data('index');
+        // $('#table2').on('change', 'select.mySelect', function() {
+        //     var colType = $(this).data('col');
+        //     var colIndex = $(this).data('index');
 
-            hideJenisReaktif(colType);
+        //     hideJenisReaktif(colType);
 
-            if (this.value == 'Reaktif'){
-                var dsts = "<select id='jenisreaktif' class='mySelect2'>" + getDetailStatusSelectOptions(null) + "</select>";
-                table2.cell({row:colIndex, column:6}).data(dsts);
-            } else{
-                table2.cell({row:colIndex, column:6}).data("");
-            }
-        });
+        //     if (this.value == 'Reaktif'){
+        //         var dsts = "<select id='jenisreaktif' class='mySelect2'>" + getDetailStatusSelectOptions(null) + "</select>";
+        //         table2.cell({row:colIndex, column:6}).data(dsts);
+        //     } else{
+        //         table2.cell({row:colIndex, column:6}).data("");
+        //     }
+        // });
     });
 
     function refresh(){
@@ -305,13 +309,19 @@
         @can('isNakes')
             var type  = $(e).data('type');
             var paid = $(e).data('paid');
+            var status_at = $(e).data('status_at');
             var doc = "";
             var sts = "";
             var dsts = "";
 
             if (paid > 0){
                 clear_column('modalUbahStatus');
-                $('#modalUbahStatus #myModalLabel').text("Ubah Status / Hasil Pemeriksaan Lab");
+                var title = "Input Status / Hasil Pemeriksaan Lab";
+                if (status_at){
+                    title = "Ubah Status / Hasil Pemeriksaan Lab";
+                }
+
+                $('#modalUbahStatus #myModalLabel').text(title);
                 $('#modalUbahStatus #id').val(id);
 
                 hideJenisReaktif(type);
@@ -326,27 +336,112 @@
                     dataType: "json",
                     success: function(data){
                         if(data.success){
-                          table2.clear();
+                          // table2.clear();
+                          var newRow  = $(".field.fieldTEXT");
+                          var html = "";
+                          newRow.empty();
+
+                          var i = 1;
+                          jumlah = 0;
+
                           $.each(data.data, function (k, v) {
 
                             if (v.paid == 'Y'){
-                                doc = "<select id='doctor' class='mySelect'>" + getDoctorSelectOptions(v.doctor) + "</select>";
-                                sts = "<select id='status' class='mySelect1' data-index='"+k+"' data-col='"+type+"'>" + getStatusSelectOptions(type, v.status) + "</select>";
-                                dsts = "<select id='jenisreaktif' class='mySelect2'>" + getDetailStatusSelectOptions(v.detailstatus) + "</select>";
+                                html += '<div id="field'+i+'" class="card card-secondary">';
+                                html +=    '<div class="card-body">';
+                                html +=       '<input type="hidden" class="form-control" id="id'+i+'" value="'+v.id+'">';
+                                html +=       '<div class="form-group">';
+                                html +=         '<label for="name'+i+'">Nama *Sesuai Kartu Identitas</label>';
+                                html +=         '<input type="text" class="form-control" id="name'+i+'" value="'+v.name+'" disabled>';
+                                html +=       '</div>';
+                                html +=       '<div class="form-group">';
+                                html +=         '<label for="address'+i+'">Alamat *Sesuai Kartu Identitas</label>';
+                                html +=         '<textarea input type="text" class="form-control" id="address'+i+'" value="'+v.address+'" disabled>'+v.address+'</textarea>';
+                                html +=       '</div>';
+                                html +=       '<div class="form-group">';
+                                html +=         '<label for="identityno'+i+'">No. Identitas KTP/SIM/Passport</label>';
+                                html +=         '<input type="text" class="form-control" id="identityno'+i+'" disabled value="'+v.identityno+'">';
+                                html +=       '</div>';
+
+                                var selectedAdam = "";
+                                var selectedHanif = "";
+                                if (v.doctor == 'Adam S.A.K Hardiyanto'){
+                                    selectedAdam = "selected";
+                                } else{
+                                    selectedHanif = "selected";
+                                }
+
+                                html +=       '<div class="form-group">';
+                                html +=         '<label for="doctor'+i+'">Doctor</label>';
+                                html +=         '<select id="doctor'+i+'" class="form-control">';
+                                html +=           '<option value="">Pilih Doctor</option>';
+                                html +=           '<option value="Adam S.A.K Hardiyanto" '+selectedAdam+'>dr. Adam S.A.K Hardiyanto</option>';
+                                html +=           '<option value="Muhammad Hanif" '+selectedHanif+'>dr. Muhammad Hanif</option></select>';
+                                html +=       '</div>';
+
+                                html +=       '<div class="form-group">';
+                                html +=         '<label for="status'+i+'">Status</label>';
+                                html +=         '<select id="status'+i+'" class="form-control" data-jenis="'+v.detailstatus+'" onchange="return getJenisReaktif(status'+i+', '+i+')">';
+                                html +=           '<option value="">Pilih Status</option>';
+
+                                if (type == 'Antibodi Test'){
+                                    var selectedReaktif = "";
+                                    var selectedNonReaktif = "";
+                                    if (v.status == 'Reaktif'){
+                                        selectedReaktif = "selected";
+                                    } else{
+                                        selectedNonReaktif = "selected";
+                                    }
+
+                                    html +=           '<option value="Reaktif" '+selectedReaktif+'>Reaktif</option>';
+                                    html +=           '<option value="Non Reaktif" '+selectedNonReaktif+'>Non Reaktif</option></select>';
+                                } else{
+                                    var selectedPositif = "";
+                                    var selectedNegatif = "";
+                                    if (v.status == 'Positif'){
+                                        selectedPositif = "selected";
+                                    } else{
+                                        selectedNegatif = "selected";
+                                    }
+
+                                    html +=           '<option value="Positif" '+selectedPositif+'>Positif</option>';
+                                    html +=           '<option value="Negatif" '+selectedNegatif+'>Negatif</option></select>';
+                                }
                                 
-                                table2.rows.add([{
-                                    'id':v.id,
-                                    'name':v.name,
-                                    'address':v.address,
-                                    'identityno':v.identityno,
-                                    'doctor':doc,
-                                    'status':sts,
-                                    'jenisreaktif':dsts,
-                                }]);
+                                html +=       '</div>';
+
+                                html +=       '<div class="form-group fieldJenisReaktif'+i+'"></div>';
+
+                                html +=     '</div>';
+                                html += '</div>';
+
+                                // doc = "<select id='doctor' class='mySelect'>" + getDoctorSelectOptions(v.doctor) + "</select>";
+                                // sts = "<select id='status' class='mySelect1' data-index='"+k+"' data-col='"+type+"'>" + getStatusSelectOptions(type, v.status) + "</select>";
+                                // dsts = "<select id='jenisreaktif' class='mySelect2'>" + getDetailStatusSelectOptions(v.detailstatus) + "</select>";
+                                
+                                // table2.rows.add([{
+                                //     'id':v.id,
+                                //     'name':v.name,
+                                //     'address':v.address,
+                                //     'identityno':v.identityno,
+                                //     'doctor':doc,
+                                //     'status':sts,
+                                //     'jenisreaktif':dsts,
+                                // }]);
+
+                                i++;
                             }
                           });
 
-                         table2.draw();
+                         // table2.draw();
+
+                         newRow.append(html);
+
+                         jumlah = i-1;
+
+                         for (var i = 1; i <= jumlah; i++){
+                            $('#status'+i).trigger('change');
+                         };
                          
                          $('#modalUbahStatus').modal("show");
                           
@@ -364,6 +459,37 @@
         @else
             toastr.error('Anda tidak memiliki HAK AKSES!')
         @endcan
+    }
+
+    function getJenisReaktif(ele, i) {
+      var x = $(ele).val();
+      var jenis = $(ele).data('jenis');
+      var newRow  = $(".form-group.fieldJenisReaktif"+i);
+      var html = "";
+
+      if (x == 'Reaktif'){
+        html += '<select id="jenisreaktif'+i+'" class="form-control">';
+        html +=   '<option value="">Pilih Jenis Reaktif</option>';
+
+        var selectedIGG = "";
+        var selectedIGM = "";
+        var selectedIGGIGM = "";
+        if (jenis == 'IGG'){
+            selectedIGG = "selected"
+        } else if(jenis == 'IGM'){
+            selectedIGM = "selected";
+        } else{
+            selectedIGGIGM = "selected";
+        }
+
+        html +=   '<option value="IGG" '+selectedIGG+'>IGG</option>';
+        html +=   '<option value="IGM" '+selectedIGM+'>IGM</option>';
+        html +=   '<option value="IGG,IGM" '+selectedIGGIGM+'>IGG & IGM</option>';
+        html +=  '</select>';
+      }
+
+      newRow.empty();
+      newRow.append(html);
     }
 
     function getDoctorSelectOptions(value) {
@@ -405,59 +531,36 @@
     }
 
     function submitStatus(){
-        var rowData = table2.rows().data().toArray();
-        var arrDoctor = [];
-        var arrStatus = [];
-        var arrReaktif = [];
-        var data = [];
+        var form_data = new FormData();
 
-        $.each(rowData, function(index, value){
-            table2.column(4).nodes().each(function (node, index, dt) {
-                var doctor = $(table2.cell(node).node()).find('.mySelect').val();
-                
-                arrDoctor[index] = {
-                    'id'        : rowData[index].id,
-                    'doctor'    : doctor
-                };
-            });
+        for (var i = 1; i <= jumlah; i++){
+            form_data.append('id'+i, $('#id'+i).val());
+            form_data.append('doctor'+i, $('#doctor'+i).val());
+            form_data.append('status'+i, $('#status'+i).val());
+            form_data.append('jenisreaktif'+i, $('#jenisreaktif'+i).val());
+        }
 
-            table2.column(5).nodes().each(function (node, index, dt) {
-                var status = $(table2.cell(node).node()).find('.mySelect1').val();
-                
-                arrStatus[index] = {
-                    'id'        : rowData[index].id,
-                    'status'    : status
-                };
-            });
-
-            table2.column(6).nodes().each(function (node, index, dt) {
-                var detailstatus = $(table2.cell(node).node()).find('.mySelect2').val();
-                
-                arrReaktif[index] = {
-                    'id'        : rowData[index].id,
-                    'detailstatus'    : (detailstatus != undefined) ? detailstatus : null
-                };console.log(arrReaktif);
-            });
-        });
-        
-        data = arrDoctor.map((item, i) => Object.assign({}, item, arrStatus[i]));
-        data = data.map((item, i) => Object.assign({}, item, arrReaktif[i]));
+        form_data.append('jumlah', jumlah);
+        form_data.append('_token', "{{ csrf_token() }}");
 
         $.ajax({
             type: 'POST',
             url: '{{ route("registrasi.simpanstatus") }}',
-            data: {
-                data: data,
-                _token: "{{ csrf_token() }}"
-            },
-            dataType: "json",
+            data: form_data,
+            dataType: 'json',
+            cache: false,
+            contentType: false,
+            processData: false,
             success: function(data){
                 if(data.success){
                     toastr.success(data.message);
                     $('#modalUbahStatus').modal('hide');
                     table.ajax.reload(null, true);
                 }else{        
-                    toastr.error(data.message);
+                    var obj = JSON.parse(data.message);
+                    for (var i = 0; i < obj.length; i++) {
+                        toastr.error(obj[i]); 
+                    }
                 }
             },
             error: function(data){
@@ -466,6 +569,44 @@
         });
 
         return false;
+
+        // var rowData = table2.rows().data().toArray();
+        // var arrDoctor = [];
+        // var arrStatus = [];
+        // var arrReaktif = [];
+        // var data = [];
+
+        // $.each(rowData, function(index, value){
+        //     table2.column(4).nodes().each(function (node, index, dt) {
+        //         var doctor = $(table2.cell(node).node()).find('.mySelect').val();
+                
+        //         arrDoctor[index] = {
+        //             'id'        : rowData[index].id,
+        //             'doctor'    : doctor
+        //         };
+        //     });
+
+        //     table2.column(5).nodes().each(function (node, index, dt) {
+        //         var status = $(table2.cell(node).node()).find('.mySelect1').val();
+                
+        //         arrStatus[index] = {
+        //             'id'        : rowData[index].id,
+        //             'status'    : status
+        //         };
+        //     });
+
+        //     table2.column(6).nodes().each(function (node, index, dt) {
+        //         var detailstatus = $(table2.cell(node).node()).find('.mySelect2').val();
+                
+        //         arrReaktif[index] = {
+        //             'id'        : rowData[index].id,
+        //             'detailstatus'    : (detailstatus != undefined) ? detailstatus : null
+        //         };console.log(arrReaktif);
+        //     });
+        // });
+        
+        // data = arrDoctor.map((item, i) => Object.assign({}, item, arrStatus[i]));
+        // data = data.map((item, i) => Object.assign({}, item, arrReaktif[i]));
     }
 
 </script>

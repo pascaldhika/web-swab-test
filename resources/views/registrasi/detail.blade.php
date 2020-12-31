@@ -204,10 +204,10 @@
                 html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Paid" checked '+disabledPaid+' onchange="return getPaidChange(this,'+i+')">';
                 html +=           '<label class="form-check-label"> Paid</label>';
                 html +=         '</div>';
-                html +=         '<div class="form-check">';
-                html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Unpaid" '+checkedUnPaid+' '+disabledUnpaid+' onchange="return getPaidChange(this,'+i+')">';
-                html +=           '<label class="form-check-label"> Unpaid</label>';
-                html +=         '</div>';
+                // html +=         '<div class="form-check">';
+                // html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Unpaid" '+checkedUnPaid+' '+disabledUnpaid+' onchange="return getPaidChange(this,'+i+')">';
+                // html +=           '<label class="form-check-label"> Unpaid</label>';
+                // html +=         '</div>';
                 html +=         '<div class="form-check">';
                 html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Cancel" '+checkedCancel+' '+disabledCancel+' onchange="return getPaidChange(this,'+i+')">';
                 html +=           '<label class="form-check-label"> Cancel</label>';

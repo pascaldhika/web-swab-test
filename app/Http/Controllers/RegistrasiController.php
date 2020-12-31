@@ -57,7 +57,7 @@ class RegistrasiController extends Controller
                 }
             } else{
                 if (Gate::allows('isNakes') || Gate::allows('isSuperAdmin')) {
-                    $action .= '<div onclick="ubahStatus('.$data->id.', this)" data-type="'.$data->type.'" data-paid="'.$data->paid.'" class="btn btn-xs btn-success no-margin-action" title="Ubah Status / Hasil Pemeriksaan Lab" style="margin-right:5px;"><i class="fas fa-check"></i></div>';
+                    $action .= '<div onclick="ubahStatus('.$data->id.', this)" data-type="'.$data->type.'" data-paid="'.$data->paid.'" data-status_at="'.$data->status_at.'" class="btn btn-xs btn-success no-margin-action" title="Ubah Status / Hasil Pemeriksaan Lab" style="margin-right:5px;"><i class="fas fa-check"></i></div>';
                 }
 
                 if (Gate::allows('isAdmin') || Gate::allows('isSuperAdmin')) {
@@ -206,18 +206,35 @@ class RegistrasiController extends Controller
     public function simpanStatus(Request $req){
         DB::beginTransaction();
         try{
-            foreach ($req->data as $value) {
-                $registrasiDetail = RegistrasiDetail::find($value['id']);
+            $jumlah = (int) $req->input('jumlah');
+            $rules = [];
+            
+            for ($i=1; $i <= $jumlah ; $i++) {
+                $rules['id' . $i] = 'required';
+                $rules['doctor' . $i] = 'required';
+                $rules['status' . $i] = 'required';
+                
+                if ($req->input('status'.$i) == "Reaktif"){
+                    $rules['jenisreaktif' . $i] = 'required';
+                }
+            }
+            
+            $vali = Validator::make($req->all(),$rules);
+
+            if ($vali->fails()) {
+                $err = [];
+                $errors = $vali->messages()->get('*');
+                foreach ($errors as $key => $value) {
+                    $err[] = $value[0];
+                }
+                throw new \Exception(json_encode($err));   
+            }
+
+            for ($i=1; $i <= $jumlah ; $i++) {
+                $id = strip_tags($req->input('id'.$i));
+                $registrasiDetail = RegistrasiDetail::find($id);
                 if ($registrasiDetail == null){
                     throw new \Exception('Registrasi detail not found');
-                }
-
-                if ($value['status'] == null){
-                    throw new \Exception('Status harus diisi.');   
-                }
-
-                if ($value['status'] == 'Reaktif' && $value['detailstatus'] == null){
-                    throw new \Exception('Jenis Reaktif harus diisi.');   
                 }
 
                 $registrasi = Registrasi::find($registrasiDetail->registrasiid);
@@ -225,9 +242,14 @@ class RegistrasiController extends Controller
                 $registrasi->status_by = $req->user()->id;
                 $registrasi->save();
 
-                $registrasiDetail->doctor = $value['doctor'];
-                $registrasiDetail->status = $value['status'];
-                $registrasiDetail->detailstatus = $value['detailstatus'];
+                $registrasiDetail->doctor = strip_tags($req->input('doctor'.$i));
+                $registrasiDetail->status = strip_tags($req->input('status'.$i));
+
+                $detailStatus = strip_tags($req->input('jenisreaktif'.$i));
+                if ($detailStatus != 'undefined'){
+                    $registrasiDetail->detailstatus = $detailStatus;
+                }
+                
                 $registrasiDetail->updatedby = $req->user()->id;
                 $registrasiDetail->save();
             }
