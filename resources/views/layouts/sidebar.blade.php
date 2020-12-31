@@ -7,7 +7,7 @@
         <img src="{{url('adminlte/dist/img/avatar5.png')}}" class="img-circle elevation-2" alt="User Image">
       </div>
       <div class="info">
-        <a href="#" class="d-block">{{ auth()->user()->name }}</a>
+        <a href="{{ route('home') }}" class="d-block">{{ auth()->user()->name }}</a>
       </div>
     </div>
     <nav class="mt-2">

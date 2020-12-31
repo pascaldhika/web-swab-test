@@ -17,8 +17,6 @@
   <link rel="stylesheet" href="{{url('adminlte/bower_components/icheck-bootstrap/icheck-bootstrap.min.css')}}">
   <!-- JQVMap -->
   <link rel="stylesheet" href="{{url('adminlte/bower_components/jqvmap/jqvmap.min.css')}}">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="{{url('adminlte/dist/css/adminlte.min.css')}}">
   <!-- overlayScrollbars -->
   <link rel="stylesheet" href="{{url('adminlte/bower_components/overlayScrollbars/css/OverlayScrollbars.min.css')}}">
   <!-- Daterange picker -->
@@ -37,7 +35,7 @@
   <link rel="stylesheet" href="{{url('adminlte/bower_components/pace-progress/themes/black/pace-theme-flat-top.css')}}">
 
 </head>
-<body class="hold-transition sidebar-mini pace-primary">
+<body class="hold-transition sidebar-mini pace-yellow">
 <div class="wrapper">
 
   <!-- Navbar -->
@@ -91,7 +89,6 @@
 <!-- overlayScrollbars -->
 <script src="{{url('adminlte/bower_components/overlayScrollbars/js/jquery.overlayScrollbars.min.js')}}"></script>
 <!-- AdminLTE App -->
-<script src="{{url('adminlte/dist/js/adminlte.js')}}"></script>
 <!-- <script src="{{url('adminlte/dist/js/pages/dashboard.js')}}"></script> -->
 <!-- DataTables  & Plugins -->
 <script src="{{url('adminlte/bower_components/datatables/jquery.dataTables.min.js')}}"></script>

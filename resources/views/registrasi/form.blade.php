@@ -27,12 +27,12 @@
 <div class="field fieldTEXT" id="fieldDynamic">
 
 </div>
-<div class="row">
+<!-- <div class="row">
   <div class="col-6">
     <button type="submit" class="btn btn-primary" onclick="simpan()">Save</button>
     <a href="{{route('frontend')}}" class="btn btn-warning">Back</a>
   </div>
-</div>
+</div> -->
 <!-- /.card -->
 @endsection
 
@@ -102,13 +102,23 @@
       html += '</div>';
     }
 
+    if (jumlah > 0){
+      html += '<div class="card-footer">';
+      html +=   '<button type="submit" class="btn btn-primary" onclick="simpan()">Submit</button>';
+      html +=   '<button type="submit" class="btn btn-warning float-right" onclick="back()">Back</button>';
+      html += '</div>';
+    } else{
+      toastr.error('Jumlah pasien harus diisi.'); 
+      $('#jumlah').focus();
+    }
+
     newRow.append(html);
   }
 
   function simpan(){
     var form_data = new FormData();
     
-    if (jumlah >0){
+    if (jumlah > 0){
       for (var i = 1; i <= jumlah; i++){
         form_data.append('name'+i, $('#name'+i).val());
         form_data.append('address'+i, $('#address'+i).val());
@@ -162,6 +172,11 @@
         }
       });
     }
+  }
+
+  function back(){
+    var url = "{!! route('frontend') !!}";
+    window.location.href = url;
   }
 </script>
 @endpush
