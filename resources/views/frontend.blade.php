@@ -1,6 +1,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ config('app.name', 'Laravel') }} | Web Swab Test</title>
+<title>{{ config('app.name', 'Laravel') }} | Web Test Covid 19</title>
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -13,51 +13,28 @@
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css" />
 <link rel="stylesheet" href="{{url('css/front.css')}}">
 
+<div style="background-image: url('adminlte/dist/img/frontend-min.jpg');background-size:cover;">
 <section class="banner">
 	<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light custom_header navbar-toggler py-3">
-		<a class="navbar-brand" href="#"><img src="{{url('adminlte/dist/img/logo.jpeg')}}" style="height:70px;width:70px;margin-top:10px" alt="" /> PT Taishan Alkes Indonesia</a>
-		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-
-		<div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-			<ul class="navbar-nav ml-auto my-lg-0 mt-2 mt-lg-0">
-				<li class="nav-item active">
-					<a class="nav-link" href="#"><span class="sr-only">(current)</span></a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="#"></a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="#"></a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="{{ route('login') }}">Sign In</a>
-				</li>
-			</ul>
-		</div>
+		<img src="{{url('adminlte/dist/img/logo.jpeg')}}" style="height:60px;width:60px;" alt="" /><a class="navbar-brand" href="#" style="margin-left:10px;"> <h5> PT Taishan Alkes Indonesia</h5></a>
 	</nav>
 	
-	<div class="owl-carousel owl-theme main_banner bg-black-transparent">
-		<div class="item"><img src="https://images.unsplash.com/photo-1596978759889-91e1a654faca?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80" alt="" /></div>
-	</div>
-
-	<div class="search-sec bg-transparent d-none d-sm-block" style="top:27%;">
-<div class="container text-center tag_line">
-			<img src="{{url('adminlte/dist/img/qrcode.png')}}" style="height:150px;width:150px;margin-top:10px" alt="" />
+	<div class="container text-center tag_line">
+		<img src="{{url('adminlte/dist/img/qr-code.png')}}" style="height:200px;width:200px;margin-top:13%;margin-bottom:3%; alt="" />
 		</div>
 		<div class="container text-center tag_line">
-			<br><p>Scan me to register Test Covid 19<p>
-			<br><p>OR</p>
+			<h5>Scan me to register Test Covid 19</h5>
+			<br><h6>OR</h6><br>
 		</div>
-		<br>
 		<div class="container text-center tag_line">
 			<form method="GET" action="{{ route('registrasi.form') }}">
-				<button type="submit" class="btn_search btn btn-danger wrn-btn ripple" style="width:70%;margin-bottom:10px"><span>Click to Registrasi Test</span></button>
+				<button type="submit" class="btn_search btn btn-danger wrn-btn ripple" style="width:77%;margin-bottom:13%;"><span>
+				<h5>Click to Registration Test</h5></span></button>
 			</form>
 		</div>
-	</div>
 </section>
+</div>
+
 
 		
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>

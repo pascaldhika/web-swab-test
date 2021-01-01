@@ -333,7 +333,7 @@ class RegistrasiController extends Controller
                     $checkRegistrasiDetailPayment->delete();
                 }
 
-                if ($firstPayment != 'undefined'){
+                if ($firstPayment != 'undefined' && $firstPayment != '' && $firstPayment != null){
                     $registrasiDetailPayment = new RegistrasiDetailPayment();
                     $registrasiDetailPayment->registrasiid = $registrasiDetail->registrasiid;
                     $registrasiDetailPayment->registrasidetailid = $id;
@@ -343,7 +343,7 @@ class RegistrasiController extends Controller
                     $registrasiDetailPayment->save();    
                 }
 
-                if ($secondPayment != 'undefined'){
+                if ($secondPayment != 'undefined' && $secondPayment != '' && $secondPayment != null){
                     $registrasiDetailPayment = new RegistrasiDetailPayment();
                     $registrasiDetailPayment->registrasiid = $registrasiDetail->registrasiid;
                     $registrasiDetailPayment->registrasidetailid = $id;
@@ -353,7 +353,7 @@ class RegistrasiController extends Controller
                     $registrasiDetailPayment->save();    
                 }
 
-                if ($thirdPayment != 'undefined'){
+                if ($thirdPayment != 'undefined' && $thirdPayment != '' && $thirdPayment != null){
                     $registrasiDetailPayment = new RegistrasiDetailPayment();
                     $registrasiDetailPayment->registrasiid = $registrasiDetail->registrasiid;
                     $registrasiDetailPayment->registrasidetailid = $id;
@@ -363,7 +363,7 @@ class RegistrasiController extends Controller
                     $registrasiDetailPayment->save();    
                 }
 
-                if ($fourPayment != 'undefined'){
+                if ($fourPayment != 'undefined' && $fourPayment != '' && $fourPayment != null){
                     $registrasiDetailPayment = new RegistrasiDetailPayment();
                     $registrasiDetailPayment->registrasiid = $registrasiDetail->registrasiid;
                     $registrasiDetailPayment->registrasidetailid = $id;

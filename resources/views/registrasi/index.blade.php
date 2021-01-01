@@ -23,7 +23,7 @@
               </div>
               @endif
               <div class="card-body">
-                <table id="table" class="table table-bordered table-striped nowrap">
+                <table id="table" class="table table-bordered table-striped nowrap" width="100%">
                   <thead>
                   <tr>
                     <th>Action</th>
@@ -109,6 +109,39 @@
             ajax       : {
                 type: 'GET',
                 url : '{{ route("registrasi.data") }}',
+            },
+            rowCallback: function( row, data, index ) {
+                @if(Gate::check('isSuperAdmin') || Gate::check('isNakes'))
+                    table.column(8).visible(true);
+                    table.column(9).visible(true);
+                    table.column(10).visible(true);
+
+                    if (data.paid <= 0){
+                        $(row).hide();
+                    }
+                @else
+                    table.column(8).visible(false);
+                    table.column(9).visible(false);
+                    table.column(10).visible(false);
+                @endif
+
+                @if(Gate::check('isSuperAdmin') || Gate::check('isAdmin'))
+                    table.column(11).visible(true);
+                    table.column(12).visible(true);
+                    table.column(13).visible(true);
+
+                    if (data.status_at == null){
+                        $(row).hide();
+                    }
+                @elseif(Gate::check('isNakes'))
+                    table.column(11).visible(false);
+                    table.column(12).visible(true);
+                    table.column(13).visible(true);
+                @else
+                    table.column(11).visible(false);
+                    table.column(12).visible(false);
+                    table.column(13).visible(false);
+                @endif
             },
             columns: [
                 {data: 'action', orderable: false, searchable: false},
@@ -206,30 +239,6 @@
                 },
             ],
         });
-
-        @if(Gate::check('isSuperAdmin') || Gate::check('isNakes'))
-            table.column(8).visible(true);
-            table.column(9).visible(true);
-            table.column(10).visible(true);
-        @else
-            table.column(8).visible(false);
-            table.column(9).visible(false);
-            table.column(10).visible(false);
-        @endif
-
-        @if(Gate::check('isSuperAdmin') || Gate::check('isAdmin'))
-            table.column(11).visible(true);
-            table.column(12).visible(true);
-            table.column(13).visible(true);
-        @elseif(Gate::check('isNakes'))
-            table.column(11).visible(false);
-            table.column(12).visible(true);
-            table.column(13).visible(true);
-        @else
-            table.column(11).visible(false);
-            table.column(12).visible(false);
-            table.column(13).visible(false);
-        @endif
 
         table2 = $('#table2').DataTable({
             "scrollX" : true,
@@ -367,7 +376,7 @@
                                 var selectedHanif = "";
                                 if (v.doctor == 'Adam S.A.K Hardiyanto'){
                                     selectedAdam = "selected";
-                                } else{
+                                } else if(v.doctor == 'Muhammad Hanif'){
                                     selectedHanif = "selected";
                                 }
 
@@ -389,7 +398,7 @@
                                     var selectedNonReaktif = "";
                                     if (v.status == 'Reaktif'){
                                         selectedReaktif = "selected";
-                                    } else{
+                                    } else if(v.status == 'Non Reaktif'){
                                         selectedNonReaktif = "selected";
                                     }
 
@@ -400,7 +409,7 @@
                                     var selectedNegatif = "";
                                     if (v.status == 'Positif'){
                                         selectedPositif = "selected";
-                                    } else{
+                                    } else if(v.status == 'Negatif'){
                                         selectedNegatif = "selected";
                                     }
 

@@ -5,6 +5,7 @@ namespace App\Exports;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use DB;
+use Illuminate\Support\Carbon;
 
 class PembayaranReport implements FromView
 {
@@ -26,8 +27,10 @@ class PembayaranReport implements FromView
 
         $data = DB::SELECT($query,$params);
 
-        return view('report.pasien.excel', [
-            'data' => $data
+        return view('report.pembayaran.excel', [
+            'data' => $data,
+            'tglawal' => Carbon::parse($this->tglawal)->isoFormat('D MMMM Y'),
+            'tglakhir' => Carbon::parse($this->tglakhir)->isoFormat('D MMMM Y')
         ]);        
     }
 }

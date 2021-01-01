@@ -2,11 +2,10 @@
 
 namespace App\Exports;
 
-use App\Models\Registrasi;
-use App\Models\RegistrasiDetail;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use DB;
+use Illuminate\Support\Carbon;
 
 class PasienReport implements FromView
 {
@@ -29,7 +28,9 @@ class PasienReport implements FromView
         $data = DB::SELECT($query,$params);
 
         return view('report.pasien.excel', [
-            'data' => $data
+            'data' => $data,
+            'tglawal' => Carbon::parse($this->tglawal)->isoFormat('D MMMM Y'),
+            'tglakhir' => Carbon::parse($this->tglakhir)->isoFormat('D MMMM Y')
         ]);        
     }
 }
