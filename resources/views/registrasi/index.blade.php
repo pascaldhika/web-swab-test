@@ -51,6 +51,12 @@
             <!-- /.card -->
         </div>
     </div>
+    <p>
+        <span class="icon"><i class="fa fa-square fa-lg" style="color : #f5473b;"></i></span> &nbsp;&nbsp;<span class="name">menandakan semua pasien dengan kode booking tersebut sudah dibatalkan</span>
+    </p>
+    <p>
+        <span class="icon"><i class="fa fa-square fa-lg" style="color : #ffc92d;"></i></span> &nbsp;&nbsp;<span class="name">menandakan sebagian pasien dengan kode booking tersebut ada yang dibatalkan</span>
+    </p>
 </div>
 
 <div class="modal fade" id="modalUbahStatus">
@@ -111,6 +117,17 @@
                 url : '{{ route("registrasi.data") }}',
             },
             rowCallback: function( row, data, index ) {
+                var array = data.paymentstatus.split(',');
+                var other = 0;
+                var cancel = 0;
+                for (var i = 0; i < array.length; i++) {
+                    if (array[i] == 'C'){
+                        cancel++;
+                    } else{
+                        other++;
+                    }
+                }
+
                 @if(Gate::check('isSuperAdmin') || Gate::check('isNakes'))
                     table.column(8).visible(true);
                     table.column(9).visible(true);
@@ -118,11 +135,25 @@
 
                     if (data.paid <= 0){
                         $(row).hide();
+                    } else{
+                        if(cancel > 0 && other <= 0){
+                            $(row).attr('style', 'background-color: #f5473b;');
+                        } else if(cancel > 0 && other > 0){
+                            $(row).attr('style', 'background-color: #ffc92d;');
+                        }
                     }
                 @else
                     table.column(8).visible(false);
                     table.column(9).visible(false);
                     table.column(10).visible(false);
+
+                    @if(Gate::check('isSuperAdmin') || Gate::check('isKasir'))
+                        if(cancel > 0 && other <= 0){
+                            $(row).attr('style', 'background-color: #f5473b;');
+                        } else if(cancel > 0 && other > 0){
+                            $(row).attr('style', 'background-color: #ffc92d;');
+                        }
+                    @endif
                 @endif
 
                 @if(Gate::check('isSuperAdmin') || Gate::check('isAdmin'))

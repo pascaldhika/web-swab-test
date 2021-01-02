@@ -28,6 +28,7 @@ class RegistrasiController extends Controller
             SELECT
                 A.id, A.docno, (SELECT sf_formatTanggal(A.docdate)) AS docdate,
                 A.type, A.print, (SELECT sf_formatTanggal(A.print_at)) AS print_at, U.name AS paid_by,
+                GROUP_CONCAT(B.paid SEPARATOR ',') AS paymentstatus,
                 (SELECT sf_formatTanggal(A.status_at)) AS status_at, S.name AS status_by,
                 GROUP_CONCAT(B.name SEPARATOR ',') AS pasien,
                 (
