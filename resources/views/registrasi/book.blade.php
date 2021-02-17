@@ -33,3 +33,6 @@
         @endforeach
     </tbody>
 </table>
+	<p> Terimakasih telah melakukan registrasi online rapid test.</p>
+	<p> - Simpan bukti registrasi online Anda</p>
+	<p> - Bukti registrasi wajib dibawa dan ditunjukkan kepada petugas kami</p>

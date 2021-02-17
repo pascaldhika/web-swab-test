@@ -12,6 +12,12 @@
     </div>
 </div>
 <div class="container">
+    @if ( session()->has('message') )
+    <div class="alert alert-success">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+      {{ session()->get('message') }}
+    </div>
+    @endif
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card card-primary card-outline">
@@ -40,6 +46,7 @@
                     <th>Print</th>
                     <th>Print At</th>
                     <th>Hasil Pemeriksaan</th>
+                    <th>ID</th>
                   </tr>
                   </thead>
                   <tbody>
@@ -111,7 +118,7 @@
             processing: true,
             searchDelay: 1000,
             "scrollX" : true,
-            "order": [[ 2, "desc" ]],
+            "order": [[ 14, "desc" ]],
             ajax       : {
                 type: 'GET',
                 url : '{{ route("registrasi.data") }}',
@@ -163,6 +170,10 @@
 
                     if (data.status_at == null){
                         $(row).hide();
+                    } else{
+                        if(cancel > 0 && other > 0){
+                            $(row).attr('style', 'background-color: #ffc92d;');
+                        }
                     }
                 @elseif(Gate::check('isNakes'))
                     table.column(11).visible(false);
@@ -173,6 +184,8 @@
                     table.column(12).visible(false);
                     table.column(13).visible(false);
                 @endif
+                
+                table.column(14).visible(false);
             },
             columns: [
                 {data: 'action', orderable: false, searchable: false},
@@ -267,6 +280,10 @@
 
                         return html;
                     }
+                },
+                {
+                    "data" : "id",
+                    "className": "menufilter textfilter"
                 },
             ],
         });

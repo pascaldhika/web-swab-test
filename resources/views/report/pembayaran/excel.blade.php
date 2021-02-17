@@ -31,24 +31,26 @@
         @php($n = 1)
         @php($total = 0)
         @foreach($data as $v)
-        <tr>
-            <td style="border: 1px solid #000;">{{ $n }}</td>
-            <td style="border: 1px solid #000;">{{ $v->docno }}</td>
-            <td style="border: 1px solid #000;">{{ $v->docdate }}</td>
-            <td style="border: 1px solid #000;">{{ ($v->gender == 'Laki-laki') ? 'Tn. ' : 'Ny. ' }} {{ $v->name }}</td>
-            <td style="border: 1px solid #000;">{{ $v->birthdate }}</td>
-            <td style="border: 1px solid #000;">{{ $v->age }}</td>
-            <td style="border: 1px solid #000;">{{ $v->identityno }}</td>
-            <td style="border: 1px solid #000;">{{ $v->type }}</td>
-            <td style="border: 1px solid #000;">{{ $v->status }}</td>
-            <td style="border: 1px solid #000;">{{ $v->paid }}</td>
-            <td style="border: 1px solid #000;">{{ $v->paymentlist }}</td>            
-            <td style="border: 1px solid #000;">{{ $v->paid_by }}</td>
-            <td style="border: 1px solid #000;">{{ $v->nakes_by }}</td>
-            <td style="border: 1px solid #000;">{{ $v->amount }}</td>
-        </tr>        
-        @php($n++)
-        @php($total = $total + $v->amount)
+            @if ($v->paid != 'Cancel')
+                <tr>
+                    <td style="border: 1px solid #000;">{{ $n }}</td>
+                    <td style="border: 1px solid #000;">{{ $v->docno }}</td>
+                    <td style="border: 1px solid #000;">{{ $v->docdate }}</td>
+                    <td style="border: 1px solid #000;">{{ ($v->gender == 'Laki-laki') ? 'Tn. ' : 'Ny. ' }} {{ $v->name }}</td>
+                    <td style="border: 1px solid #000;">{{ $v->birthdate }}</td>
+                    <td style="border: 1px solid #000;">{{ $v->age }}</td>
+                    <td style="border: 1px solid #000;">{{ $v->identityno }}</td>
+                    <td style="border: 1px solid #000;">{{ $v->type }}</td>
+                    <td style="border: 1px solid #000;">{{ $v->status }}</td>
+                    <td style="border: 1px solid #000;">{{ $v->paid }}</td>
+                    <td style="border: 1px solid #000;">{{ $v->paymentlist }}</td>            
+                    <td style="border: 1px solid #000;">{{ $v->paid_by }}</td>
+                    <td style="border: 1px solid #000;">{{ $v->nakes_by }}</td>
+                    <td style="border: 1px solid #000;">{{ $v->amount }}</td>
+                </tr>        
+                @php($n++)
+                @php($total = $total + $v->amount)
+            @endif
         @endforeach
         <tr>
             <td colspan="13" style="text-align: right; background-color: #dbe5f1; border: 1px solid #000;"><strong>Total</strong></td>

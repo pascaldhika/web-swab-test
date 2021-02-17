@@ -12,9 +12,20 @@
     </div>
 </div>
 <div class="container">
+    @if ( session()->has('message') )
+    <div class="alert alert-success">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+      {{ session()->get('message') }}
+    </div>
+    @endif
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card card-primary card-outline">
+              <div class="card-header">
+                <div class="card-tools">
+                  <a onclick="tambahUser()" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah User</a>
+                </div>
+              </div>
               <div class="card-body">
                 <table id="table" class="table table-bordered table-striped">
                   <thead>
@@ -154,6 +165,14 @@
             $('#modalTambahRole #myModalLabel').text("Tambah Role");
             $('#modalTambahRole #id').val(id);
             $('#modalTambahRole').modal("show");
+        @else
+            toastr.error('Anda tidak memiliki HAK AKSES!')
+        @endcan
+    }
+    
+    function tambahUser(){
+        @can('isSuperAdmin')
+            window.location.replace("{!! route('user.register') !!}");
         @else
             toastr.error('Anda tidak memiliki HAK AKSES!')
         @endcan

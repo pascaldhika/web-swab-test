@@ -61,7 +61,6 @@
         url: '{{ route("registrasi.detail.data") }}',
         data: {
             id: id,
-            tipe: "edit",
             _token: "{{ csrf_token() }}"
         },
         dataType: "json",
@@ -84,45 +83,16 @@
                 html +=    '<div class="card-body">';
                 html +=       '<input type="hidden" class="form-control" id="id'+i+'" value="'+v.id+'">';
                 html +=       '<div class="form-group">';
-                html +=         '<label for="name'+i+'">Nama *Sesuai Kartu Identitas</label>';
-                html +=         '<input type="text" class="form-control" id="name'+i+'" value="'+v.name+'" placeholder="Nama *Sesuai Kartu Identitas" >';
+                html +=         '<label for="name'+i+'">Nama</label>';
+                html +=         '<input type="text" class="form-control" id="name'+i+'" value="'+v.name+'" placeholder="Nama" >';
                 html +=       '</div>';
                 html +=       '<div class="form-group">';
-                html +=         '<label for="address'+i+'">Alamat *Sesuai Kartu Identitas</label>';
-                html +=         '<input type="text" class="form-control" id="address'+i+'" value="'+v.address+'" placeholder="Alamat *Sesuai Kartu Identitas" >';
+                html +=         '<label for="address'+i+'">Alamat</label>';
+                html +=         '<input type="text" class="form-control" id="address'+i+'" value="'+v.address+'" placeholder="Alamat" >';
                 html +=       '</div>';
                 html +=       '<div class="form-group">';
-                html +=         '<label for="identityno'+i+'">No. Identitas KTP/SIM/Passport</label>';
-                html +=         '<input type="text" class="form-control" id="identityno'+i+'" value="'+v.identityno+'" placeholder="No. Identitas KTP/SIM/Passport" >';
-                html +=       '</div>';
-                html +=       '<div class="form-group">';
-                html +=         '<label for="birthplace'+i+'">Tempat Lahir *Sesuai Kartu Identitas</label>';
-                html +=         '<input type="text" class="form-control" id="birthplace'+i+'" value="'+v.birthplace+'" placeholder="Tempat Lahir *Sesuai Kartu Identitas" >';
-                html +=       '</div>';
-                html +=       '<div class="form-group">';
-                html +=         '<label for="birthdate'+i+'">Tgl. Lahir</label>';
-                html +=         '<input type="date" class="form-control" id="birthdate'+i+'" value="'+v.birthdate+'" placeholder="Tgl. Lahir *Sesuai Kartu Identitas" >';
-                html +=       '</div>';
-                html +=       '<div class="form-group">';
-                html +=         '<label for="gender'+i+'">Jenis Kelamin</label>';
-                html +=         '<select id="gender'+i+'" class="form-control">';
-
-                if (v.gender == 'Laki-laki'){
-                  html +=           '<option value="Laki-laki" selected>Laki-laki</option>';
-                  html +=           '<option value="Perempuan">Perempuan</option></select>';
-                } else{
-                  html +=           '<option value="Laki-laki">Laki-laki</option>';
-                  html +=           '<option value="Perempuan" selected>Perempuan</option></select>';
-                }
-
-                html +=       '</div>';
-                html +=       '<div class="form-group">';
-                html +=         '<label for="job'+i+'">Pekerjaan *Sesuai Kartu Identitas</label>';
-                html +=         '<input type="text" class="form-control" id="job'+i+'" value="'+v.job+'" placeholder="Pekerjaan *Sesuai Kartu Identitas">';
-                html +=       '</div>';
-                html +=       '<div class="form-group">';
-                html +=         '<label for="country'+i+'">Warga Negara *Sesuai Kartu Identitas</label>';
-                html +=         '<input type="text" class="form-control" id="country'+i+'" value="'+v.country+'" placeholder="Warga Negara *Sesuai Kartu Identitas">';
+                html +=         '<label for="identityno'+i+'">No. Identitas</label>';
+                html +=         '<input type="text" class="form-control" id="identityno'+i+'" value="'+v.identityno+'" placeholder="No. Identitas" >';
                 html +=       '</div>';
                 html +=     '</div>';
                 html += '</div>';
@@ -158,11 +128,6 @@
           form_data.append('name'+i, $('#name'+i).val());
           form_data.append('address'+i, $('#address'+i).val());
           form_data.append('identityno'+i, $('#identityno'+i).val());
-          form_data.append('birthplace'+i, $('#birthplace'+i).val());
-          form_data.append('birthdate'+i, $('#birthdate'+i).val());
-          form_data.append('gender'+i, $('#gender'+i).val());
-          form_data.append('job'+i, $('#job'+i).val());
-          form_data.append('country'+i, $('#country'+i).val());
         }
 
         form_data.append('jumlah', jumlah);
@@ -180,15 +145,11 @@
                 if(data.success){
                     toastr.success(data.message);
                     setTimeout(function(){
-                        // var url = "{!! route('registrasi.index') !!}";
-                        // window.location.href = url;
-                        window.location.reload();
+                        var url = "{!! route('registrasi.index') !!}";
+                        window.location.href = url;
                     },1000);
                 }else{        
-                  var obj = JSON.parse(data.message);
-                  for (var i = 0; i < obj.length; i++) {
-                    toastr.error(obj[i]); 
-                  }
+                    toastr.error(data.message);
                 }
             },
             error: function(data){

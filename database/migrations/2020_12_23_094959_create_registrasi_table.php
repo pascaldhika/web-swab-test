@@ -19,7 +19,7 @@ class CreateRegistrasiTable extends Migration
             $table->string('docno');
             $table->string('type');
             $table->integer('print');
-            $table->dateTime('print_at');
+            $table->string('payment');
             $table->string('createdby');
             $table->string('updatedby');
             $table->timestamps();

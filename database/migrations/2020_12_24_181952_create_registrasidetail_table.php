@@ -25,12 +25,6 @@ class CreateRegistrasidetailTable extends Migration
             $table->string('job');
             $table->string('country');
             $table->string('status');
-            $table->dateTime('status_at');
-            $table->decimal('amount');
-            $table->string('paid');
-            $table->dateTime('paid_at');
-            $table->string('branch');
-            $table->string('paymentid');
             $table->string('createdby');
             $table->string('updatedby');
             $table->timestamps();

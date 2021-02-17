@@ -47,7 +47,9 @@ Route::group(['middleware' => ['auth']],function(){
 
 	// USER
 	Route::get('/security/user','UserController@index')->name('user.index');
+	Route::get('/security/user/register','UserController@register')->name('user.register');
 	Route::get('/security/user/data','UserController@getData')->name('user.data');
+	Route::post('/security/user/adduser','UserController@addUser')->name('user.add')->middleware('can:isSuperAdmin');
 	Route::post('/security/user/addrole','UserController@addRole')->name('user.add.role');
 	Route::post('/security/user/simpan','UserController@simpan')->name('user.simpan')->middleware('can:isSuperAdmin');
 	Route::post('/security/user/hapus','UserController@hapus')->name('user.hapus')->middleware('can:isSuperAdmin');

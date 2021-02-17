@@ -24,6 +24,11 @@ class RegistrasiController extends Controller
     }
 
     public function getData(Datatables $datatables, Request $req) {
+        $search = $req->search['value'];
+        $filter = "";
+        if ($search){
+            $filter = "WHERE A.docno LIKE '%".$search."%'";
+        }
         $query = "
             SELECT
                 A.id, A.docno, (SELECT sf_formatTanggal(A.docdate)) AS docdate,
@@ -42,8 +47,9 @@ class RegistrasiController extends Controller
             INNER JOIN registrasidetail B ON B.registrasiid = A.id
             LEFT JOIN users U ON A.paid_by = U.id
             LEFT JOIN users S ON A.status_by = S.id
+            ".$filter."
             GROUP BY A.id, A.docno, A.docdate, A.type, A.print, A.print_at, U.name, A.status_at, S.name
-            ORDER BY A.docdate DESC LIMIT 500
+            ORDER BY A.docdate DESC LIMIT 50
         ";
 
         $data = DB::SELECT($query);
@@ -92,6 +98,11 @@ class RegistrasiController extends Controller
     }
 
     public function getDetail(Request $req) {
+        $filterEdit = "";
+        if (isset($req->tipe)){
+            $filterEdit = "AND A.paid != 'C'";
+        }
+
         $params = [
             'id' => $req->id
         ];
@@ -107,6 +118,7 @@ class RegistrasiController extends Controller
             FROM registrasidetail A
             INNER JOIN registrasi B ON A.registrasiid = B.id
             WHERE B.id = :id
+            ".$filterEdit."
         ";
 
         $data = DB::SELECT($query,$params);
@@ -245,10 +257,14 @@ class RegistrasiController extends Controller
 
                 $registrasiDetail->doctor = strip_tags($req->input('doctor'.$i));
                 $registrasiDetail->status = strip_tags($req->input('status'.$i));
-
-                $detailStatus = strip_tags($req->input('jenisreaktif'.$i));
-                if ($detailStatus != 'undefined'){
-                    $registrasiDetail->detailstatus = $detailStatus;
+                
+                if (strip_tags($req->input('status'.$i)) != 'Non Reaktif'){
+                    $detailStatus = strip_tags($req->input('jenisreaktif'.$i));
+                    if ($detailStatus != 'undefined'){
+                        $registrasiDetail->detailstatus = $detailStatus;
+                    }   
+                } else{
+                    $registrasiDetail->detailstatus = NULL;
                 }
                 
                 $registrasiDetail->updatedby = $req->user()->id;

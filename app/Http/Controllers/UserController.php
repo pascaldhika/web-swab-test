@@ -8,6 +8,7 @@ use App\User;
 use App\Models\Role;
 use App\Models\RoleUser;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 use DB;
 
 class UserController extends Controller
@@ -15,6 +16,10 @@ class UserController extends Controller
     public function index(){
     	$role = Role::orderBy('name','asc')->pluck('name','id');
     	return view('user.index', compact('role'));
+    }
+    
+    public function register(){
+    	return view('auth.register');
     }
 
     public function getData(Datatables $datatables, Request $req) {
@@ -37,6 +42,45 @@ class UserController extends Controller
             		// <div onclick="hapusUser('.$data->id.')" class="btn btn-xs btn-danger no-margin-action" title="Hapus User"><i class="fa fa-trash"></i></div>';
         })
         ->make(true);
+    }
+    
+    public function addUser(Request $req){
+        DB::beginTransaction();
+        try{
+            
+        	$vali = Validator::make($req->all(),[
+        		'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                'password' => ['required', 'string', 'min:8', 'confirmed'],
+        	]);
+
+        	if ($vali->fails()) {
+          		throw new \Exception($vali->errors());   
+        	}
+            
+            $data = [
+                'name' => $req->name,
+                'email' => $req->email,
+                'password' => Hash::make($req->password),
+                'active' => 'Y'
+            ];
+      
+            User::create($data);
+            
+            DB::commit();
+            
+            $message = "Data berhasil disimpan";
+            $role = Role::orderBy('name','asc')->pluck('name','id');
+            
+            return view('user.index', compact('message','role'));
+        } catch(\Exception $ex) {
+            DB::rollback();
+            
+            $message = $ex->getMessage();
+            $role = Role::orderBy('name','asc')->pluck('name','id');
+            
+            return view('user.index', compact('message','role'));
+        }
     }
 
     public function addRole(Request $req){

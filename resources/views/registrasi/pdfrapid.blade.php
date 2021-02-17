@@ -151,7 +151,7 @@
         <tr>
             <td colspan="8"></td>
             <td>Jakarta,</td>
-            <td colspan="3">{{ \Carbon\Carbon::now()->isoFormat('D MMMM Y') }}</td>
+            <td colspan="3">{{ $v->status_at_date }}</td>
             
         </tr>
         @endif   
@@ -264,7 +264,7 @@
         <tr>
             <td colspan="8"></td>
             <td>Jakarta,</td>
-            <td colspan="3">{{ \Carbon\Carbon::now()->isoFormat('D MMMM Y') }}</td>
+            <td colspan="3">{{ $v->status_at_date }}</td>
         </tr>
         <tr >
             <td><br><br><br>

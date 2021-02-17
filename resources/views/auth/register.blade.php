@@ -24,7 +24,7 @@
     <div class="card-body">
       <p class="login-box-msg">Register a new membership</p>
 
-      <form method="POST" action="{{ route('register') }}">
+      <form method="POST" action="{{ route('user.add') }}">
         @csrf
         <div class="input-group mb-3">
           <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus placeholder="Full name">
@@ -78,7 +78,7 @@
         </div>
         <div class="row">
           <div class="col-8">
-            <a href="{{ route('login') }}" class="text-center">I already have a membership</a>
+            <a href="{{ route('user.index') }}" class="text-center">Back</a>
           </div>
           <!-- /.col -->
           <div class="col-4">
