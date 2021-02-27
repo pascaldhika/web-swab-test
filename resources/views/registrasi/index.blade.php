@@ -21,15 +21,43 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card card-primary card-outline">
-              @if(Gate::check('isSuperAdmin') || Gate::check('isAdmin'))
+              <!-- @if(Gate::check('isSuperAdmin') || Gate::check('isAdmin'))
               <div class="card-header">
                 <div class="card-tools">
                   <a onclick="refresh()" class="btn btn-success">Refresh</a>
                 </div>
               </div>
-              @endif
+              @endif -->
               <div class="card-body">
-                <table id="table" class="table table-bordered table-striped nowrap" width="100%">
+
+                <div class="row">
+                    <div class="col-sm-2">
+                      <label>From:</label>
+                      <div class="input-group input-group-sm">
+                        <input type="date" class="form-control" id="tglawal" value="{{ date('Y-m-d') }}" placeholder="Tgl. Awal">
+                      </div>
+                    </div>
+                    <div class="col-sm-2">
+                      <label>To:</label>
+                      <div class="input-group input-group-sm">
+                        <input type="date" class="form-control" id="tglakhir" value="{{ date('Y-m-d') }}" placeholder="Tgl. Akhir">
+                      </div>
+                    </div>
+                    <div class="col-sm-4">
+                      <label>No. Booking:</label>
+                      <div class="input-group input-group-sm">
+                        <input type="text" class="form-control" id="docno" placeholder="Cari No. Booking">
+                        <span class="input-group-append">
+                            <a onclick="refresh()" type="button" class="btn btn-success btn-flat">Refresh</a>
+                        </span>
+                      </div>
+                    </div>
+                    <div class="col-sm-3 text-right">
+                        <a class="btn btn-info" id="skeyIns" data-toggle="modal" data-target=".bd-example-modal-lg" title='Flag' style='border-radius: 50%;'><i class="fa fa-info"></i></a>
+                    </div>
+                </div>
+
+                <table id="table" class="table table-bordered table-striped display nowrap mbuhsakarepku" width="100%" cellspacing="0">
                   <thead>
                   <tr>
                     <th>Action</th>
@@ -52,18 +80,26 @@
                   <tbody>
                   </tbody>
                 </table>
+
+                <br>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="input-group mb-3">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text">Total Data Registrasi Pasien hari ini:</span>
+                          </div>
+                          <input type="text" id="total" class="form-control col-sm-2" value="{{ $today }}" placeholder="0" disabled="">
+                        </div>
+                    </div>
+                </div>
+
               </div>
               <!-- /.card-body -->
             </div>
             <!-- /.card -->
         </div>
     </div>
-    <p>
-        <span class="icon"><i class="fa fa-square fa-lg" style="color : #f5473b;"></i></span> &nbsp;&nbsp;<span class="name">menandakan semua pasien dengan kode booking tersebut sudah dibatalkan</span>
-    </p>
-    <p>
-        <span class="icon"><i class="fa fa-square fa-lg" style="color : #ffc92d;"></i></span> &nbsp;&nbsp;<span class="name">menandakan sebagian pasien dengan kode booking tersebut ada yang dibatalkan</span>
-    </p>
 </div>
 
 <div class="modal fade" id="modalUbahStatus">
@@ -105,6 +141,34 @@
     </div>
 </div>
 
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Informasi</h4>
+      </div>
+      <div class="modal-body">
+        <P></P>
+          <ul class="legend list-unstyled">
+            <p>
+              <span class="icon"><i class="fa fa-square fa-lg" style="color : #ffc92d;"></i></span> &nbsp;&nbsp; <strong>Kuning :</strong> <span class="name">menandakan semua pasien dengan kode booking tersebut sudah dibatalkan</span>
+            </p>
+            </li>
+            <li>
+            <p>
+              <span class="icon"><i class="fa fa-square fa-lg" style="color : #f5473b;"></i></span> &nbsp;&nbsp; <strong>Merah :</strong> <span class="name">menandakan sebagian pasien dengan kode booking tersebut ada yang dibatalkan</span>
+            </p>
+            </li>
+          </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
 @endsection
 
 @push('scripts')
@@ -112,17 +176,31 @@
     var table, table2;
     var jumlah = 0;
     $(document).ready(function(){
-        $('#table').dataTable().fnDestroy();
+        // $('#table').dataTable().fnDestroy();
         table = $('#table').DataTable({
-            serverSide: true,
-            processing: true,
-            searchDelay: 1000,
-            "scrollX" : true,
-            "order": [[ 14, "desc" ]],
+            dom : 'lrtp',
+            serverSide  : true,
+            stateSave : true,
+            deferRender : true,
+            select: {
+                style: 'single'
+            },
+            keys: {keys: [38,40]},
             ajax       : {
                 type: 'GET',
                 url : '{{ route("registrasi.data") }}',
+                data    : function ( d ) {
+                    d.tglawal  = $('#tglawal').val();
+                    d.tglakhir = $('#tglakhir').val();
+                    d.docno    = $('#docno').val();
+                },
             },
+            scrollY   : 300,
+            scrollX   : true,
+            scroller  : {
+                loadingIndicator: true
+            },
+            "order": [[ 14, "desc" ]],
             rowCallback: function( row, data, index ) {
                 var array = data.paymentstatus.split(',');
                 var other = 0;

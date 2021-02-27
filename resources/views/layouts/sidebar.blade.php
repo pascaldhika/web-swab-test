@@ -53,6 +53,16 @@
         </li>
         @endif
 
+        <li class="nav-header">MASTER</li>
+        @if(Gate::check('isSuperAdmin'))
+        <li class="nav-item">
+          <a href="{{ route('outlet.index') }}" class="nav-link">
+            <i class="nav-icon fas fa-house-user"></i>
+            <p>Outlet</p>
+          </a>
+        </li>
+        @endcan
+
         <li class="nav-header">SECURITY</li>
         @if(Gate::check('isSuperAdmin'))
         <li class="nav-item">

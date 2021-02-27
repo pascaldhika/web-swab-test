@@ -118,7 +118,7 @@
     var table = false;
     $(document).ready(function(){
         //Initialize Select2 Elements
-        $('.select2').select2()
+        $('.select2').select2();
 
         $('#table').dataTable().fnDestroy();
         table = $('#table').DataTable({

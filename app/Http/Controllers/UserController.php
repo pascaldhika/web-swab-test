@@ -202,4 +202,32 @@ class UserController extends Controller
             ]);
         }
     }
+
+    public function changePassword()
+    {
+        return view('auth.passwords.change');
+    }
+
+    public function simpanPassword(Request $req)
+    {
+      $rules = [
+          'password_current' => 'required',
+          'password'     => 'min:5|confirmed|different:password_current',
+          'password_confirmation' => 'required_with:password|min:5',
+      ];
+
+      // Validate
+      $this->validate($req,$rules);
+
+      // Update
+      if(Hash::check($req->password_current,$req->user()->password)) {
+        $user = User::find($req->user()->id);
+        $user->password = bcrypt($req->password);
+        $user->save();
+
+        return redirect()->back()->with('status',['success','Password anda telah diperbarui!']);
+      }else{
+        return redirect()->back()->with('status',['danger','Password salah.']);
+      }
+    }
 }

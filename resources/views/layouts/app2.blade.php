@@ -57,6 +57,8 @@
 </script>
 @endpush
 
+@include('includes/library/index')
+
 @stack('scripts')
 
 </body>

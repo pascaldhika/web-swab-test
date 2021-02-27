@@ -2,8 +2,8 @@
     <div class="il">
         <div class="il2">
             <div class="il3">
-                <img src="{{url('adminlte/img/spinner-200px.gif')}}" alt="Loading..." /><br />
-                <span>Please wait</span>
+                <img src="{{url('adminlte/dist/img/Spinner-1s-200px.gif')}}" alt="Loading..." /><br />
+                <span id="loadingText">Please wait</span>
             </div>
         </div>
     </div>
@@ -49,11 +49,14 @@
 </style>
 <script>
     var __theLoading,
-        showLoading;
+        showLoading,
+        __textLoading;
     $(document).ready(function () {
         __theLoading = $("#theLoading", document);
-        showLoading = (type, cb) => {
+        __textLoading = $("#loadingText", document);
+        showLoading = (type, cb, text) => {
             if (typeof type == "undefined") type = !__theLoading.is(":visible");
+            if (typeof text != "undefined") __textLoading.html(text);
             if (type) {
                 __theLoading.fadeIn(150, () => {
                     if (typeof cb == "function") cb();

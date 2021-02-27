@@ -1,0 +1,295 @@
+/*Global CSS*/
+
+html, body {
+    color: #333;
+}
+
+/*body#nice-scroll2 {
+    overflow: hidden;
+    height: 100vh;
+}*/
+
+@media (min-width: 1200px) {
+    .modal-xl {
+        width: 1200px;
+    }
+}
+
+.textarea-noresize {
+    resize: none;
+}
+
+.no-margin-action {
+    margin-bottom: 0px;
+    margin-right: 5px;
+}
+
+.hr-text {
+  line-height: 1em;
+  position: relative;
+  outline: 0;
+  border: 0;
+  color: black;
+  text-align: center;
+  height: 1.5em;
+  opacity: 1;
+}
+.hr-text::before {
+    content: '';
+    background-color: #000;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+}
+.hr-text::after {
+    content: attr(data-content);
+    position: relative;
+    display: inline-block;
+    color: black;
+    padding: 0 .5em;
+    line-height: 1.5em;
+    color: #000;
+    background-color: #fff;
+}
+
+/*Topbar*/
+
+.toggle {
+    float: left;
+    margin: 0;
+    padding-top: 10px;
+    width: 50px;
+    padding-bottom: 9px;
+}
+
+.toggle a {
+    padding: 10px 10px 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+.toggle a i {
+    font-size: 20px;
+}
+
+/*Sidebar*/
+
+@media (min-width: 992px) {
+    .nav-md .container.body .col-md-3.left_col {
+        width: 300px;
+    }
+
+    .nav_title {
+        width: 300px;
+    }
+
+    .sidebar-footer {
+        width: 300px;
+    }
+
+    .nav-md .container.body .right_col {
+        margin-left: 300px;
+    }
+
+    .main_container .top_nav {
+        display: block;
+        margin-left: 300px;
+    }
+
+    footer {
+        margin-left: 300px;
+    }
+}
+
+/*Dropdown Level Menu*/
+
+.nav.child_menu li {
+    padding-left: 35px;
+}
+
+.nav-md ul.nav.child_menu li:before {
+    left: 18.5px;
+}
+
+.nav-md ul.nav.child_menu li:after {
+    left: 22px;
+}
+
+/*Form CSS*/
+
+.help-block {
+    margin-top: 8px;
+    margin-bottom: 5px;
+}
+
+.form-control {
+    color: #333;
+}
+
+/*Switchery*/
+
+.switchery {
+    width: 32px !important;
+    height: 20px !important;
+    margin-bottom: -10px;
+}
+
+.switchery>small {
+    width: 20px !important;
+    height: 20px !important;
+}
+
+section.login_content > form > div > input[type=submit] {
+    font-size: 12px;
+    margin: 10px 15px 0 0 !important;
+    float: none !important;
+}
+
+/*Breadcrumb*/
+
+.breadcrumb {
+    padding: 11px 0px;
+    margin-bottom: 0px;
+    list-style: none;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #ededed;
+}
+
+/*Custom*/
+
+.mbuhsakarepku {
+    background-color: #fff;
+}
+
+table.tablepilih tr.selected {
+    background-color: #acbad4 !important;
+    color: #fff;
+    vertical-align: middle;
+    padding: 1.5em;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+/*Input Custom*/
+
+input:not(.kecilin), textarea {
+    text-transform: uppercase;
+}
+
+/*Check Tree*/
+
+.no-style {
+    list-style: none;
+}
+
+.check-box {
+    margin-left: -60px;
+    margin-top: 0px;
+}
+
+/*Table*/
+
+thead {
+    color: #d9534f;
+}
+
+tbody {
+    color: #333;
+}
+
+.dataTables_scrollBody {
+    color: #333;
+}
+
+.dataTables_scroll {
+    cursor: pointer;
+}
+
+table.dataTable.stripe tbody>tr.odd.selected,
+table.dataTable.stripe tbody>tr.odd>.selected,
+table.dataTable.display tbody>tr.odd.selected,
+table.dataTable.display tbody>tr.odd>.selected {
+    background-color: #2A3F54;
+    color: #fff;
+}
+
+table.dataTable.stripe tbody>tr.even.selected,
+table.dataTable.stripe tbody>tr.even>.selected,
+table.dataTable.display tbody>tr.even.selected,
+table.dataTable.display tbody>tr.even>.selected {
+    background-color: #2A3F54;
+    color: #fff;
+}
+
+table.dataTable.display tbody>tr.odd.selected>.sorting_1,
+table.dataTable.order-column.stripe tbody>tr.odd.selected>.sorting_1 {
+    background-color: #2A3F54;
+    color: #fff;
+}
+
+table.dataTable.display tbody>tr.even.selected>.sorting_1,
+table.dataTable.order-column.stripe tbody>tr.even.selected>.sorting_1 {
+    background-color: #2A3F54;
+    color: #fff;
+}
+
+table.dataTable tbody>tr.grey {
+    background-color: #D3D3D3;
+}
+table.dataTable tbody>tr.abang {
+    background-color: #EF9A9A;
+}
+table.dataTable tbody>tr.blue {
+    background-color: #96f6ff;
+    color: #333;
+}
+
+/*Checkbox Action*/
+div.checkboxaction{
+  padding-right: 5px;
+}
+
+div.checkbox.checkboxaction > div.disabled > ins.iCheck-helper {
+  cursor: not-allowed;
+}
+
+.table > thead > tr > th,
+.table > tbody > tr > th,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > td,
+.table > tfoot > tr > td {
+  padding: 5px;
+}
+
+@media (max-width: 768px) {
+    .checkbox, .radio {
+        display: inline-block;
+        margin: 0;
+    }
+}
+.tgl{
+    width: 100px !important;
+    display: inline-block;
+}
+
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_desc:after,
+table.dataTable thead .sorting_asc_disabled:after,
+table.dataTable thead .sorting_desc_disabled:after {
+    bottom: 5px;
+}
+
+.menu_section{
+    margin-bottom: 15px;
+}
+
+footer {
+    padding: 8px 20px;
+}

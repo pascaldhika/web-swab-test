@@ -26,13 +26,16 @@
   <!-- DataTables -->
   <link rel="stylesheet" href="{{url('adminlte/bower_components/datatables-bs4/css/dataTables.bootstrap4.min.css')}}">
   <link rel="stylesheet" href="{{url('adminlte/bower_components/datatables-responsive/css/responsive.bootstrap4.min.css')}}">
-  <link rel="stylesheet" href="{{url('adminlte/bower_components/datatables-buttons/css/buttons.bootstrap4.min.css')}}">
+  <link rel="stylesheet" href="{{url('adminlte/bower_components/datatables-scroller/css/scroller.bootstrap4.min.css')}}">
+  <link rel="stylesheet" href="{{url('adminlte/bower_components/datatables-select/css/select.bootstrap4.min.css')}}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{url('adminlte/dist/css/adminlte.min.css')}}">
   <link rel="stylesheet" href="{{url('adminlte/bower_components/toastr/toastr.min.css')}}">
   <link rel="stylesheet" href="{{url('adminlte/bower_components/select2/css/select2.min.css')}}">
   <!-- pace-progress -->
   <link rel="stylesheet" href="{{url('adminlte/bower_components/pace-progress/themes/black/pace-theme-flat-top.css')}}">
+  <!-- Custom Style -->
+  <link href="{{url('adminlte/dist/css/custom.css')}}" rel="stylesheet" type="text/css">
 
 </head>
 <body class="hold-transition sidebar-mini pace-yellow">
@@ -95,14 +98,8 @@
 <script src="{{url('adminlte/bower_components/datatables-bs4/js/dataTables.bootstrap4.min.js')}}"></script>
 <script src="{{url('adminlte/bower_components/datatables-responsive/js/dataTables.responsive.min.js')}}"></script>
 <script src="{{url('adminlte/bower_components/datatables-responsive/js/responsive.bootstrap4.min.js')}}"></script>
-<script src="{{url('adminlte/bower_components/datatables-buttons/js/dataTables.buttons.min.js')}}"></script>
-<script src="{{url('adminlte/bower_components/datatables-buttons/js/buttons.bootstrap4.min.js')}}"></script>
-<script src="{{url('adminlte/bower_components/jszip/jszip.min.js')}}"></script>
-<script src="{{url('adminlte/bower_components/pdfmake/pdfmake.min.js')}}"></script>
-<script src="{{url('adminlte/bower_components/pdfmake/vfs_fonts.js')}}"></script>
-<script src="{{url('adminlte/bower_components/datatables-buttons/js/buttons.html5.min.js')}}"></script>
-<script src="{{url('adminlte/bower_components/datatables-buttons/js/buttons.print.min.js')}}"></script>
-<script src="{{url('adminlte/bower_components/datatables-buttons/js/buttons.colVis.min.js')}}"></script>
+<script src="{{url('adminlte/bower_components/datatables-scroller/js/dataTables.scroller.min.js')}}"></script>
+<script src="{{url('adminlte/bower_components/datatables-select/js/dataTables.select.min.js')}}"></script>
 <!-- AdminLTE App -->
 <script src="{{url('adminlte/dist/js/adminlte.min.js')}}"></script>
 <script src="{{url('adminlte/bower_components/toastr/toastr.min.js')}}"></script>
@@ -140,6 +137,8 @@
 
 </script>
 @endpush
+
+@include('includes/library/index')
 
 @stack('scripts')
 

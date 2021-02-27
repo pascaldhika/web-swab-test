@@ -20,22 +20,31 @@ class RegistrasiController extends Controller
 {
     public function index()
     {
-        return view('registrasi.index');
+        $today = RegistrasiDetail::leftJoin('registrasi', 'registrasidetail.registrasiid', '=', 'registrasi.id')->whereRaw("DATE(docdate) >= CURRENT_DATE")->count();
+
+        return view('registrasi.index', compact('today'));
     }
 
     public function getData(Datatables $datatables, Request $req) {
-        $search = $req->search['value'];
+        $search = $req->docno;
+        $tglawal = Carbon::parse($req->tglawal)->format('Y-m-d');
+        $tglakhir = Carbon::parse($req->tglakhir)->format('Y-m-d');
         $filter = "";
         if ($search){
-            $filter = "WHERE A.docno LIKE '%".$search."%'";
+            $filter = "AND A.docno LIKE '%".$search."%'";
         }
+
+        $params = [
+            'tglawal' => $tglawal,
+            'tglakhir' => $tglakhir
+        ];
         $query = "
             SELECT
                 A.id, A.docno, (SELECT sf_formatTanggal(A.docdate)) AS docdate,
                 A.type, A.print, (SELECT sf_formatTanggal(A.print_at)) AS print_at, U.name AS paid_by,
                 GROUP_CONCAT(B.paid SEPARATOR ',') AS paymentstatus,
                 (SELECT sf_formatTanggal(A.status_at)) AS status_at, S.name AS status_by,
-                GROUP_CONCAT(B.name SEPARATOR ',') AS pasien,
+                GROUP_CONCAT(DISTINCT B.name SEPARATOR ',') AS pasien,
                 (
                     SELECT COUNT(*) FROM registrasidetail WHERE registrasiid = A.id
                 ) AS jumlah,
@@ -47,12 +56,13 @@ class RegistrasiController extends Controller
             INNER JOIN registrasidetail B ON B.registrasiid = A.id
             LEFT JOIN users U ON A.paid_by = U.id
             LEFT JOIN users S ON A.status_by = S.id
+            WHERE DATE(A.docdate) BETWEEN :tglawal AND :tglakhir
             ".$filter."
             GROUP BY A.id, A.docno, A.docdate, A.type, A.print, A.print_at, U.name, A.status_at, S.name
-            ORDER BY A.docdate DESC LIMIT 50
+            ORDER BY A.docdate DESC 
         ";
 
-        $data = DB::SELECT($query);
+        $data = DB::SELECT($query,$params);
 
         return Datatables::of($data)
         ->addColumn("action", function($data){
@@ -134,6 +144,27 @@ class RegistrasiController extends Controller
         return view('registrasi.form');
     }
 
+    public function cekNoIdentitas(Request $req)
+    {
+        try
+        {
+            $registrasi = RegistrasiDetail::where('identityno', $req->identityno)->orderBy('updated_at', 'desc')->first();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'No error detected',
+                'data'    => $registrasi
+            ]); 
+        }
+        catch(\Exception $ex) 
+        {
+            return response()->json([
+                'success' => false,
+                'message' => $ex->getMessage(),
+            ]);
+        }
+    }
+
     public function simpan(Request $req){
     	DB::beginTransaction();
         try{
@@ -150,6 +181,8 @@ class RegistrasiController extends Controller
                 $rules['gender' . $i] = 'required';
                 $rules['job' . $i] = 'required';
                 $rules['country' . $i] = 'required';
+                $rules['email' . $i] = 'required|email';
+                $rules['image' . $i] = 'required|mimes:jpeg,png,jpg|max:2048';
         	}
         	
         	$vali = Validator::make($req->all(),$rules);
@@ -183,11 +216,20 @@ class RegistrasiController extends Controller
             $registrasi->save();
 
         	for ($i=1; $i <= $jumlah ; $i++) {
+                $identityno = strip_tags($req->input('identityno'.$i));
+                // menyimpan data file yang diupload ke variabel $file
+                $file = $req->file('image'.$i);
+                $nama_file = time()."_".$identityno.".png";
+
+                // isi dengan nama folder tempat kemana file diupload
+                $tujuan_upload = storage_path().'/app/uploads';
+                $file->move($tujuan_upload,$nama_file);
+
                 $registrasiDetail = new RegistrasiDetail();
                 $registrasiDetail->registrasiid = $registrasi->id;
                 $registrasiDetail->name      = strip_tags($req->input('name'.$i));
                 $registrasiDetail->address   = strip_tags($req->input('address'.$i));
-                $registrasiDetail->identityno= strip_tags($req->input('identityno'.$i));
+                $registrasiDetail->identityno= $identityno;
                 $registrasiDetail->birthplace= strip_tags($req->input('birthplace'.$i));
                 $registrasiDetail->birthdate = strip_tags($req->input('birthdate'.$i));
                 $registrasiDetail->gender    = strip_tags($req->input('gender'.$i));
@@ -195,6 +237,8 @@ class RegistrasiController extends Controller
                 $registrasiDetail->paid      = 'N';
                 $registrasiDetail->job       = strip_tags($req->input('job'.$i));
                 $registrasiDetail->country   = strip_tags($req->input('country'.$i));
+                $registrasiDetail->email     = strip_tags($req->input('email'.$i));
+                $registrasiDetail->image     = $nama_file;
                 $registrasiDetail->createdby = -1;
 	            $registrasiDetail->updatedby = -1;
 	            $registrasiDetail->save();

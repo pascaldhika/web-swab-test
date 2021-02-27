@@ -23,11 +23,19 @@
           <i class="fas fa-user mr-2"></i> Profile
           <span class="float-right text-muted text-sm"></span>
         </a>-->
+
+        <a href="{{ route('password.change') }}" class="dropdown-item">
+          <i class="fas fa-angle-double-right mr-2"></i> Change Password
+          <span class="float-right text-muted text-sm"></span>
+        </a>
+
         <div class="dropdown-divider"></div>
+
         <a href="{{ route('logout') }}" class="dropdown-item">
           <i class="fas fa-angle-double-right mr-2"></i> Logout
           <span class="float-right text-muted text-sm"></span>
         </a>
+        
       </div>
     </li>
   </ul>
