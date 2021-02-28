@@ -32,7 +32,8 @@ class OutletController extends Controller
 
         return Datatables::of($data)
         ->addColumn("action", function($data){
-            return '<a href="'.url('master/outlet/user',$data->id).'" class="btn btn-xs btn-info no-margin-action" title="Outlet User"><i class="fas fa-eye"></i></a>';
+            return '<a href="'.url('master/outlet/user',$data->id).'" class="btn btn-xs btn-info no-margin-action" title="Outlet User"><i class="fas fa-eye"></i></a>
+            	<div onclick="editOutlet('.$data->id.', this)" data-name="'.$data->name.'" data-code="'.$data->code.'" data-active="'.$data->active.'" class="btn btn-xs btn-warning no-margin-action" title="Edit Outlet"><i class="fas fa-edit"></i></div>';
         })
         ->make(true);
     }
@@ -82,9 +83,10 @@ class OutletController extends Controller
                 $outlet->createdby = strtoupper($req->user()->id);
             }
 
+            $active = strip_tags($req->active);
             $outlet->code      = strip_tags($req->code);
             $outlet->name      = strip_tags($req->name);
-            $outlet->active    = 'Y';
+            $outlet->active    = ($active == 'Y') ? $active : 'N';
             $outlet->updatedby = $req->user()->id;
             $outlet->save();
 

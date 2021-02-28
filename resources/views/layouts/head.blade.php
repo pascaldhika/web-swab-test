@@ -10,13 +10,18 @@
   <ul class="navbar-nav ml-auto">
     <!-- Notifications Dropdown Menu -->
     <li class="nav-item">
-      <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+      <a title="Switch Outlet" class="nav-link" href="{{ url('/switchc') }}" role="button">
+        <i class="fas fa-arrow-circle-right"></i>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a title="Fullscreen" class="nav-link" data-widget="fullscreen" href="#" role="button">
         <i class="fas fa-expand-arrows-alt"></i>
       </a>
     </li>
     <li class="nav-item dropdown">
-      <a class="nav-link" data-toggle="dropdown" href="#">
-        <i class="fas fa-th-large"></i>
+      <a title="Profile" class="nav-link" data-toggle="dropdown" href="#">
+        <i class="fas fa-user"></i>
       </a>
       <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
         <!--<a href="#" class="dropdown-item">

@@ -20,11 +20,13 @@ class ReportController extends Controller
         $namasheet    = str_slug($title);
         $namafile     = $namasheet."-".uniqid().".xls";
 
+        $outletid = $req->session()->get('outlet');
         $tglawal = $req->tglawal;
         $tglakhir = $req->tglakhir;
         $name = ($req->name) ? $req->name : '';
+        $username = $req->user()->name;
 
-        return Excel::download(new PasienReport($tglawal,$tglakhir,$name), $namafile);
+        return Excel::download(new PasienReport($tglawal,$tglakhir,$name,$outletid,$username), $namafile);
     }
 
     public function indexPembayaran()
@@ -38,10 +40,12 @@ class ReportController extends Controller
         $namasheet    = str_slug($title);
         $namafile     = $namasheet."-".uniqid().".xls";
 
+        $outletid = $req->session()->get('outlet');
         $tglawal = $req->tglawal;
         $tglakhir = $req->tglakhir;
         $name = ($req->name) ? $req->name : '';
+        $username = $req->user()->name;
 
-        return Excel::download(new PembayaranReport($tglawal,$tglakhir,$name), $namafile);
+        return Excel::download(new PembayaranReport($tglawal,$tglakhir,$name,$outletid,$username), $namafile);
     }
 }

@@ -46,3 +46,8 @@
         @endforeach
     </tbody>
 </table>
+<table>
+    <tr>
+        <td style="font-style: italic;">{{ $username }} {{ date('d/m/Y H:i:s') }}</td>
+    </tr>
+</table>

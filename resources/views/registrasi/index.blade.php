@@ -497,50 +497,26 @@
                                 html +=         '<label for="identityno'+i+'">No. Identitas KTP/SIM/Passport</label>';
                                 html +=         '<input type="text" class="form-control" id="identityno'+i+'" disabled value="'+v.identityno+'">';
                                 html +=       '</div>';
-
-                                var selectedAdam = "";
-                                var selectedHanif = "";
-                                if (v.doctor == 'Adam S.A.K Hardiyanto'){
-                                    selectedAdam = "selected";
-                                } else if(v.doctor == 'Muhammad Hanif'){
-                                    selectedHanif = "selected";
-                                }
-
                                 html +=       '<div class="form-group">';
                                 html +=         '<label for="doctor'+i+'">Doctor</label>';
                                 html +=         '<select id="doctor'+i+'" class="form-control">';
                                 html +=           '<option value="">Pilih Doctor</option>';
-                                html +=           '<option value="Adam S.A.K Hardiyanto" '+selectedAdam+'>dr. Adam S.A.K Hardiyanto</option>';
-                                html +=           '<option value="Muhammad Hanif" '+selectedHanif+'>dr. Muhammad Hanif</option></select>';
+                                html +=           '@foreach($dokter as $p => $v)';
+                                html +=           '<option value="{{$v}}">{{$v}}</option>';
+                                html +=           '@endforeach';
+                                html +=         '</select>';
                                 html +=       '</div>';
-
                                 html +=       '<div class="form-group">';
                                 html +=         '<label for="status'+i+'">Status</label>';
                                 html +=         '<select id="status'+i+'" class="form-control" data-jenis="'+v.detailstatus+'" onchange="return getJenisReaktif(status'+i+', '+i+')">';
                                 html +=           '<option value="">Pilih Status</option>';
 
                                 if (type == 'Antibodi Test'){
-                                    var selectedReaktif = "";
-                                    var selectedNonReaktif = "";
-                                    if (v.status == 'Reaktif'){
-                                        selectedReaktif = "selected";
-                                    } else if(v.status == 'Non Reaktif'){
-                                        selectedNonReaktif = "selected";
-                                    }
-
-                                    html +=           '<option value="Reaktif" '+selectedReaktif+'>Reaktif</option>';
-                                    html +=           '<option value="Non Reaktif" '+selectedNonReaktif+'>Non Reaktif</option></select>';
+                                    html +=           '<option value="Reaktif">Reaktif</option>';
+                                    html +=           '<option value="Non Reaktif">Non Reaktif</option></select>';
                                 } else{
-                                    var selectedPositif = "";
-                                    var selectedNegatif = "";
-                                    if (v.status == 'Positif'){
-                                        selectedPositif = "selected";
-                                    } else if(v.status == 'Negatif'){
-                                        selectedNegatif = "selected";
-                                    }
-
-                                    html +=           '<option value="Positif" '+selectedPositif+'>Positif</option>';
-                                    html +=           '<option value="Negatif" '+selectedNegatif+'>Negatif</option></select>';
+                                    html +=           '<option value="Positif">Positif</option>';
+                                    html +=           '<option value="Negatif">Negatif</option></select>';
                                 }
                                 
                                 html +=       '</div>';
@@ -577,6 +553,13 @@
                          for (var i = 1; i <= jumlah; i++){
                             $('#status'+i).trigger('change');
                          };
+
+                         // looping ulang untuk menentukan selected
+                         i = 1;
+                         $.each(data.data, function (k, v) {
+                            $('#doctor'+i).val(v.doctor).change();
+                            $('#status'+i).val(v.status).change();
+                         });
                          
                          $('#modalUbahStatus').modal("show");
                           

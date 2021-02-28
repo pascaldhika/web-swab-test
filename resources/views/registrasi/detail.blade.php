@@ -232,50 +232,10 @@
                   arrFourPayment.push(objFour);
                 }
                 
-                html +=           '<option value="">Pilih Payment</option>';
-
-                var selected1 = "";
-                if (arrPayment[0] == 'Cash'){
-                  selected1 = "selected"
-                }
-
-                var selected2 = "";
-                if (arrPayment[0] == 'Qris'){
-                  selected2 = "selected"
-                }
-
-                var selected3 = "";
-                if (arrPayment[0] == 'Mobile Banking'){
-                  selected3 = "selected"
-                }
-
-                var selected4 = "";
-                if (arrPayment[0] == 'Partners'){
-                  selected4 = "selected"
-                }
-
-                var selected5 = "";
-                if (arrPayment[0] == 'Airlines'){
-                  selected5 = "selected"
-                }
-
-                var selected6 = "";
-                if (arrPayment[0] == 'Debit'){
-                  selected6 = "selected"
-                }
-
-                var selected7 = "";
-                if (arrPayment[0] == 'Kartu Kredit'){
-                  selected7 = "selected"
-                }
-                
-                html +=           '<option value="Cash" '+selected1+'>Cash</option>';
-                html +=           '<option value="Qris" '+selected2+'>Qris</option>';
-                html +=           '<option value="Mobile Banking" '+selected3+'>Mobile Banking</option>';
-                html +=           '<option value="Partners" '+selected4+'>Partners</option>';
-                html +=           '<option value="Airlines" '+selected5+'>Airlines</option>';
-                html +=           '<option value="Debit" '+selected6+'>Debit</option>';
-                html +=           '<option value="Kartu Kredit" '+selected7+'>Kartu Kredit</option>';
+                html +=           '<option value="">Pilih Payment</option>';                
+                html +=           '@foreach($payment as $p => $v)';
+                html +=           '<option value="{{$v}}">{{$v}}</option>';
+                html +=           '@endforeach';
                 html +=         '</select>';
                 html +=       '</div>';
 
@@ -305,6 +265,16 @@
                 $('input:radio[name=paid'+i+']:checked').trigger("change");
                 $('#payment'+i).trigger('change');
               }
+
+              // looping ulang untuk menentukan selected
+               i = 1;
+               $.each(data.data, function (k, v) {
+                  var arrPayment = [];
+                  if (v.paymentlist){
+                    arrPayment = v.paymentlist.split(',');
+                    $('#payment'+i).val(arrPayment[0]).change();
+                  }
+               });
 
               $('#docdate').html(data.data[0].newdocdate);
               $('#docno').html(data.data[0].docno);

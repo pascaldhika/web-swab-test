@@ -27,6 +27,11 @@ Route::get('/transaction/registrasi/ceknoidentitas','RegistrasiController@cekNoI
 
 Route::group(['middleware' => ['auth']],function(){
 	Route::get('/home', 'HomeController@index')->name('home');
+	// Lil bit Special :)~
+    Route::get('getData','HomeController@getData')->name('home.data');
+    Route::post('setoutlet','HomeController@setOutlet')->name('home.setoutlet');
+    Route::post('cekoutlet', 'HomeController@cekSubcabang')->name('home.cekoutlet');
+    Route::get('switchc', 'HomeController@switchc')->name('home.switchc');
 
 	// REGISTRASI
 	Route::get('/transaction/registrasi','RegistrasiController@index')->name('registrasi.index');
@@ -39,6 +44,7 @@ Route::group(['middleware' => ['auth']],function(){
 	Route::get('/transaction/registrasi/print/excel','RegistrasiController@printExcel')->name('registrasi.print.excel');
 	Route::get('/transaction/registrasi/print/pdf','RegistrasiController@printPdf')->name('registrasi.print.pdf');
 	Route::post('/transaction/registrasi/simpanedit','RegistrasiController@simpanEdit')->name('registrasi.simpanedit');
+	Route::get('/transaction/registrasi/email','RegistrasiController@email')->name('registrasi.email');
 
 	// REPORT
 	Route::get('/report/pasien','ReportController@indexPasien')->name('report.pasien.index');
@@ -71,5 +77,21 @@ Route::group(['middleware' => ['auth']],function(){
 	Route::post('/master/outlet/simpan','OutletController@simpan')->name('outlet.simpan')->middleware('can:isSuperAdmin');
 	Route::post('/master/outlet/user/hapus','OutletController@hapusOutletUser')->name('outlet.user.hapus')->middleware('can:isSuperAdmin');
 	Route::post('/master/outlet/adduser','OutletController@addUser')->name('outlet.add.user')->middleware('can:isSuperAdmin');
+
+	Route::get('/master/mitra','MitraController@index')->name('mitra.index')->middleware('can:isSuperAdmin');
+	Route::get('/master/mitra/data','MitraController@getData')->name('mitra.data')->middleware('can:isSuperAdmin');
+	Route::post('/master/mitra/simpan','MitraController@simpan')->name('mitra.simpan')->middleware('can:isSuperAdmin');
+
+	Route::get('/master/payment','PaymentController@index')->name('payment.index')->middleware('can:isSuperAdmin');
+	Route::get('/master/payment/data','PaymentController@getData')->name('payment.data')->middleware('can:isSuperAdmin');
+	Route::post('/master/payment/simpan','PaymentController@simpan')->name('payment.simpan')->middleware('can:isSuperAdmin');
+
+	Route::get('/master/dokter','DokterController@index')->name('dokter.index')->middleware('can:isSuperAdmin');
+	Route::get('/master/dokter/data','DokterController@getData')->name('dokter.data')->middleware('can:isSuperAdmin');
+	Route::post('/master/dokter/simpan','DokterController@simpan')->name('dokter.simpan')->middleware('can:isSuperAdmin');
+
+	Route::get('/master/jenisrapid','JenisRapidController@index')->name('jenisrapid.index')->middleware('can:isSuperAdmin');
+	Route::get('/master/jenisrapid/data','JenisRapidController@getData')->name('jenisrapid.data')->middleware('can:isSuperAdmin');
+	Route::post('/master/jenisrapid/simpan','JenisRapidController@simpan')->name('jenisrapid.simpan')->middleware('can:isSuperAdmin');
 
 });

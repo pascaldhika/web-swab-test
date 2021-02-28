@@ -63,6 +63,38 @@
 </div>
 <!-- ./wrapper -->
 @include('layouts.footer')
+
+@if(!session('outlet'))
+  <div class="modal fade" id="modalhomeOutlet" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-backdrop="static">
+      <div class="modal-dialog modal-xs" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h4 class="modal-title" id="myModalLabel">Lookup Pemilihan Outlet</h4>
+              </div>
+              <div class="modal-body">
+                  <div class="row">
+                      <div class="col-sm-12">
+                          <table id="tableoutletpilihawal" class="table table-bordered table-striped display nowrap mbuhsakarepku" width="100%" cellspacing="0">
+                              <thead>
+                                  <tr>
+                                    <th>Kode Outlet</th>
+                                    <th>Nama Outlet</th>
+                                    <th width="5%">Aktif</th>
+                                  </tr>
+                              </thead>
+                              <tbody></tbody>
+                          </table>
+                      </div>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" id="btnPilihOutlet" class="btn btn-primary">Pilih</button>
+              </div>
+          </div>
+      </div>
+  </div>
+  @endif
+
 <!-- jQuery -->
 <script src="{{url('adminlte/bower_components/jquery/jquery.min.js')}}"></script>
 <!-- jQuery UI 1.11.4 -->

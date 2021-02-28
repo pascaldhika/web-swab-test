@@ -8,6 +8,9 @@ use App\Models\Registrasi;
 use App\Models\RegistrasiDetail;
 use App\Models\RegistrasiDetailPayment;
 use App\Models\Payment;
+use App\Models\Outlet;
+use App\Models\Dokter;
+use App\Models\JenisRapid;
 use Illuminate\Support\Facades\Validator;
 use DB;
 use App\Exports\RegistrasiReport;
@@ -15,26 +18,38 @@ use Excel;
 use PDF;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Carbon;
+use \Illuminate\Filesystem\Filesystem;
+use File;
+use App\Mail\TaishanalkesEmail;
+use Illuminate\Support\Facades\Mail;
 
 class RegistrasiController extends Controller
 {
-    public function index()
+    public function index(Request $req)
     {
-        $today = RegistrasiDetail::leftJoin('registrasi', 'registrasidetail.registrasiid', '=', 'registrasi.id')->whereRaw("DATE(docdate) >= CURRENT_DATE")->count();
+        $outletid = $req->session()->get('outlet');
+        $today = RegistrasiDetail::leftJoin('registrasi', 'registrasidetail.registrasiid', '=', 'registrasi.id')
+                ->where('registrasi.outlet_id', $outletid)
+                ->whereRaw("DATE(docdate) >= CURRENT_DATE")->count();
 
-        return view('registrasi.index', compact('today'));
+        $dokter = Dokter::where('active', 'Y')->orderBy('name','asc')->pluck('name','id');
+
+        return view('registrasi.index', compact('today','dokter'));
     }
 
     public function getData(Datatables $datatables, Request $req) {
+        $outletid = $req->session()->get('outlet');
         $search = $req->docno;
         $tglawal = Carbon::parse($req->tglawal)->format('Y-m-d');
         $tglakhir = Carbon::parse($req->tglakhir)->format('Y-m-d');
+
         $filter = "";
         if ($search){
             $filter = "AND A.docno LIKE '%".$search."%'";
         }
 
         $params = [
+            'outletid' => $outletid,
             'tglawal' => $tglawal,
             'tglakhir' => $tglakhir
         ];
@@ -56,7 +71,8 @@ class RegistrasiController extends Controller
             INNER JOIN registrasidetail B ON B.registrasiid = A.id
             LEFT JOIN users U ON A.paid_by = U.id
             LEFT JOIN users S ON A.status_by = S.id
-            WHERE DATE(A.docdate) BETWEEN :tglawal AND :tglakhir
+            WHERE A.outlet_id = :outletid
+            AND DATE(A.docdate) BETWEEN :tglawal AND :tglakhir
             ".$filter."
             GROUP BY A.id, A.docno, A.docdate, A.type, A.print, A.print_at, U.name, A.status_at, S.name
             ORDER BY A.docdate DESC 
@@ -88,6 +104,7 @@ class RegistrasiController extends Controller
 
             if (Gate::allows('isAdmin') || Gate::allows('isSuperAdmin')) {
                 $action .= '<div onclick="edit('.$data->id.')" class="btn btn-xs btn-warning no-margin-action" title="Edit Data Pasien" style="margin-right:5px;"><i class="fa fa-edit"></i></div>';
+                $action .= '<div onclick="email('.$data->id.')" class="btn btn-xs btn-info no-margin-action" title="Email" style="margin-right:5px;"><i class="fa fa-mail-bulk"></i></div>';
             }
 
             return $action;
@@ -104,7 +121,8 @@ class RegistrasiController extends Controller
     public function formDetail(Request $req)
     {
         $id = $req->id;
-        return view('registrasi.detail', compact('id'));
+        $payment = Payment::where('active', 'Y')->orderBy('name','asc')->pluck('name','id');
+        return view('registrasi.detail', compact('id','payment'));
     }
 
     public function getDetail(Request $req) {
@@ -141,19 +159,55 @@ class RegistrasiController extends Controller
 
     public function form()
     {
-        return view('registrasi.form');
+        $outlet = Outlet::where('active', 'Y')->orderBy('name','asc')->pluck('name','id');
+        $jenisrapid = JenisRapid::where('active', 'Y')->orderBy('name','asc')->pluck('name','id');
+
+        return view('registrasi.form', compact('outlet','jenisrapid'));
     }
 
     public function cekNoIdentitas(Request $req)
     {
         try
         {
-            $registrasi = RegistrasiDetail::where('identityno', $req->identityno)->orderBy('updated_at', 'desc')->first();
+            $columns = array(
+                0 => 'registrasi.outlet_id',
+                1 => 'registrasidetail.name',
+                2 => 'registrasidetail.address',
+                3 => 'registrasidetail.identityno',
+                4 => 'registrasidetail.birthplace',
+                5 => 'registrasidetail.birthdate',
+                6 => 'registrasidetail.gender',
+                7 => 'registrasidetail.job',
+                8 => 'registrasidetail.country',
+                9 => 'registrasidetail.email',
+                10 => 'registrasidetail.image',
+                11 => 'registrasidetail.id',
+            );
+
+            $registrasi = RegistrasiDetail::selectRaw(collect($columns)->implode(', '))
+                        ->leftJoin('registrasi', 'registrasidetail.registrasiid', '=', 'registrasi.id')
+                        ->where('identityno', $req->identityno)
+                        ->orderBy('registrasidetail.updated_at', 'desc')->first();
+
+            $base64 = '';
+            if ($registrasi)
+            {
+                $image = $registrasi->image;
+                $path = storage_path('app/uploads/').$image;
+
+                if(File::exists($path) && $image)
+                {
+                    $filetype = pathinfo($path,PATHINFO_EXTENSION);
+                    $val = file_get_contents($path);
+                    $base64 = 'data:image/'.$filetype.';base64,'.base64_encode($val);
+                }
+            }
             
             return response()->json([
                 'success' => true,
                 'message' => 'No error detected',
-                'data'    => $registrasi
+                'data'    => $registrasi,
+                'image'   => $base64
             ]); 
         }
         catch(\Exception $ex) 
@@ -169,11 +223,12 @@ class RegistrasiController extends Controller
     	DB::beginTransaction();
         try{
         	$type = $req->input('type');
+            $outlet = strip_tags($req->input('outlet'));
         	$jumlah = (int) $req->input('jumlah');
         	$rules = [];
         	
         	for ($i=1; $i <= $jumlah ; $i++) {
-        		$rules['name' . $i] = 'required';
+                $rules['name' . $i] = 'required';
         		$rules['address' . $i] = 'required';
                 $rules['identityno' . $i] = 'required';
                 $rules['birthplace' . $i] = 'required';
@@ -207,6 +262,7 @@ class RegistrasiController extends Controller
             $docNo = $autoNum[0]->docno;
 
             $registrasi = new Registrasi();
+            $registrasi->outlet_id = $outlet;
             $registrasi->docno     = $docNo;
             $registrasi->docdate   = date('Y-m-d H:i:s');
             $registrasi->type      = $type;
@@ -566,5 +622,12 @@ class RegistrasiController extends Controller
 
         $pdf = PDF::loadview('registrasi.book',['data'=>$data])->setPaper('a5', 'landscape');
         return $pdf->stream($data[0]->docno.".pdf");
+    }
+
+    public function email(Request $req)
+    {
+        Mail::to("pascalprahardhika@gmail.com")->send(new TaishanalkesEmail());
+ 
+        return "Email telah dikirim";
     }
 }

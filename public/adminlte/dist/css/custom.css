@@ -177,9 +177,9 @@ table.tablepilih tr.selected {
 
 /*Input Custom*/
 
-input:not(.kecilin), textarea {
+/*input:not(.kecilin), textarea {
     text-transform: uppercase;
-}
+}*/
 
 /*Check Tree*/
 

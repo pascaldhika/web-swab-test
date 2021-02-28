@@ -24,6 +24,7 @@
             <th style="background-color: #dbe5f1; border: 1px solid #000;">Payment Method</th>
             <th style="background-color: #dbe5f1; border: 1px solid #000;">Paid By</th>
             <th style="background-color: #dbe5f1; border: 1px solid #000;">Nakes By</th>
+            <th style="background-color: #dbe5f1; border: 1px solid #000;">Status At</th>
             <th style="background-color: #dbe5f1; border: 1px solid #000;">Total Bayar</th>
         </tr>
     </thead>
@@ -46,6 +47,7 @@
                     <td style="border: 1px solid #000;">{{ $v->paymentlist }}</td>            
                     <td style="border: 1px solid #000;">{{ $v->paid_by }}</td>
                     <td style="border: 1px solid #000;">{{ $v->nakes_by }}</td>
+                    <td style="border: 1px solid #000;">{{ $v->status_at }}</td>
                     <td style="border: 1px solid #000;">{{ $v->amount }}</td>
                 </tr>        
                 @php($n++)
@@ -53,8 +55,13 @@
             @endif
         @endforeach
         <tr>
-            <td colspan="13" style="text-align: right; background-color: #dbe5f1; border: 1px solid #000;"><strong>Total</strong></td>
+            <td colspan="14" style="text-align: right; background-color: #dbe5f1; border: 1px solid #000;"><strong>Total</strong></td>
             <td style="text-align: right; background-color: #dbe5f1; border: 1px solid #000;"><strong>{{ $total }}</strong></td>
         </tr>
     </tbody>
+</table>
+<table>
+    <tr>
+        <td style="font-style: italic;">{{ $username }} {{ date('d/m/Y H:i:s') }}</td>
+    </tr>
 </table>

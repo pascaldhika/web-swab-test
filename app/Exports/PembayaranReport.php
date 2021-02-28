@@ -9,11 +9,13 @@ use Illuminate\Support\Carbon;
 
 class PembayaranReport implements FromView
 {
-    public function __construct(string $tglawal, string $tglakhir, string $name)
+    public function __construct(string $tglawal, string $tglakhir, string $name, int $outletid, string $username)
     {
+        $this->outletid = $outletid;
         $this->tglawal = $tglawal;
         $this->tglakhir = $tglakhir;
         $this->name = $name;
+        $this->username = $username;
     }
 
     public function view(): View
@@ -21,13 +23,15 @@ class PembayaranReport implements FromView
     	$params = [
             'tglawal' => $this->tglawal,
             'tglakhir' => $this->tglakhir,
-            'name' => $this->name
+            'name' => $this->name,
+            'outletid' => $this->outletid
         ];
-        $query = "CALL rpt_get_data_pasien(:tglawal,:tglakhir,:name)";
+        $query = "CALL rpt_get_data_pasien(:tglawal,:tglakhir,:name,:outletid)";
 
         $data = DB::SELECT($query,$params);
 
         return view('report.pembayaran.excel', [
+            'username' => $this->username,
             'data' => $data,
             'tglawal' => Carbon::parse($this->tglawal)->isoFormat('D MMMM Y'),
             'tglakhir' => Carbon::parse($this->tglakhir)->isoFormat('D MMMM Y')

@@ -8,13 +8,26 @@
   </div>
   <div class="card-body">
     <div class="row">
-      <div class="col-6">
-        <select id="type" class="form-control" style="width: 100%;">
-            <option value="Antigen Test">Antigen Test</option>
-            <option value="Antibodi Test">Antibodi Test</option>
+      <div class="col-12">
+        <select id="outlet" name="outlet" class="form-control">
+          <option value="">Pilih Outlet</option>
+          @foreach($outlet as $p => $v)
+          <option value="{{$p}}">{{$v}}</option>
+          @endforeach
         </select>
       </div>
-      <div class="col-3">
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-6">
+        <select id="type" class="form-control" style="width: 100%;">
+          <option value="">Pilih Jenis Rapid</option>
+          @foreach($jenisrapid as $p => $v)
+          <option value="{{$v}}">{{$v}}</option>
+          @endforeach
+        </select>
+      </div>
+      <div class="col-4">
         <input type="text" id="jumlah" class="form-control" placeholder="Jml Pasien" onkeypress="return hanyaAngka(event)">
       </div>
       <div class="col-2">
@@ -52,78 +65,88 @@
 
   function proses(){
     jumlah = $('#jumlah').val();
+    var outlet = $('#outlet').val();
+    var type = $('#type').val();
 
     var newRow  = $(".field.fieldTEXT");
     var html = "";
 
     newRow.empty();
 
-    html += '<form id="formTambah" class="form-horizontal" method="post" enctype="multipart/form-data">';
-    for (var i = 1; i <= jumlah; i++) {
-      html += '<div id="field'+i+'" class="card card-secondary">';
-      html +=    '<div class="card-header"><h3 class="card-title">Data Peserta '+i+'</h3>';
-      html +=     '<div class="card-tools">';
-      html +=       '<button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>';
-      html +=     '</div>';
-      html +=    '</div>';
-      html +=    '<div class="card-body">';
-      html +=       '<div class="form-group">';
-      html +=         '<label for="identityno'+i+'">No. Identitas KTP/SIM/Passport</label>';
-      html +=         '<input type="text" class="form-control" id="identityno'+i+'" placeholder="No. Identitas" onChange="cekNoIdentitas(this,'+i+')" onkeypress="return hanyaAngka(event)">';
-      html +=       '</div>';
-      html +=       '<div class="form-group">';
-      html +=         '<label for="name'+i+'">Nama </label><small style="color: red"> *Sesuai Kartu Identitas</small>';
-      html +=         '<input type="text-area" class="form-control" id="name'+i+'" placeholder="Nama">';
-      html +=       '</div>';
-      html +=       '<div class="form-group">';
-      html +=         '<label for="address'+i+'">Alamat </label><small style="color: red"> *Sesuai Kartu Identitas</small>';
-      html +=         '<textarea type="text" class="form-control" id="address'+i+'" placeholder="Alamat"></textarea>';
-      html +=       '</div>';
-      html +=       '<div class="form-group">';
-      html +=         '<label for="birthplace'+i+'">Tempat Lahir </label><small style="color: red"> *Sesuai Kartu Identitas</small>';
-      html +=         '<input type="text" class="form-control" id="birthplace'+i+'" placeholder="Tempat Lahir">';
-      html +=       '</div>';
-      html +=       '<div class="form-group">';
-      html +=         '<label for="birthdate'+i+'">Tgl. Lahir </label><small style="color: red"> *Sesuai Kartu Identitas</small>';
-      html +=           '<input type="date" class="form-control calendar" id="birthdate'+i+'" placeholder="Tgl. Lahir">';
-      html +=       '</div>';
-      html +=       '<div class="form-group">';
-      html +=         '<label for="gender'+i+'">Jenis Kelamin</label>';
-      html +=         '<select id="gender'+i+'" class="form-control"><option value="Laki-laki">Laki-laki</option><option value="Perempuan">Perempuan</option></select>';
-      html +=       '</div>';
-      html +=       '<div class="form-group">';
-      html +=         '<label for="job'+i+'">Pekerjaan </label><small style="color: red"> *Sesuai Kartu Identitas</small>';
-      html +=         '<input type="text" class="form-control" id="job'+i+'" placeholder="Pekerjaan">';
-      html +=       '</div>';
-      html +=       '<div class="form-group">';
-      html +=         '<label for="country'+i+'">Warga Negara </label><small style="color: red"> *Sesuai Kartu Identitas</small>';
-      html +=         '<input type="text" class="form-control" id="country'+i+'" placeholder="Warga Negara">';
-      html +=       '</div>';
-      html +=       '<div class="form-group">';
-      html +=         '<label for="email'+i+'">Email </label>';
-      html +=         '<input type="text" class="form-control" id="email'+i+'" placeholder="Email">';
-      html +=       '</div>';
-      html +=       '<div class="form-group">';
-      html +=         '<label for="file'+i+'">Foto KTP/SIM/Passport/KK </label><small style="color: red"> *Max size: 2MB</small>';
-      html +=         '<input type="file" class="form-control" id="file'+i+'" onChange="resizeImage(this,'+i+')" accept="image/*" capture="camera">';
-      html +=         '<input type="hidden" class="form-control" id="image'+i+'">';
-      html +=       '</div>';
-      html +=     '</div>';
-      html += '</div>';
-    }
-    html += '</form>';
+    if (outlet && type)
+    {
+      html += '<form id="formTambah" class="form-horizontal" method="post" enctype="multipart/form-data">';
+      for (var i = 1; i <= jumlah; i++) {
+        html += '<div id="field'+i+'" class="card card-secondary">';
+        html +=    '<div class="card-header"><h3 class="card-title">Data Peserta '+i+'</h3>';
+        html +=     '<div class="card-tools">';
+        html +=       '<button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>';
+        html +=     '</div>';
+        html +=    '</div>';
+        html +=    '<div class="card-body">';
+        html +=       '<div class="form-group">';
+        html +=         '<label for="identityno'+i+'">No. Identitas KTP/SIM/Passport</label>';
+        html +=         '<input type="text" class="form-control" id="identityno'+i+'" placeholder="No. Identitas" onChange="cekNoIdentitas(this,'+i+')" onkeypress="return hanyaAngka(event)">';
+        html +=       '</div>';
+        html +=       '<div class="form-group">';
+        html +=         '<label for="name'+i+'">Nama </label><small style="color: red"> *Sesuai Kartu Identitas</small>';
+        html +=         '<input type="text-area" class="form-control" id="name'+i+'" placeholder="Nama">';
+        html +=       '</div>';
+        html +=       '<div class="form-group">';
+        html +=         '<label for="address'+i+'">Alamat </label><small style="color: red"> *Sesuai Kartu Identitas</small>';
+        html +=         '<textarea type="text" class="form-control" id="address'+i+'" placeholder="Alamat"></textarea>';
+        html +=       '</div>';
+        html +=       '<div class="form-group">';
+        html +=         '<label for="birthplace'+i+'">Tempat Lahir </label><small style="color: red"> *Sesuai Kartu Identitas</small>';
+        html +=         '<input type="text" class="form-control" id="birthplace'+i+'" placeholder="Tempat Lahir">';
+        html +=       '</div>';
+        html +=       '<div class="form-group">';
+        html +=         '<label for="birthdate'+i+'">Tgl. Lahir </label><small style="color: red"> *Sesuai Kartu Identitas</small>';
+        html +=           '<input type="date" class="form-control calendar" id="birthdate'+i+'" placeholder="Tgl. Lahir">';
+        html +=       '</div>';
+        html +=       '<div class="form-group">';
+        html +=         '<label for="gender'+i+'">Jenis Kelamin</label>';
+        html +=         '<select id="gender'+i+'" class="form-control"><option value="Laki-laki">Laki-laki</option><option value="Perempuan">Perempuan</option></select>';
+        html +=       '</div>';
+        html +=       '<div class="form-group">';
+        html +=         '<label for="job'+i+'">Pekerjaan </label><small style="color: red"> *Sesuai Kartu Identitas</small>';
+        html +=         '<input type="text" class="form-control" id="job'+i+'" placeholder="Pekerjaan">';
+        html +=       '</div>';
+        html +=       '<div class="form-group">';
+        html +=         '<label for="country'+i+'">Warga Negara </label><small style="color: red"> *Sesuai Kartu Identitas</small>';
+        html +=         '<input type="text" class="form-control" id="country'+i+'" placeholder="Warga Negara">';
+        html +=       '</div>';
+        html +=       '<div class="form-group">';
+        html +=         '<label for="email'+i+'">Email </label>';
+        html +=         '<input type="text" class="form-control" id="email'+i+'" placeholder="Email">';
+        html +=       '</div>';
+        html +=       '<div class="form-group">';
+        html +=         '<label for="file'+i+'">Foto KTP/SIM/Passport/KK </label><small style="color: red"> *Max size: 2MB</small>';
+        html +=         '<input type="file" class="form-control" id="file'+i+'" onChange="resizeImage(this,'+i+')" accept="image/*" capture="camera">';
+        html +=         '<input type="hidden" class="form-control" id="image'+i+'">';
+        html +=         '<img id="preview'+i+'" src=""/>';
+        html +=       '</div>';
+        html +=     '</div>';
+        html += '</div>';
+      }
+      html += '</form>';
 
-    if (jumlah > 0){
-      html += '<div class="card-footer">';
-      html +=   '<button type="submit" class="btn btn-primary" onclick="simpan()">Submit</button>';
-      html +=   '<button type="submit" class="btn btn-warning float-right" onclick="back()">Back</button>';
-      html += '</div>';
-    } else{
-      toastr.error('Jumlah pasien harus diisi.'); 
-      $('#jumlah').focus();
-    }
+      if (jumlah > 0){
+        html += '<div class="card-footer">';
+        html +=   '<button type="submit" class="btn btn-primary" onclick="simpan()">Submit</button>';
+        html +=   '<button type="submit" class="btn btn-warning float-right" onclick="back()">Back</button>';
+        html += '</div>';
+      } else{
+        toastr.error('Jumlah pasien harus diisi.'); 
+        $('#jumlah').focus();
+      }
 
-    newRow.append(html);
+      newRow.append(html);
+    }
+    else
+    {
+      toastr.error('Outlet dan Jenis Rapid harus dipilih.');   
+    }
   }
 
   function cekNoIdentitas(elem, currentIndex) {
@@ -142,6 +165,7 @@
           {
             if (result.data)
             {
+              // $('#outlet').val(result.data.outlet_id).change();
               $('#name'+currentIndex).val(result.data.name);
               $('#address'+currentIndex).val(result.data.address);
               $('#identityno'+currentIndex).val(result.data.identityno);
@@ -151,7 +175,8 @@
               $('#job'+currentIndex).val(result.data.job);
               $('#country'+currentIndex).val(result.data.country);
               $('#email'+currentIndex).val(result.data.email);
-              // $('#image'+currentIndex).val(result.data.image);
+              $('#image'+currentIndex).val(result.image);
+              document.getElementById('preview'+currentIndex).src = result.image;
             }
             else
             {
@@ -160,6 +185,7 @@
           }
           else
           {
+            toastr.error(result.message);
             resetValue(currentIndex);
           }
         },
@@ -183,7 +209,8 @@
     $('#job'+currentIndex).val('');
     $('#country'+currentIndex).val('');
     $('#email'+currentIndex).val('');
-    $('#resized'+currentIndex).val('');
+    $('#image'+currentIndex).val('');
+    document.getElementById('preview'+currentIndex).src = '';
   }
 
   function simpan(){
@@ -216,6 +243,7 @@
 
         form_data.append('jumlah', jumlah);
         form_data.append('type', $('#type').val());
+        form_data.append('outlet', $('#outlet').val());
         form_data.append('_token', "{{ csrf_token() }}");
         
         $.ajax({
@@ -313,7 +341,7 @@
             octx.drawImage(image, 0, 0, oc.width, oc.height);
             
             $("#image"+currentIndex).val(oc.toDataURL());
-            // document.getElementById("preview"+foto+"").src = oc.toDataURL();
+            document.getElementById("preview"+currentIndex).src = oc.toDataURL();
           };
           image.src = event.target.result;
         };

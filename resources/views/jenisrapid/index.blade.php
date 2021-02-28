@@ -6,7 +6,7 @@
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-left">
           <li class="breadcrumb-item">Master</li>
-          <li class="breadcrumb-item active"><a href="{{ route('outlet.index') }}">Kelola Data Outlet</a></li>
+          <li class="breadcrumb-item active"><a href="{{ route('jenisrapid.index') }}">Kelola Data Jenis Rapid</a></li>
         </ol>
       </div>
     </div>
@@ -17,7 +17,7 @@
             <div class="card card-primary card-outline">
               <div class="card-header">
                 <div class="card-tools">
-                  <a onclick="tambahOutlet()" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah Outlet</a>
+                  <a onclick="tambahJenisRapid()" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah Jenis Rapid</a>
                 </div>
               </div>
               <!-- /.card-header -->
@@ -25,7 +25,7 @@
                 <table id="table" class="table table-bordered table-striped">
                   <thead>
                   <tr>
-                    <th>Code</th>
+                    <th>ID</th>
                     <th>Name</th>
                     <th>Active</th>
                     <th>CreatedBy</th>
@@ -46,7 +46,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalTambahOutlet">
+<div class="modal fade" id="modalTambahJenisRapid">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
@@ -59,10 +59,6 @@
             <div class="card-body">
                 <input type="hidden" id="id" value="" class="form-control form-clear">
                 <div class="form-group">
-                    <label>Code</label>
-                    <input type="text" class="form-control form-clear sort-tab" id="code" placeholder="Code">
-                </div>
-                <div class="form-group">
                     <label>Name</label>
                     <input type="text" class="form-control form-clear sort-tab" id="name" placeholder="Name">
                 </div>
@@ -74,7 +70,7 @@
         </div>
         <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onclick="simpanOutlet()">Save</button>
+          <button type="button" class="btn btn-primary" onclick="simpanJenisRapid()">Save</button>
         </div>
       </div>
     </div>
@@ -93,11 +89,11 @@
             searchDelay: 1000,
             ajax       : {
                 type: 'GET',
-                url : '{{ route("outlet.data") }}',
+                url : '{{ route("jenisrapid.data") }}',
             },
             columns: [
                 {
-                    "data" : "code",
+                    "data" : "id",
                     "className": "menufilter textfilter"
                 },
                 {
@@ -129,48 +125,44 @@
         });
     });
 
-    function tambahOutlet(){
+    function tambahJenisRapid(){
         @can('isSuperAdmin')
-            clear_column('modalTambahOutlet');
-            $('#modalTambahOutlet #myModalLabel').text("Tambah Outlet");
-            $('#modalTambahOutlet').modal("show");
+            clear_column('modalTambahJenisRapid');
+            $('#modalTambahJenisRapid #myModalLabel').text("Tambah Jenis Rapid");
+            $('#modalTambahJenisRapid').modal("show");
         @else
             toastr.error('Anda tidak memiliki HAK AKSES!')
         @endcan
     }
 
-    function editOutlet(id, e){
+    function editJenisRapid(id, e){
         @can('isSuperAdmin')
-            var code  = $(e).data('code');
             var name  = $(e).data('name');
             var active  = $(e).data('active');
-            clear_column('modalTambahOutlet');
-            $('#modalTambahOutlet #myModalLabel').text("Edit Outlet");
-            $('#modalTambahOutlet #id').val(id);
-            $('#modalTambahOutlet #code').val(code);
-            $('#modalTambahOutlet #name').val(name);
+            clear_column('modalTambahJenisRapid');
+            $('#modalTambahJenisRapid #myModalLabel').text("Edit Jenis Rapid");
+            $('#modalTambahJenisRapid #id').val(id);
+            $('#modalTambahJenisRapid #name').val(name);
             if (active == 'Y'){
-                $('#modalTambahOutlet #active').prop('checked', true);  
-            } else $('#modalTambahOutlet #active').prop('checked', false);
+                $('#modalTambahJenisRapid #active').prop('checked', true);  
+            } else $('#modalTambahJenisRapid #active').prop('checked', false);
             
-            $('#modalTambahOutlet').modal("show");
+            $('#modalTambahJenisRapid').modal("show");
         @else
             toastr.error('Anda tidak memiliki HAK AKSES!')
         @endcan
     }
 
-    function simpanOutlet(){
-        var id   = $('#modalTambahOutlet #id').val();
-        var code = $('#modalTambahOutlet #code').val();
-        var name = $('#modalTambahOutlet #name').val();
+    function simpanJenisRapid(){
+        var id   = $('#modalTambahJenisRapid #id').val();
+        var name = $('#modalTambahJenisRapid #name').val();
         var active = $('.custom-control-input:checked').val();
 
         $.ajax({
             type: 'POST',
-            url: '{{ route("outlet.simpan") }}',
+            url: '{{ route("jenisrapid.simpan") }}',
             data: {
                 id: id,
-                code: code,
                 name: name,
                 active: active,
                 _token: "{{ csrf_token() }}"
@@ -179,7 +171,7 @@
             success: function(data){
                 if(data.success){
                     toastr.success(data.message);
-                    $('#modalTambahOutlet').modal('hide');
+                    $('#modalTambahJenisRapid').modal('hide');
                     table.ajax.reload(null, true);
                 }else{        
                     toastr.error(data.message);
