@@ -32,28 +32,35 @@ class HomeController extends Controller
         $antigen = 0;
         $today = 0;
         
-        if ($outletid)
-        {
-            $pasien = RegistrasiDetail::leftJoin('registrasi', 'registrasidetail.registrasiid', '=', 'registrasi.id')
-                    ->where('registrasi.outlet_id', $outletid)
-                    ->count();
-
+        // if ($outletid)
+        // {
             $antibodi = RegistrasiDetail::leftJoin('registrasi', 'registrasidetail.registrasiid', '=', 'registrasi.id')
-                    ->where('registrasi.outlet_id', $outletid)
+                    // ->where('registrasi.outlet_id', $outletid)
+                    ->whereRaw("DATE(docdate) >= CURRENT_DATE")
                     ->where('type', 'Antibodi Test')
+                    ->where('paid', 'Y')
                     ->count();
 
             $antigen = RegistrasiDetail::leftJoin('registrasi', 'registrasidetail.registrasiid', '=', 'registrasi.id')
-                    ->where('registrasi.outlet_id', $outletid)
+                    // ->where('registrasi.outlet_id', $outletid)
+                    ->whereRaw("DATE(docdate) >= CURRENT_DATE")
                     ->where('type', 'Antigen Test')
+                    ->where('paid', 'Y')
                     ->count();
 
-            $today = RegistrasiDetail::leftJoin('registrasi', 'registrasidetail.registrasiid', '=', 'registrasi.id')
-                    ->where('registrasi.outlet_id', $outletid)
-                    ->whereRaw("DATE(docdate) >= CURRENT_DATE")->count();
-        }
+            $total = RegistrasiDetail::leftJoin('registrasi', 'registrasidetail.registrasiid', '=', 'registrasi.id')
+                    // ->where('registrasi.outlet_id', $outletid)
+                    ->whereRaw("DATE(docdate) >= CURRENT_DATE")
+                    ->where('paid', 'Y')
+                    ->count();
 
-        return view('home', compact('pasien','antibodi','antigen','today'));
+            $pasien = RegistrasiDetail::leftJoin('registrasi', 'registrasidetail.registrasiid', '=', 'registrasi.id')
+                    // ->where('registrasi.outlet_id', $outletid)
+                    ->whereRaw("DATE(docdate) >= CURRENT_DATE")
+                    ->count();
+        // }
+
+        return view('home', compact('antibodi','antigen','total','pasien'));
     }
 
     public function getData(Request $req)

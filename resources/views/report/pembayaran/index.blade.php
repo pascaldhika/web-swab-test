@@ -32,6 +32,22 @@
 						  </div>
 						</div>
 						<div class="col-sm-4">
+						  <label>Filter:</label>
+						  <div class="input-group input-group-sm">
+						    <select id="filter" name="filter" class="form-control">
+						    	<option value="">Pilih Filter</option>
+						    	<option value="Paid">Paid</option>
+						    	<option value="Cash">Pembayaran Cash</option>
+						    	<option value="NonCash">Pembayaran Non-Cash (Mobile Banking, QRIS, etc)</option>
+						    	<option value="Pasien">Pasien Reguler</option>
+						    	<option value="PasienMitra">Pasien Mitra (Traveloka, AirAsia, etc)</option>
+						    	<option value="Antibod">Data Antibodi</option>
+						    	<option value="Antigen">Data Antigen</option>
+						    	<option value="Total">Data Keseluruhan (Antigen & Antibody)</option>
+						    </select>
+						  </div>
+						</div>
+						<div class="col-sm-4">
 						  <label>Nama:</label>
 						  <div class="input-group input-group-sm">
 						    <input type="text" class="form-control" id="name" placeholder="Cari Nama">
@@ -58,8 +74,9 @@
 		var tglawal = $('#tglawal').val();
 		var tglakhir = $('#tglakhir').val();
 		var name = $('#name').val();
+		var filter = $('#filter').val();
 
-		var url = base+'?tglawal='+tglawal+'&tglakhir='+tglakhir+'&name='+name;
+		var url = base+'?tglawal='+tglawal+'&tglakhir='+tglakhir+'&name='+name+'&filter='+filter;
 
 		window.location.href = url;
 	}

@@ -440,6 +440,12 @@
         window.location.href = url;
     }
 
+    function email(id){
+        var base = "{!! route('registrasi.preview') !!}";
+        var url = base+'?id='+id ;
+        window.location.href = url;
+    }
+
     function ubahStatus(id, e){
         @can('isNakes')
             var type  = $(e).data('type');

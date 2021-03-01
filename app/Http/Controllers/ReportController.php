@@ -25,8 +25,9 @@ class ReportController extends Controller
         $tglakhir = $req->tglakhir;
         $name = ($req->name) ? $req->name : '';
         $username = $req->user()->name;
+        $filter = '';
 
-        return Excel::download(new PasienReport($tglawal,$tglakhir,$name,$outletid,$username), $namafile);
+        return Excel::download(new PasienReport($tglawal,$tglakhir,$name,$outletid,$username,$filter), $namafile);
     }
 
     public function indexPembayaran()
@@ -45,7 +46,8 @@ class ReportController extends Controller
         $tglakhir = $req->tglakhir;
         $name = ($req->name) ? $req->name : '';
         $username = $req->user()->name;
+        $filter = ($req->filter) ? $req->filter : '';
 
-        return Excel::download(new PembayaranReport($tglawal,$tglakhir,$name,$outletid,$username), $namafile);
+        return Excel::download(new PembayaranReport($tglawal,$tglakhir,$name,$outletid,$username,$filter), $namafile);
     }
 }

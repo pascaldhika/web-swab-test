@@ -22,6 +22,7 @@ use \Illuminate\Filesystem\Filesystem;
 use File;
 use App\Mail\TaishanalkesEmail;
 use Illuminate\Support\Facades\Mail;
+use Response;
 
 class RegistrasiController extends Controller
 {
@@ -624,10 +625,61 @@ class RegistrasiController extends Controller
         return $pdf->stream($data[0]->docno.".pdf");
     }
 
+    public function preview(Request $req)
+    {
+        $id = strip_tags($req->id);
+        $registrasi = Registrasi::find($id);
+
+        if ($registrasi)
+        {
+            $title = $registrasi->docno;
+            $namasheet    = str_slug($title);
+            $namafile     = $namasheet."-".uniqid().".pdf";
+
+            $view = 'registrasi.pdfswab';
+            if ($registrasi->type == 'Antibodi Test'){
+                $view = 'registrasi.pdfrapid';
+            }
+            
+            $params = [
+                'id' => $req->id
+            ];
+            $query = "CALL fn_get_detail_registrasi(:id)";
+
+            $data = DB::SELECT($query,$params);
+
+            $pdf = PDF::loadview($view, ['data'=>$data])->setPaper('a4', 'portrait');
+            $pdf->save(storage_path('excel/exports') . '/'.$namafile);
+
+            return view('registrasi.preview',compact('id','data','namafile'));
+        }
+        else
+        {
+            return redirect('/transaction/registrasi')->with('message', 'Data tidak ditemukan');
+        }
+    }
+
     public function email(Request $req)
     {
-        Mail::to("pascalprahardhika@gmail.com")->send(new TaishanalkesEmail());
+        // Mail::to("pascalprahardhika@gmail.com")->send(new TaishanalkesEmail());
  
-        return "Email telah dikirim";
+        // return "Email telah dikirim";
+
+        $id = strip_tags($req->id);
+        $registrasiDetail = RegistrasiDetail::where('registrasiid',$id)->get();
+
+        $text = 'Berikut hasil swab test Anda:';
+        $recipients  = [];
+        foreach ($registrasiDetail as $key => $value)
+        {
+            if ($value->email)
+            {
+                $recipients[$value->email] = $value->name;
+            }
+        }
+
+        $send = $this->sendEmail($recipients,'Email from Taishanalkes',$text,$req->namafile);
+
+        return redirect('/transaction/registrasi')->with('message', $send);
     }
 }

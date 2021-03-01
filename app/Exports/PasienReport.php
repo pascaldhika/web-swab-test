@@ -9,13 +9,14 @@ use Illuminate\Support\Carbon;
 
 class PasienReport implements FromView
 {
-    public function __construct(string $tglawal, string $tglakhir, string $name, int $outletid, string $username)
+    public function __construct(string $tglawal, string $tglakhir, string $name, int $outletid, string $username, string $filter)
     {
         $this->outletid = $outletid;
         $this->tglawal = $tglawal;
         $this->tglakhir = $tglakhir;
         $this->name = $name;
         $this->username = $username;
+        $this->filter = $filter;
     }
 
     public function view(): View
@@ -24,9 +25,10 @@ class PasienReport implements FromView
             'tglawal' => $this->tglawal,
             'tglakhir' => $this->tglakhir,
             'name' => $this->name,
-            'outletid' => $this->outletid
+            'outletid' => $this->outletid,
+            'filter' => ''
         ];
-        $query = "CALL rpt_get_data_pasien(:tglawal,:tglakhir,:name,:outletid)";
+        $query = "CALL rpt_get_data_pasien(:tglawal,:tglakhir,:name,:outletid,:filter)";
 
         $data = DB::SELECT($query,$params);
 

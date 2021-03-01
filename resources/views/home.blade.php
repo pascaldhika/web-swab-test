@@ -25,9 +25,9 @@
         <!-- small box -->
         <div class="small-box bg-info">
           <div class="inner">
-            <h3>{{ $pasien }}</h3>
+            <h3>{{ $antibodi }}</h3>
 
-            <p>Registrasi Pasien</p>
+            <p>Antibody Hari Ini</p>
           </div>
           <div class="icon">
             <i class="ion ion-person-add"></i>
@@ -40,12 +40,12 @@
         <!-- small box -->
         <div class="small-box bg-success">
           <div class="inner">
-            <h3>{{ $antibodi }}</h3>
+            <h3>{{ $antigen }}</h3>
 
-            <p>Antibodi Test</p>
+            <p>Antigen Hari Ini</p>
           </div>
           <div class="icon">
-            <i class="ion ion-pie-graph"></i>
+            <i class="ion ion-person-add"></i>
           </div>
           <a href="{{ route('report.pasien.index') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
         </div>
@@ -55,9 +55,9 @@
         <!-- small box -->
         <div class="small-box bg-warning">
           <div class="inner">
-            <h3>{{ $antigen }}</h3>
+            <h3>{{ $total }}</h3>
 
-            <p>Antigen Test</p>
+            <p>Total Hari Ini</p>
           </div>
           <div class="icon">
             <i class="ion ion-stats-bars"></i>
@@ -70,9 +70,9 @@
         <!-- small box -->
         <div class="small-box bg-danger">
           <div class="inner">
-            <h3>{{ $today }}</h3>
+            <h3>{{ $pasien }}</h3>
 
-            <p>Registrasi Hari Ini</p>
+            <p>Registrasi Pasien Hari Ini</p>
           </div>
           <div class="icon">
             <i class="ion ion-person-add"></i>

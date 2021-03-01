@@ -44,6 +44,7 @@ Route::group(['middleware' => ['auth']],function(){
 	Route::get('/transaction/registrasi/print/excel','RegistrasiController@printExcel')->name('registrasi.print.excel');
 	Route::get('/transaction/registrasi/print/pdf','RegistrasiController@printPdf')->name('registrasi.print.pdf');
 	Route::post('/transaction/registrasi/simpanedit','RegistrasiController@simpanEdit')->name('registrasi.simpanedit');
+	Route::get('/transaction/registrasi/preview','RegistrasiController@preview')->name('registrasi.preview');
 	Route::get('/transaction/registrasi/email','RegistrasiController@email')->name('registrasi.email');
 
 	// REPORT
