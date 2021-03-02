@@ -151,12 +151,12 @@
         <P></P>
           <ul class="legend list-unstyled">
             <p>
-              <span class="icon"><i class="fa fa-square fa-lg" style="color : #ffc92d;"></i></span> &nbsp;&nbsp; <strong>Kuning :</strong> <span class="name">menandakan semua pasien dengan kode booking tersebut sudah dibatalkan</span>
+              <span class="icon"><i class="fa fa-square fa-lg" style="color : #ffc92d;"></i></span> &nbsp;&nbsp; <strong>Kuning :</strong> <span class="name">menandakan sebagian pasien dengan kode booking tersebut ada yang dibatalkan</span>
             </p>
             </li>
             <li>
             <p>
-              <span class="icon"><i class="fa fa-square fa-lg" style="color : #f5473b;"></i></span> &nbsp;&nbsp; <strong>Merah :</strong> <span class="name">menandakan sebagian pasien dengan kode booking tersebut ada yang dibatalkan</span>
+              <span class="icon"><i class="fa fa-square fa-lg" style="color : #f5473b;"></i></span> &nbsp;&nbsp; <strong>Merah :</strong> <span class="name">menandakan semua pasien dengan kode booking tersebut sudah dibatalkan</span>
             </p>
             </li>
           </ul>
@@ -177,15 +177,15 @@
     var jumlah = 0;
     $(document).ready(function(){
         // $('#table').dataTable().fnDestroy();
-        table = $('#table').DataTable({
-            dom : 'lrtp',
-            serverSide  : true,
-            stateSave : true,
-            deferRender : true,
-            select: {
-                style: 'single'
-            },
-            keys: {keys: [38,40]},
+        table = $('#table')
+        .on('preXhr.dt', function(){ $("#dataTablesSpinner").show(); })
+        .on('xhr.dt', function(){ $("#dataTablesSpinner").hide(); })
+        .DataTable({
+            "serverSide" : true,
+            "stateSave"  : true,
+            "deferRender": true,
+            "ordering"   : false,
+            "searching"  : false,
             ajax       : {
                 type: 'GET',
                 url : '{{ route("registrasi.data") }}',

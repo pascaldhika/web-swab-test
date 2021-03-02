@@ -28,6 +28,8 @@
   <link rel="stylesheet" href="{{url('adminlte/bower_components/datatables-responsive/css/responsive.bootstrap4.min.css')}}">
   <link rel="stylesheet" href="{{url('adminlte/bower_components/datatables-scroller/css/scroller.bootstrap4.min.css')}}">
   <link rel="stylesheet" href="{{url('adminlte/bower_components/datatables-select/css/select.bootstrap4.min.css')}}">
+  <!-- jQuery custom content scroller -->
+  <link href="{{url('adminlte/dist/css/jquery.mCustomScrollbar.min.css')}}" rel="stylesheet" type="text/css">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{url('adminlte/dist/css/adminlte.min.css')}}">
   <link rel="stylesheet" href="{{url('adminlte/bower_components/toastr/toastr.min.css')}}">
@@ -95,6 +97,12 @@
   </div>
   @endif
 
+  <div id="dataTablesSpinner" style="background-color:rgba(255, 255, 255, 0.2); position:fixed; width:100%; height:100%; top:0px; left:0px; z-index:2000; display: none;">
+    <div style="position: absolute; top: 50%; left: 50%; margin: -26px 0 0 -26px; color: #26B99A;">
+      <i class='fa fa-spinner fa-spin fa-4x'></i>
+    </div>
+  </div>
+
 <!-- jQuery -->
 <script src="{{url('adminlte/bower_components/jquery/jquery.min.js')}}"></script>
 <!-- jQuery UI 1.11.4 -->
@@ -132,6 +140,8 @@
 <script src="{{url('adminlte/bower_components/datatables-responsive/js/responsive.bootstrap4.min.js')}}"></script>
 <script src="{{url('adminlte/bower_components/datatables-scroller/js/dataTables.scroller.min.js')}}"></script>
 <script src="{{url('adminlte/bower_components/datatables-select/js/dataTables.select.min.js')}}"></script>
+<!-- jQuery custom content scroller -->
+<!-- <script src="{{url('adminlte/dist/js/jquery.mCustomScrollbar.concat.min.js')}}"></script> -->
 <!-- AdminLTE App -->
 <script src="{{url('adminlte/dist/js/adminlte.min.js')}}"></script>
 <script src="{{url('adminlte/bower_components/toastr/toastr.min.js')}}"></script>
@@ -142,6 +152,21 @@
 
 @push('scripts')
 <script type="text/javascript">
+  $(document).ready(function () { 
+    /** add active class and stay opened when selected */
+    var url = window.location;
+    const allLinks = document.querySelectorAll('.nav-item a');
+    const currentLink = [...allLinks].filter(e => {
+      return e.href == url;
+    });
+
+    if (currentLink.length > 0) { //this filter because some links are not from menu
+        currentLink[0].classList.add("active");
+        currentLink[0].closest(".nav-treeview").style.display = "block";
+        currentLink[0].closest(".nav-treeview").classList.add("active");
+    }
+  });
+
   function clear_column(modal){
     for (var i = 0; i < $('#'+modal+' .form-clear').length; i++) {
         element = $('#'+modal+' .form-clear')[i];
