@@ -14,7 +14,7 @@
                       {{ session('status')[1] }}
                     </div>
                     @endif
-                    <form method="POST" action="{{ route('password.update') }}">
+                    <form method="POST" action="{{ route('password.simpan') }}">
                         @csrf
 
                         <div class="form-group row">

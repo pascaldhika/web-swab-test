@@ -25,6 +25,10 @@ Route::post('/transaction/registrasi/simpan','RegistrasiController@simpan')->nam
 Route::get('/transaction/registrasi/print/book','RegistrasiController@printBook')->name('registrasi.print.book');
 Route::get('/transaction/registrasi/ceknoidentitas','RegistrasiController@cekNoIdentitas')->name('registrasi.ceknoidentitas');
 
+// RESET PASSWORD
+Route::get('/password-request','Auth\ResetPasswordController@request')->name('password.request');
+// Route::get('/password-reset','Auth\ResetPasswordController@reset')->name('password.reset');
+
 Route::group(['middleware' => ['auth']],function(){
 	Route::get('/home', 'HomeController@index')->name('home');
 	// Lil bit Special :)~
@@ -62,7 +66,7 @@ Route::group(['middleware' => ['auth']],function(){
 	Route::post('/security/user/simpan','UserController@simpan')->name('user.simpan')->middleware('can:isSuperAdmin');
 	Route::post('/security/user/hapus','UserController@hapus')->name('user.hapus')->middleware('can:isSuperAdmin');
 	Route::get('/security/user/password','UserController@changePassword')->name('password.change');
-	Route::post('/security/user/password/update','UserController@simpanPassword')->name('password.update');
+	Route::post('/security/user/password/simpan','UserController@simpanPassword')->name('password.simpan');
 
 	// ROLE
 	Route::get('/security/role','RoleController@index')->name('role.index')->middleware('can:isSuperAdmin');
