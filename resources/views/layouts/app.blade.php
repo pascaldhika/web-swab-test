@@ -28,8 +28,6 @@
   <link rel="stylesheet" href="{{url('adminlte/bower_components/datatables-responsive/css/responsive.bootstrap4.min.css')}}">
   <link rel="stylesheet" href="{{url('adminlte/bower_components/datatables-scroller/css/scroller.bootstrap4.min.css')}}">
   <link rel="stylesheet" href="{{url('adminlte/bower_components/datatables-select/css/select.bootstrap4.min.css')}}">
-  <!-- jQuery custom content scroller -->
-  <link href="{{url('adminlte/dist/css/jquery.mCustomScrollbar.min.css')}}" rel="stylesheet" type="text/css">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{url('adminlte/dist/css/adminlte.min.css')}}">
   <link rel="stylesheet" href="{{url('adminlte/bower_components/toastr/toastr.min.css')}}">
@@ -40,7 +38,7 @@
   <link href="{{url('adminlte/dist/css/custom.css')}}" rel="stylesheet" type="text/css">
 
 </head>
-<body class="hold-transition sidebar-mini pace-yellow">
+<body class="hold-transition sidebar-mini layout-fixed pace-yellow">
 <div class="wrapper">
 
   <!-- Navbar -->
@@ -52,7 +50,6 @@
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
-  <br>
   @yield('content')
   </div>
   <!-- /.content-wrapper -->
@@ -140,8 +137,6 @@
 <script src="{{url('adminlte/bower_components/datatables-responsive/js/responsive.bootstrap4.min.js')}}"></script>
 <script src="{{url('adminlte/bower_components/datatables-scroller/js/dataTables.scroller.min.js')}}"></script>
 <script src="{{url('adminlte/bower_components/datatables-select/js/dataTables.select.min.js')}}"></script>
-<!-- jQuery custom content scroller -->
-<!-- <script src="{{url('adminlte/dist/js/jquery.mCustomScrollbar.concat.min.js')}}"></script> -->
 <!-- AdminLTE App -->
 <script src="{{url('adminlte/dist/js/adminlte.min.js')}}"></script>
 <script src="{{url('adminlte/bower_components/toastr/toastr.min.js')}}"></script>
@@ -149,6 +144,8 @@
 <script src="{{url('adminlte/bower_components/select2/js/select2.full.min.js')}}"></script>
 <!-- pace-progress -->
 <script src="{{url('adminlte/bower_components/pace-progress/pace.min.js')}}"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="{{url('adminlte/dist/js/demo.js')}}"></script>
 
 @push('scripts')
 <script type="text/javascript">

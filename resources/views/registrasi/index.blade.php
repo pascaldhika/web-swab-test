@@ -52,7 +52,7 @@
                         </span>
                       </div>
                     </div>
-                    <div class="col-sm-3 text-right">
+                    <div class="col-sm-4 text-right">
                         <a class="btn btn-info" id="skeyIns" data-toggle="modal" data-target=".bd-example-modal-lg" title='Flag' style='border-radius: 50%;'><i class="fa fa-info"></i></a>
                     </div>
                 </div>
@@ -290,7 +290,7 @@
                 },
                 {
                     "data" : "jumlah",
-                    "className": "menufilter textfilter"
+                    "className": "menufilter text-right"
                 },
                 {
                     "data" : "type",
@@ -298,7 +298,7 @@
                 },
                 {
                     "data" : "paid",
-                    "className": "menufilter textfilter",
+                    "className": "menufilter text-center",
                     "orderable" : false,
                     render : function(data, type, row) {
                         var data = row.paid;
@@ -316,7 +316,7 @@
                 },
                 {
                     "data" : "status_at",
-                    "className": "menufilter textfilter",
+                    "className": "menufilter text-center",
                     render : function(data, type, row) {
                         var data = row.status_at;
                         if (data) {
@@ -492,11 +492,11 @@
                                 html +=    '<div class="card-body">';
                                 html +=       '<input type="hidden" class="form-control" id="id'+i+'" value="'+v.id+'">';
                                 html +=       '<div class="form-group">';
-                                html +=         '<label for="name'+i+'">Nama *Sesuai Kartu Identitas</label>';
+                                html +=         '<label for="name'+i+'">Nama </label><small style="color: red"> *Sesuai Kartu Identitas</small>';
                                 html +=         '<input type="text" class="form-control" id="name'+i+'" value="'+v.name+'" disabled>';
                                 html +=       '</div>';
                                 html +=       '<div class="form-group">';
-                                html +=         '<label for="address'+i+'">Alamat *Sesuai Kartu Identitas</label>';
+                                html +=         '<label for="address'+i+'">Alamat </label><small style="color: red"> *Sesuai Kartu Identitas</small>';
                                 html +=         '<textarea input type="text" class="form-control" id="address'+i+'" value="'+v.address+'" disabled>'+v.address+'</textarea>';
                                 html +=       '</div>';
                                 html +=       '<div class="form-group">';

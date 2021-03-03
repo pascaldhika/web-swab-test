@@ -192,7 +192,7 @@
                 }
 
                 var disabledPaid, disabledUnpaid, disabledCancel = "";
-                if (v.status){
+                if (v.status || v.paid == 'C'){
                   disabledPaid = "disabled";
                   disabledUnpaid = "disabled";
                   disabledCancel = "disabled";
@@ -247,7 +247,12 @@
 
                 html +=       '<div class="form-group">';
                 html +=         '<label for="amount'+i+'">Amount</label>';
-                html +=         '<input type="text" class="form-control amount" id="amount'+i+'" value="'+v.amount+'" placeholder="Amount" onkeypress="return hanyaAngka(event)" onkeyup="return separatorRibuan(amount'+i+')">';
+                html +=         '<select id="amount'+i+'" name="amount'+i+'" class="form-control" onchange="return separatorRibuan(amount'+i+')">';
+                html +=           '<option value="0">Pilih Harga</option>';                
+                html +=           '@foreach($harga as $p => $v)';
+                html +=           '<option value="{{$v}}">{{$v}}</option>';
+                html +=           '@endforeach';
+                html +=         '</select>';
                 html +=       '</div>';
                 html +=     '</div>';
                 html += '</div>';
@@ -264,6 +269,7 @@
               for (var i = 1; i <= jumlah; i++){
                 $('input:radio[name=paid'+i+']:checked').trigger("change");
                 $('#payment'+i).trigger('change');
+                i++;
               }
 
               // looping ulang untuk menentukan selected
@@ -272,8 +278,13 @@
                   var arrPayment = [];
                   if (v.paymentlist){
                     arrPayment = v.paymentlist.split(',');
-                    $('#payment'+i).val(arrPayment[0]).change();
+                    if (v.paid != 'C')
+                    {
+                      $('#payment'+i).val(arrPayment[0]).change();
+                    }
                   }
+                  $('#amount'+i).val(v.amount);
+                  i++;
                });
 
               $('#docdate').html(data.data[0].newdocdate);
@@ -345,7 +356,7 @@
       if (value == 'Cancel' || value == 'Unpaid'){
         resetFieldPayment(i);
         $('#payment'+i).val($('#payment'+i+' option:first').val()).attr('disabled', true);
-        $('#amount'+i).val('0').attr('disabled', true);
+        $('#amount'+i).attr('disabled', true);
       } else{
         $('#payment'+i).attr('disabled', false);
         $('#amount'+i).attr('disabled', false);
@@ -446,7 +457,7 @@
           html +=  '</select>';
           break;
 
-        case 'Debit':
+        case 'Debit Card':
           html += '<select id="secondpayment'+i+'" class="form-control">';
           html +=   '<option value="">Pilih Debit</option>';
 
@@ -466,7 +477,7 @@
           html +=  '</select>';
           break;
 
-        case 'Kartu Kredit':
+        case 'Credit Card':
           html += '<select id="secondpayment'+i+'" class="form-control">';
           html +=   '<option value="">Pilih Kartu Kredit</option>';
 

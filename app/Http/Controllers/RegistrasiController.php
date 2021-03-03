@@ -11,6 +11,7 @@ use App\Models\Payment;
 use App\Models\Outlet;
 use App\Models\Dokter;
 use App\Models\JenisRapid;
+use App\Models\Harga;
 use Illuminate\Support\Facades\Validator;
 use DB;
 use App\Exports\RegistrasiReport;
@@ -104,7 +105,7 @@ class RegistrasiController extends Controller
             }
 
             if (Gate::allows('isAdmin') || Gate::allows('isSuperAdmin')) {
-                $action .= '<div onclick="edit('.$data->id.')" class="btn btn-xs btn-warning no-margin-action" title="Edit Data Pasien" style="margin-right:5px;"><i class="fa fa-edit"></i></div>';
+                $action .= '<div onclick="edit('.$data->id.')" class="btn btn-xs btn-secondary no-margin-action" title="Edit Data Pasien" style="margin-right:5px;"><i class="fa fa-edit"></i></div>';
                 $action .= '<div onclick="email('.$data->id.')" class="btn btn-xs btn-info no-margin-action" title="Email" style="margin-right:5px;"><i class="fa fa-mail-bulk"></i></div>';
             }
 
@@ -122,8 +123,14 @@ class RegistrasiController extends Controller
     public function formDetail(Request $req)
     {
         $id = $req->id;
+        $registrasi = Registrasi::find($id);
+
         $payment = Payment::where('active', 'Y')->orderBy('name','asc')->pluck('name','id');
-        return view('registrasi.detail', compact('id','payment'));
+
+        $jenisrapid = JenisRapid::where('name',$registrasi->type)->where('active', 'Y')->first();
+        $harga = Harga::where('active', 'Y')->where('jenisrapidid',$jenisrapid->id)->orderBy('nominal','asc')->pluck('nominal','id');
+
+        return view('registrasi.detail', compact('id','payment','harga'));
     }
 
     public function getDetail(Request $req) {
@@ -152,9 +159,30 @@ class RegistrasiController extends Controller
 
         $data = DB::SELECT($query,$params);
 
+        $node = [];
+        foreach ($data as $key => $value) {
+            $node[$key] = $value;
+
+            $base64 = '';
+            $image = $value->image;
+            if ($image)
+            {
+                $path = storage_path('app/uploads/').$image;
+
+                if(File::exists($path) && $image)
+                {
+                    $filetype = pathinfo($path,PATHINFO_EXTENSION);
+                    $val = file_get_contents($path);
+                    $base64 = 'data:image/'.$filetype.';base64,'.base64_encode($val);
+
+                    $node[$key]->image = $base64;
+                }
+            }
+        }
+
         return response()->json([
             'success' => true,
-            'data'    => $data
+            'data'    => $node
         ]);
     }
 
@@ -220,7 +248,20 @@ class RegistrasiController extends Controller
         }
     }
 
+    public function storeImage($file,$identityno)
+    {
+        // menyimpan data file yang diupload ke variabel $file
+        $nama_file = uniqid()."_".$identityno.".png";
+
+        // isi dengan nama folder tempat kemana file diupload
+        $tujuan_upload = storage_path().'/app/uploads';
+        $file->move($tujuan_upload,$nama_file);
+
+        return $nama_file;
+    }
+
     public function simpan(Request $req){
+        $this->simpleLogger($this, __FUNCTION__, $req->all(), __LINE__);
     	DB::beginTransaction();
         try{
         	$type = $req->input('type');
@@ -273,15 +314,6 @@ class RegistrasiController extends Controller
             $registrasi->save();
 
         	for ($i=1; $i <= $jumlah ; $i++) {
-                $identityno = strip_tags($req->input('identityno'.$i));
-                // menyimpan data file yang diupload ke variabel $file
-                $file = $req->file('image'.$i);
-                $nama_file = time()."_".$identityno.".png";
-
-                // isi dengan nama folder tempat kemana file diupload
-                $tujuan_upload = storage_path().'/app/uploads';
-                $file->move($tujuan_upload,$nama_file);
-
                 $registrasiDetail = new RegistrasiDetail();
                 $registrasiDetail->registrasiid = $registrasi->id;
                 $registrasiDetail->name      = strip_tags($req->input('name'.$i));
@@ -295,7 +327,7 @@ class RegistrasiController extends Controller
                 $registrasiDetail->job       = strip_tags($req->input('job'.$i));
                 $registrasiDetail->country   = strip_tags($req->input('country'.$i));
                 $registrasiDetail->email     = strip_tags($req->input('email'.$i));
-                $registrasiDetail->image     = $nama_file;
+                $registrasiDetail->image     = $this->storeImage($req->file('image'.$i),$identityno);
                 $registrasiDetail->createdby = -1;
 	            $registrasiDetail->updatedby = -1;
 	            $registrasiDetail->save();
@@ -318,6 +350,7 @@ class RegistrasiController extends Controller
     }
 
     public function simpanStatus(Request $req){
+        $this->simpleLogger($this, __FUNCTION__, $req->all(), __LINE__);
         DB::beginTransaction();
         try{
             $jumlah = (int) $req->input('jumlah');
@@ -387,6 +420,7 @@ class RegistrasiController extends Controller
     }
 
     public function simpanPayment(Request $req){
+        $this->simpleLogger($this, __FUNCTION__, $req->all(), __LINE__);
         DB::beginTransaction();
         try{
             $jumlah = (int) $req->input('jumlah');
@@ -508,6 +542,7 @@ class RegistrasiController extends Controller
     }
 
     public function simpanEdit(Request $req){
+        $this->simpleLogger($this, __FUNCTION__, $req->all(), __LINE__);
         DB::beginTransaction();
         try{
             $jumlah = (int) $req->input('jumlah');
@@ -523,6 +558,8 @@ class RegistrasiController extends Controller
                 $rules['gender' . $i] = 'required';
                 $rules['job' . $i] = 'required';
                 $rules['country' . $i] = 'required';
+                $rules['email' . $i] = 'required|email';
+                $rules['image' . $i] = 'required|mimes:jpeg,png,jpg|max:2048';
             }
             
             $vali = Validator::make($req->all(),$rules);
@@ -542,15 +579,18 @@ class RegistrasiController extends Controller
                 if ($registrasiDetail == null){
                     throw new \Exception('Registrasi Detail with ID '.$id.' not found');
                 }
-
+                
+                $identityno = strip_tags($req->input('identityno'.$i));
                 $registrasiDetail->name = strip_tags($req->input('name'.$i));
                 $registrasiDetail->address = strip_tags($req->input('address'.$i));
-                $registrasiDetail->identityno = strip_tags($req->input('identityno'.$i));
+                $registrasiDetail->identityno = $identityno;
                 $registrasiDetail->birthplace = strip_tags($req->input('birthplace'.$i));
                 $registrasiDetail->birthdate = strip_tags($req->input('birthdate'.$i));
                 $registrasiDetail->gender = strip_tags($req->input('gender'.$i));
                 $registrasiDetail->job = strip_tags($req->input('job'.$i));
                 $registrasiDetail->country = strip_tags($req->input('country'.$i));
+                $registrasiDetail->email = strip_tags($req->input('email'.$i));
+                $registrasiDetail->image = $this->storeImage($req->file('image'.$i),$identityno);
                 $registrasiDetail->updatedby = $req->user()->id;
                 $registrasiDetail->save();                
             }
@@ -672,13 +712,15 @@ class RegistrasiController extends Controller
         $recipients  = [];
         foreach ($registrasiDetail as $key => $value)
         {
-            if ($value->email)
+            if ($value->email && $value->status)
             {
                 $recipients[$value->email] = $value->name;
             }
         }
+        $this->simpleLogger($this, __FUNCTION__, $recipients, __LINE__);
 
-        $send = $this->sendEmail($recipients,'Email from Taishanalkes',$text,$req->namafile);
+        $subject = 'Hasil Pemeriksaan';
+        $send = $this->sendEmail($recipients,$subject,$text,$req->namafile);
 
         return redirect('/transaction/registrasi')->with('message', $send);
     }

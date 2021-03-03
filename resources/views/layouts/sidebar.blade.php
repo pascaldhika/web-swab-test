@@ -146,6 +146,15 @@
                 </a>
               </li>
               @endif
+
+              @if(Gate::check('isSuperAdmin'))
+              <li class="nav-item">
+                <a href="{{ route('harga.index') }}" class="nav-link">
+                  <i class="nav-icon far fa-circle text-danger"></i>
+                  <p>Harga</p>
+                </a>
+              </li>
+              @endif
             </ul>
           </li>
 

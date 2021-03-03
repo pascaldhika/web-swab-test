@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Registrasi;
 use App\Models\RegistrasiDetail;
 use App\Models\Outlet;
+use DB;
 
 class HomeController extends Controller
 {
@@ -118,7 +119,8 @@ class HomeController extends Controller
 
     public function cekOutlet($id)
     {
-        return Outlet::find($id)->code;
+        $outlet = Outlet::select(DB::raw("CONCAT(code,' - ', name) AS code"))->where('id',$id)->first();
+        return $outlet->code;
     }
 
     public function switchc(Request $req) {
