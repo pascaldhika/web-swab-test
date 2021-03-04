@@ -25,14 +25,12 @@
                 <table id="table" class="table table-bordered table-striped">
                   <thead>
                   <tr>
-                    <th>ID</th>
+                    <th>Mitra</th>
                     <th>Jenis Rapid</th>
                     <th>Nominal</th>
+                    <th>Payment Method</th>
                     <th>Active</th>
-                    <th>CreatedBy</th>
-                    <th>UpdatedBy</th>
-                    <th>Created_at</th>
-                    <th>Updated_at</th>
+                    <th>Keterangan</th>
                     <th>Action</th>
                   </tr>
                   </thead>
@@ -60,6 +58,15 @@
             <div class="card-body">
                 <input type="hidden" id="id" value="" class="form-control form-clear">
                 <div class="form-group">
+                    <label>Mitra</label>
+                    <select id="mitraid" class="form-control form-clear">
+                        <option value="">Pilih Jenis Mitra</option>
+                        @foreach($mitra as $p => $v)
+                        <option value="{{$p}}">{{$v}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Jenis Rapid</label>
                     <select id="jenisrapid" class="form-control form-clear">
                         <option value="">Pilih Jenis Rapid</option>
@@ -71,6 +78,18 @@
                 <div class="form-group">
                     <label>Nominal</label>
                     <input type="text" class="form-control form-clear sort-tab" id="nominal" placeholder="Nominal" onkeypress="return hanyaAngka(event)">
+                </div>
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <select id="paymentid" class="select2 form-control form-clear" multiple="multiple" data-placeholder="Pilih Payment Method" style="width: 100%;">
+                        @foreach($payment as $p => $v)
+                        <option value="{{$v}}">{{$v}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Keterangan</label>
+                    <textarea type="text" class="form-control form-clear sort-tab" id="keterangan" placeholder="Keterangan"></textarea>
                 </div>
                 <div class="custom-control custom-checkbox">
                   <input class="custom-control-input" type="checkbox" id="active" value="Y">
@@ -92,6 +111,9 @@
 <script type="text/javascript">
     var table = false;
     $(document).ready(function(){
+        //Initialize Select2 Elements
+        $('.select2').select2();
+
         $('#table').dataTable().fnDestroy();
         table = $('#table').DataTable({
             serverSide: true,
@@ -103,7 +125,7 @@
             },
             columns: [
                 {
-                    "data" : "id",
+                    "data" : "mitra",
                     "className": "menufilter textfilter"
                 },
                 {
@@ -116,23 +138,15 @@
                     render: $.fn.dataTable.render.number( '.' )
                 },
                 {
+                    "data" : "paymentlist",
+                    "className": "menufilter textfilter"
+                },
+                {
                     "data" : "active",
-                    "className": "menufilter textfilter"
+                    "className": "menufilter text-center"
                 },
                 {
-                    "data" : "createdby",
-                    "className": "menufilter textfilter"
-                },
-                {
-                    "data" : "updatedby",
-                    "className": "menufilter textfilter"
-                },
-                {
-                    "data" : "created_at",
-                    "className": "menufilter textfilter"
-                },
-                {
-                    "data" : "updated_at",
+                    "data" : "remark",
                     "className": "menufilter textfilter"
                 },
                 {data: 'action', orderable: false, searchable: false},
@@ -168,17 +182,31 @@
 
     function editHarga(id, e){
         @can('isSuperAdmin')
+            var mitra  = $(e).data('mitraid');
             var jenisrapid  = $(e).data('jenisrapid');
             var nominal  = $(e).data('nominal');
             var active  = $(e).data('active');
+            var keterangan  = $(e).data('keterangan');
+
             clear_column('modalTambahHarga');
             $('#modalTambahHarga #myModalLabel').text("Edit Harga");
             $('#modalTambahHarga #id').val(id);
+            $('#modalTambahHarga #mitraid').val(mitra).change();
             $('#modalTambahHarga #jenisrapid').val(jenisrapid).change();
             $('#modalTambahHarga #nominal').val(nominal).change();
+            $('#modalTambahHarga #keterangan').val(keterangan);
             if (active == 'Y'){
                 $('#modalTambahHarga #active').prop('checked', true);  
             } else $('#modalTambahHarga #active').prop('checked', false);
+
+            var paymentlist  = $(e).data('paymentlist');
+            var selectedValues = new Array();
+            selectedValues = paymentlist.split(",");
+
+            $('#paymentid').val(selectedValues).change();
+            // $.each($(".select2"), function(){
+            //     $(this).select2('val', selectedValues);
+            // });
             
             $('#modalTambahHarga').modal("show");
         @else
@@ -189,17 +217,23 @@
     function simpanHarga(){
         var id   = $('#modalTambahHarga #id').val();
         var nominal = $('#modalTambahHarga #nominal').val().replace(/\./g,'');
+        var mitraid = $('#modalTambahHarga #mitraid').val();
         var jenisrapid = $('#modalTambahHarga #jenisrapid').val();
         var active = $('.custom-control-input:checked').val();
+        var keterangan = $('#modalTambahHarga #keterangan').val();
+        var paymentid = $('#modalTambahHarga #paymentid').val();
 
         $.ajax({
             type: 'POST',
             url: '{{ route("harga.simpan") }}',
             data: {
                 id: id,
+                mitraid: mitraid,
                 jenisrapid: jenisrapid,
                 nominal: nominal,
                 active: active,
+                keterangan: keterangan,
+                paymentid: paymentid,
                 _token: "{{ csrf_token() }}"
             },
             dataType: "json",

@@ -12,6 +12,7 @@ use App\Models\Outlet;
 use App\Models\Dokter;
 use App\Models\JenisRapid;
 use App\Models\Harga;
+use App\Models\Mitra;
 use Illuminate\Support\Facades\Validator;
 use DB;
 use App\Exports\RegistrasiReport;
@@ -125,12 +126,9 @@ class RegistrasiController extends Controller
         $id = $req->id;
         $registrasi = Registrasi::find($id);
 
-        $payment = Payment::where('active', 'Y')->orderBy('name','asc')->pluck('name','id');
+        $mitra = Mitra::where('active', 'Y')->orderBy('name','asc')->pluck('name','id');
 
-        $jenisrapid = JenisRapid::where('name',$registrasi->type)->where('active', 'Y')->first();
-        $harga = Harga::where('active', 'Y')->where('jenisrapidid',$jenisrapid->id)->orderBy('nominal','asc')->pluck('nominal','id');
-
-        return view('registrasi.detail', compact('id','payment','harga'));
+        return view('registrasi.detail', compact('id','mitra'));
     }
 
     public function getDetail(Request $req) {

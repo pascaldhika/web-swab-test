@@ -138,6 +138,10 @@
               var newRow  = $(".field.fieldTEXT");
               var html = "";
 
+              $('#docdate').html(data.data[0].newdocdate);
+              $('#docno').html(data.data[0].docno);
+              $('#type').html(data.data[0].type);
+
               newRow.empty();
 
               var i = 1;
@@ -181,10 +185,10 @@
                 html +=         '</div>';
                 html +=       '</div>';
 
-                var checkedUnPaid = "";
-                if (v.paid == 'N'){
-                  checkedUnPaid ="checked";
-                }
+                // var checkedUnPaid = "";
+                // if (v.paid == 'N'){
+                //   checkedUnPaid ="checked";
+                // }
 
                 var checkedCancel = "";
                 if (v.paid == 'C'){
@@ -213,10 +217,9 @@
                 html +=           '<label class="form-check-label"> Cancel</label>';
                 html +=         '</div>';
                 html +=       '</div>';
+                html +=     '</div>';
 
-                html +=       '<div class="form-group">';
-                html +=         '<label for="payment'+i+'">Payment Method</label>';
-                html +=         '<select id="payment'+i+'" name="payment'+i+'" class="form-control" onchange="return getSecondPayment(payment'+i+', '+i+')">';
+                html +=    '<div class="card-footer">';
 
                 var arrPayment = [];
                 if (v.paymentlist){
@@ -231,11 +234,20 @@
                   objFour['payment'+i] = arrPayment[3];
                   arrFourPayment.push(objFour);
                 }
-                
-                html +=           '<option value="">Pilih Payment</option>';                
-                html +=           '@foreach($payment as $p => $v)';
-                html +=           '<option value="{{$v}}">{{$v}}</option>';
+
+                html +=       '<div class="form-group">';
+                html +=         '<label for="payment'+i+'">Payment Method</label>';
+                html +=         '<select id="payment'+i+'" name="payment'+i+'" class="form-control" data-amount="'+v.amount+'" onchange="return getAmount(this, '+i+')">';
+                html +=           '<option value="">Pilih Mitra</option>';                
+                html +=           '@foreach($mitra as $p => $v)';
+                html +=           '<option value="{{$p}}">{{$v}}</option>';
                 html +=           '@endforeach';
+                html +=         '</select>';
+                html +=       '</div>';
+                html +=       '<div class="form-group">';
+                html +=         '<label for="amount'+i+'">Amount</label>';
+                html +=         '<select id="amount'+i+'" name="amount'+i+'" class="form-control" onchange="return separatorRibuan(amount'+i+')">';
+
                 html +=         '</select>';
                 html +=       '</div>';
 
@@ -245,16 +257,8 @@
 
                 html +=       '<div class="form-group fieldFourPayment'+i+'"></div>';
 
-                html +=       '<div class="form-group">';
-                html +=         '<label for="amount'+i+'">Amount</label>';
-                html +=         '<select id="amount'+i+'" name="amount'+i+'" class="form-control" onchange="return separatorRibuan(amount'+i+')">';
-                html +=           '<option value="0">Pilih Harga</option>';                
-                html +=           '@foreach($harga as $p => $v)';
-                html +=           '<option value="{{$v}}">{{$v}}</option>';
-                html +=           '@endforeach';
-                html +=         '</select>';
-                html +=       '</div>';
-                html +=     '</div>';
+                html +=      '</div>';
+
                 html += '</div>';
 
                 total = total + parseInt(v.amount);
@@ -287,9 +291,6 @@
                   i++;
                });
 
-              $('#docdate').html(data.data[0].newdocdate);
-              $('#docno').html(data.data[0].docno);
-              $('#type').html(data.data[0].type);
               $('#total').val(total).trigger('keyup');
               
             }else{        
@@ -363,6 +364,33 @@
       }
 
       separatorRibuan('amount'+i);
+    }
+
+    function getAmount(ele, i) {
+      var amount = $(ele).data('amount');
+      $.ajax({
+        url: "{{ route('harga.amount')}}",
+        data : {
+          jenisrapidid: $('#type').html(),
+          mitraid: ele.value
+        },
+        type: 'GET',
+        dataType: 'json',
+        success: function(val) {
+          var k = $('select[name="amount'+i+'"]');
+          k.empty();
+          k.append('<option value="0">Pilih Amount</option>');
+          $.each(val, function(key, value){
+            var selected = "";
+            if (amount == value)
+            {
+              selected = 'selected';
+            }
+            k.append('<option value="'+key+'" '+selected+'>'+value+'</option>');
+          });
+          k.trigger("change");
+        }
+      });
     }
 
     function getSecondPayment(ele, i) {
@@ -607,7 +635,11 @@
       // Calculate
       var total = 0;
       for (var i = 1; i <= jumlah; i++){
-        total = total + parseInt($('#amount'+i).val().replace(/\./g,''));
+        var amount = parseInt($('#amount'+i+' option:selected').text());
+        if (!isNaN(amount))
+        {
+          total = total + amount;
+        }
       }
       $('#total').val(total).trigger('keyup');
 

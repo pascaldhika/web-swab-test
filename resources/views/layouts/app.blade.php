@@ -145,7 +145,7 @@
 <!-- pace-progress -->
 <script src="{{url('adminlte/bower_components/pace-progress/pace.min.js')}}"></script>
 <!-- AdminLTE for demo purposes -->
-<script src="{{url('adminlte/dist/js/demo.js')}}"></script>
+<!-- <script src="{{url('adminlte/dist/js/demo.js')}}"></script> -->
 
 @push('scripts')
 <script type="text/javascript">

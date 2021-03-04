@@ -122,9 +122,14 @@
         html +=       '</div>';
         html +=       '<div class="form-group">';
         html +=         '<label for="file'+i+'">Foto KTP/SIM/Passport/KK </label><small style="color: red"> *Max size: 2MB</small>';
-        html +=         '<input type="file" class="form-control" id="file'+i+'" onChange="resizeImage(this,'+i+')" accept="image/*" capture="camera">';
-        html +=         '<input type="hidden" class="form-control" id="image'+i+'">';
-        html +=         '<img id="preview'+i+'" src=""/>';
+        html +=         '<div class="custom-file">';
+        html +=           '<input type="file" class="custom-file-input" id="file'+i+'" onChange="resizeImage(this,'+i+')" accept="image/*" capture="camera">';
+        html +=           '<label class="custom-file-label" for="file'+i+'">Pilih Gambar</label>';
+        html +=           '<input type="hidden" class="form-control" id="image'+i+'">';
+        html +=         '</div>';
+        html +=       '</div>';
+        html +=       '<div class="form-group">';
+        html +=           '<img id="preview'+i+'" src=""/>';
         html +=       '</div>';
         html +=     '</div>';
         html += '</div>';

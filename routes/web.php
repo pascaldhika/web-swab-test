@@ -102,5 +102,6 @@ Route::group(['middleware' => ['auth']],function(){
 	Route::get('/master/harga','HargaController@index')->name('harga.index')->middleware('can:isSuperAdmin');
 	Route::get('/master/harga/data','HargaController@getData')->name('harga.data')->middleware('can:isSuperAdmin');
 	Route::post('/master/harga/simpan','HargaController@simpan')->name('harga.simpan')->middleware('can:isSuperAdmin');
+	Route::get('/master/harga/amount', 'HargaController@getAmountByMitra')->name('harga.amount');
 
 });
