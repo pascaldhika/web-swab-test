@@ -134,4 +134,16 @@ class HargaController extends Controller
 
         return json_encode($harga);
     }
+
+    public function getPaymentByHarga(Request $req)
+    {
+        $payment = [];
+        if ($req->hargaid)
+        {
+            $payment = HargaDetail::where('hargaid', $req->hargaid)
+                    ->orderBy('name','asc')->pluck('name','id');
+        }
+
+        return json_encode($payment);
+    }
 }

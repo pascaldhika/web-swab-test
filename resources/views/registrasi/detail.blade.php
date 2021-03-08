@@ -4,12 +4,13 @@
 <div class="container-fluid">
     <div class="row">
       <div class="col-12">
-        <div class="callout callout-info">
+        <!-- <div class="callout callout-info">
           <h5><i class="fas fa-info"></i> Note:</h5>
           This page has been enhanced for printing. Click the print button at the bottom of the invoice.
-        </div>
+        </div> -->
 
-
+        <br>
+        
         <!-- Main content -->
         <div class="invoice p-3 mb-3">
           <!-- title row -->
@@ -45,27 +46,27 @@
 
           <div class="row">
             <!-- accepted payments column -->
-            <div class="col-6">
+            <div class="col-8">
               <p class="lead">Payment Methods:</p>
               <img src="{{url('adminlte/dist/img/credit/visa.png')}}" alt="Visa">
               <img src="{{url('adminlte/dist/img/credit/mastercard.png')}}" alt="Mastercard">
               <img src="{{url('adminlte/dist/img/credit/american-express.png')}}" alt="American Express">
               <img src="{{url('adminlte/dist/img/credit/paypal2.png')}}" alt="Paypal">
 
-              <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
+              <!-- <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
                 Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles, weebly ning heekya handango imeem
                 plugg
                 dopplr jibjab, movity jajah plickers sifteo edmodo ifttt zimbra.
-              </p>
+              </p> -->
             </div>
             <!-- /.col -->
-            <div class="col-6">
+            <div class="col-4">
 
               <div class="table-responsive">
                 <table class="table">
                   <tr>
                     <th>Total:</th>
-                    <td><input type="text" class="form-control" id="total" placeholder="Total" disabled=""></td>
+                    <td><input type="text" class="form-control" id="total" placeholder="Total" disabled="" style="font-size: 20pt; text-align: right"></td>
                   </tr>
                 </table>
               </div>
@@ -73,7 +74,7 @@
             <!-- /.col -->
           </div>
           <!-- /.row -->
-
+          <br>
           <!-- this row will not appear when printing -->
           <div class="row no-print">
             <div class="col-12">
@@ -148,7 +149,7 @@
               var total = 0;
               $.each(data.data, function (k, v) {
                 html += '<div id="field'+i+'" class="card card-secondary">';
-                html +=    '<div class="card-header"><h3 class="card-title">Data Peserta '+i+'</h3>';
+                html +=    '<div class="card-header"><h3 class="card-title">Data Pasien '+i+'</h3>';
                 html +=     '<div class="card-tools">';
                 html +=       '<button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>';
                 html +=     '</div>';
@@ -236,8 +237,8 @@
                 }
 
                 html +=       '<div class="form-group">';
-                html +=         '<label for="payment'+i+'">Payment Method</label>';
-                html +=         '<select id="payment'+i+'" name="payment'+i+'" class="form-control" data-amount="'+v.amount+'" onchange="return getAmount(this, '+i+')">';
+                html +=         '<label for="mitra'+i+'">Mitra</label>';
+                html +=         '<select id="mitra'+i+'" name="mitra'+i+'" class="form-control" data-amount="'+v.amount+'" onchange="return getAmount(this, '+i+')">';
                 html +=           '<option value="">Pilih Mitra</option>';                
                 html +=           '@foreach($mitra as $p => $v)';
                 html +=           '<option value="{{$p}}">{{$v}}</option>';
@@ -246,7 +247,13 @@
                 html +=       '</div>';
                 html +=       '<div class="form-group">';
                 html +=         '<label for="amount'+i+'">Amount</label>';
-                html +=         '<select id="amount'+i+'" name="amount'+i+'" class="form-control" onchange="return separatorRibuan(amount'+i+')">';
+                html +=         '<select id="amount'+i+'" name="amount'+i+'" class="form-control" data-payment="'+v.payment+'" onchange="return getPaymentMethod(this, '+i+')">';
+
+                html +=         '</select>';
+                html +=       '</div>';
+                html +=       '<div class="form-group">';
+                html +=         '<label for="payment'+i+'">Payment Method</label>';
+                html +=         '<select id="payment'+i+'" name="payment'+i+'" class="form-control">';
 
                 html +=         '</select>';
                 html +=       '</div>';
@@ -389,6 +396,33 @@
             k.append('<option value="'+key+'" '+selected+'>'+value+'</option>');
           });
           k.trigger("change");
+        }
+      });
+    }
+
+    function getPaymentMethod(ele, i) {
+      var payment = $(ele).data('payment');
+      $.ajax({
+        url: "{{ route('harga.payment')}}",
+        data : {
+          hargaid: ele.value
+        },
+        type: 'GET',
+        dataType: 'json',
+        success: function(val) {
+          var k = $('select[name="payment'+i+'"]');
+          k.empty();
+          k.append('<option value="0">Pilih Payment Method</option>');
+          $.each(val, function(key, value){
+            var selected = "";
+            if (payment == value)
+            {
+              selected = 'selected';
+            }
+            k.append('<option value="'+key+'" '+selected+'>'+value+'</option>');
+          });
+          k.trigger("change");
+          separatorRibuan('amount'+i);
         }
       });
     }
