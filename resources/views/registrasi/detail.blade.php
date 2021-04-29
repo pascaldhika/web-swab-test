@@ -66,7 +66,7 @@
                 <table class="table">
                   <tr>
                     <th>Total:</th>
-                    <td><input type="text" class="form-control" id="total" placeholder="Total" disabled="" style="font-size: 20pt; text-align: right"></td>
+                    <td><input type="text" class="form-control" id="total" placeholder="0" disabled="" style="font-size: 20pt; text-align: right"></td>
                   </tr>
                 </table>
               </div>
@@ -104,8 +104,8 @@
     var objThird = {};
     var objFour = {};
 
-    generateForm();
     $(document).ready(function(){
+        generateForm();
       $('#total').on('keyup',function(event) {
         // skip for arrow keys
         if(event.which >= 100 && event.which <= 100) return;
@@ -125,189 +125,187 @@
 
     function generateForm(){
       var id = "{!! $id !!}";
-      
-      $.ajax({
-        type: 'POST',
-        url: '{{ route("registrasi.detail.data") }}',
-        data: {
-            id: id,
-            _token: "{{ csrf_token() }}"
-        },
-        dataType: "json",
-        success: function(data){
-            if(data.success){
-              var newRow  = $(".field.fieldTEXT");
-              var html = "";
-
-              $('#docdate').html(data.data[0].newdocdate);
-              $('#docno').html(data.data[0].docno);
-              $('#type').html(data.data[0].type);
-
-              newRow.empty();
-
-              var i = 1;
-              var total = 0;
-              $.each(data.data, function (k, v) {
-                html += '<div id="field'+i+'" class="card card-secondary">';
-                html +=    '<div class="card-header"><h3 class="card-title">Data Pasien '+i+'</h3>';
-                html +=     '<div class="card-tools">';
-                html +=       '<button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>';
-                html +=     '</div>';
-                html +=    '</div>';
-                html +=    '<div class="card-body">';
-                html +=       '<input type="hidden" class="form-control" id="id'+i+'" value="'+v.id+'">';
-                html +=       '<div class="form-group">';
-                html +=         '<label for="name'+i+'">Nama</label>';
-                html +=         '<input type="text" class="form-control" id="name'+i+'" value="'+v.name+'" placeholder="Nama" disabled>';
-                html +=       '</div>';
-                html +=       '<div class="form-group">';
-                html +=         '<label for="address'+i+'">Alamat</label>';
-                html +=         '<input type="text" class="form-control" id="address'+i+'" value="'+v.address+'" placeholder="Alamat" disabled>';
-                html +=       '</div>';
-                html +=       '<div class="form-group">';
-                html +=         '<label for="identityno'+i+'">No. Identitas</label>';
-                html +=         '<input type="text" class="form-control" id="identityno'+i+'" value="'+v.identityno+'" placeholder="No. Identitas" disabled>';
-                html +=       '</div>';
-                html +=       '<div class="form-group">';
-                html +=         '<label for="branch'+i+'">Branch</label>';
-                html +=         '<div class="form-check">';
-                html +=           '<input class="form-check-input" type="radio" name="branch'+i+'" value="SBP" checked>';
-                html +=           '<label class="form-check-label"> SPB</label>';
-                html +=         '</div>';
-                html +=         '<div class="form-check">';
-                
-                var checkedVisit = "";
-                if (v.branch == 'Visit'){
-                  checkedVisit ="checked";
-                }
-
-                html +=           '<input class="form-check-input" type="radio" name="branch'+i+'" value="Visit" '+checkedVisit+'>';
-                html +=           '<label class="form-check-label"> Visit</label>';
-                html +=         '</div>';
-                html +=       '</div>';
-
-                // var checkedUnPaid = "";
-                // if (v.paid == 'N'){
-                //   checkedUnPaid ="checked";
-                // }
-
-                var checkedCancel = "";
-                if (v.paid == 'C'){
-                  checkedCancel ="checked";
-                }
-
-                var disabledPaid, disabledUnpaid, disabledCancel = "";
-                if (v.status || v.paid == 'C'){
-                  disabledPaid = "disabled";
-                  disabledUnpaid = "disabled";
-                  disabledCancel = "disabled";
-                }
-
-                html +=       '<div class="form-group">';
-                html +=         '<label for="paid'+i+'">Payment Status</label>';
-                html +=         '<div class="form-check">';
-                html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Paid" checked '+disabledPaid+' onchange="return getPaidChange(this,'+i+')">';
-                html +=           '<label class="form-check-label"> Paid</label>';
-                html +=         '</div>';
-                // html +=         '<div class="form-check">';
-                // html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Unpaid" '+checkedUnPaid+' '+disabledUnpaid+' onchange="return getPaidChange(this,'+i+')">';
-                // html +=           '<label class="form-check-label"> Unpaid</label>';
-                // html +=         '</div>';
-                html +=         '<div class="form-check">';
-                html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Cancel" '+checkedCancel+' '+disabledCancel+' onchange="return getPaidChange(this,'+i+')">';
-                html +=           '<label class="form-check-label"> Cancel</label>';
-                html +=         '</div>';
-                html +=       '</div>';
-                html +=     '</div>';
-
-                html +=    '<div class="card-footer">';
-
-                var arrPayment = [];
-                if (v.paymentlist){
-                  arrPayment = v.paymentlist.split(',');
-                
-                  objSecond['payment'+i] = arrPayment[1];
-                  arrSecondPayment.push(objSecond);
-
-                  objThird['payment'+i] = arrPayment[2];
-                  arrThirdPayment.push(objThird);
-
-                  objFour['payment'+i] = arrPayment[3];
-                  arrFourPayment.push(objFour);
-                }
-
-                html +=       '<div class="form-group">';
-                html +=         '<label for="mitra'+i+'">Mitra</label>';
-                html +=         '<select id="mitra'+i+'" name="mitra'+i+'" class="form-control" data-amount="'+v.amount+'" onchange="return getAmount(this, '+i+')">';
-                html +=           '<option value="">Pilih Mitra</option>';                
-                html +=           '@foreach($mitra as $p => $v)';
-                html +=           '<option value="{{$p}}">{{$v}}</option>';
-                html +=           '@endforeach';
-                html +=         '</select>';
-                html +=       '</div>';
-                html +=       '<div class="form-group">';
-                html +=         '<label for="amount'+i+'">Amount</label>';
-                html +=         '<select id="amount'+i+'" name="amount'+i+'" class="form-control" data-payment="'+v.payment+'" onchange="return getPaymentMethod(this, '+i+')">';
-
-                html +=         '</select>';
-                html +=       '</div>';
-                html +=       '<div class="form-group">';
-                html +=         '<label for="payment'+i+'">Payment Method</label>';
-                html +=         '<select id="payment'+i+'" name="payment'+i+'" class="form-control">';
-
-                html +=         '</select>';
-                html +=       '</div>';
-
-                html +=       '<div class="form-group fieldSecondPayment'+i+'"></div>';
-
-                html +=       '<div class="form-group fieldThirdPayment'+i+'"></div>';
-
-                html +=       '<div class="form-group fieldFourPayment'+i+'"></div>';
-
-                html +=      '</div>';
-
-                html += '</div>';
-
-                total = total + parseInt(v.amount);
-
-                i++;
-              });
-
-              newRow.append(html);
-
-              jumlah = i-1;
-
-              for (var i = 1; i <= jumlah; i++){
-                $('input:radio[name=paid'+i+']:checked').trigger("change");
-                $('#payment'+i).trigger('change');
-                i++;
-              }
-
-              // looping ulang untuk menentukan selected
-               i = 1;
-               $.each(data.data, function (k, v) {
-                  var arrPayment = [];
-                  if (v.paymentlist){
-                    arrPayment = v.paymentlist.split(',');
-                    if (v.paid != 'C')
-                    {
-                      $('#payment'+i).val(arrPayment[0]).change();
+      showLoading(true, () => {
+          $.ajax({
+            type: 'POST',
+            url: '{{ route("registrasi.detail.data") }}',
+            data: {
+                id: id,
+                _token: "{{ csrf_token() }}"
+            },
+            dataType: "json",
+            success: function(data){
+                if(data.success){
+                  var newRow  = $(".field.fieldTEXT");
+                  var html = "";
+    
+                  $('#docdate').html(data.data[0].newdocdate);
+                  $('#docno').html(data.data[0].docno);
+                  $('#type').html(data.data[0].type);
+    
+                  newRow.empty();
+    
+                  var i = 1;
+                  var total = 0;
+                  $.each(data.data, function (k, v) {
+                    html += '<div id="field'+i+'" class="card card-secondary">';
+                    html +=    '<div class="card-header"><h3 class="card-title">Data Pasien '+i+'</h3>';
+                    html +=     '<div class="card-tools">';
+                    html +=       '<button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>';
+                    html +=     '</div>';
+                    html +=    '</div>';
+                    html +=    '<div class="card-body">';
+                    html +=       '<input type="hidden" class="form-control" id="id'+i+'" value="'+v.id+'">';
+                    html +=       '<div class="form-group">';
+                    html +=         '<label for="name'+i+'">Nama</label>';
+                    html +=         '<input type="text" class="form-control" id="name'+i+'" value="'+v.name+'" placeholder="Nama" disabled>';
+                    html +=       '</div>';
+                    html +=       '<div class="form-group">';
+                    html +=         '<label for="address'+i+'">Alamat</label>';
+                    html +=         '<input type="text" class="form-control" id="address'+i+'" value="'+v.address+'" placeholder="Alamat" disabled>';
+                    html +=       '</div>';
+                    html +=       '<div class="form-group">';
+                    html +=         '<label for="identityno'+i+'">No. Identitas</label>';
+                    html +=         '<input type="text" class="form-control" id="identityno'+i+'" value="'+v.identityno+'" placeholder="No. Identitas" disabled>';
+                    html +=       '</div>';
+                    // html +=       '<div class="form-group">';
+                    // html +=         '<label for="branch'+i+'">Branch</label>';
+                    // html +=         '<div class="form-check">';
+                    // html +=           '<input class="form-check-input" type="radio" name="branch'+i+'" value="SBP" checked>';
+                    // html +=           '<label class="form-check-label"> SPB</label>';
+                    // html +=         '</div>';
+                    // html +=         '<div class="form-check">';
+                    
+                    // var checkedVisit = "";
+                    // if (v.branch == 'Visit'){
+                    //   checkedVisit ="checked";
+                    // }
+    
+                    // html +=           '<input class="form-check-input" type="radio" name="branch'+i+'" value="Visit" '+checkedVisit+'>';
+                    // html +=           '<label class="form-check-label"> Visit</label>';
+                    // html +=         '</div>';
+                    // html +=       '</div>';
+    
+                    // var checkedUnPaid = "";
+                    // if (v.paid == 'N'){
+                    //   checkedUnPaid ="checked";
+                    // }
+    
+                    var checkedCancel = "";
+                    if (v.paid == 'C'){
+                      checkedCancel ="checked";
                     }
-                  }
-                  $('#amount'+i).val(v.amount);
-                  i++;
-               });
-
-              $('#total').val(total).trigger('keyup');
-              
-            }else{        
-               toastr.error(data.message);
+    
+                    var disabledPaid, disabledUnpaid, disabledCancel = "";
+                    if (v.status){
+                      disabledPaid = "disabled";
+                      disabledUnpaid = "disabled";
+                      disabledCancel = "disabled";
+                    }
+                    
+                    var arrPayment = [];
+                    var mitra = "";
+                    var payment = "";
+                    if (v.paymentlist){
+                      arrPayment = v.paymentlist.split(',');
+                      
+                      mitra = arrPayment[0];
+                      payment = arrPayment[1];
+                    
+                      objSecond['payment'+i] = arrPayment[1];
+                      arrSecondPayment.push(objSecond);
+    
+                      objThird['payment'+i] = arrPayment[2];
+                      arrThirdPayment.push(objThird);
+    
+                      objFour['payment'+i] = arrPayment[3];
+                      arrFourPayment.push(objFour);
+                    }
+    
+                    html +=       '<div class="form-group">';
+                    html +=         '<label for="paid'+i+'">Payment Status</label>';
+                    html +=         '<div class="form-check">';
+                    html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Paid" checked '+disabledPaid+' data-mitra="'+mitra+'" data-status="'+v.status+'" onchange="return getPaidChange(this,'+i+')">';
+                    html +=           '<label class="form-check-label"> Paid</label>';
+                    html +=         '</div>';
+                    // html +=         '<div class="form-check">';
+                    // html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Unpaid" '+checkedUnPaid+' '+disabledUnpaid+' onchange="return getPaidChange(this,'+i+')">';
+                    // html +=           '<label class="form-check-label"> Unpaid</label>';
+                    // html +=         '</div>';
+                    html +=         '<div class="form-check">';
+                    html +=           '<input class="form-check-input" type="radio" name="paid'+i+'" value="Cancel" '+checkedCancel+' '+disabledCancel+' onchange="return getPaidChange(this,'+i+')">';
+                    html +=           '<label class="form-check-label"> Cancel</label>';
+                    html +=         '</div>';
+                    html +=       '</div>';
+                    html +=     '</div>';
+    
+                    html +=    '<div class="card-footer">';
+    
+                    html +=       '<div class="form-group">';
+                    html +=         '<label for="mitra'+i+'">Mitra</label>';
+                    html +=         '<select id="mitra'+i+'" name="mitra'+i+'" class="form-control" data-amount="'+v.amount+'" onchange="return getAmount(this, '+i+')">';
+                    
+                    html +=         '</select>';
+                    html +=       '</div>';
+                    html +=       '<div class="form-group">';
+                    html +=         '<label for="amount'+i+'">Amount</label>';
+                    html +=         '<select id="amount'+i+'" name="amount'+i+'" class="form-control" data-payment="'+payment+'" onchange="return getPaymentMethod(this, '+i+')">';
+    
+                    html +=         '</select>';
+                    html +=       '</div>';
+                    html +=       '<div class="form-group">';
+                    html +=         '<label for="payment'+i+'">Payment Method</label>';
+                    html +=         '<select id="payment'+i+'" name="payment'+i+'" class="form-control">';
+    
+                    html +=         '</select>';
+                    html +=       '</div>';
+    
+                    html +=       '<div class="form-group fieldSecondPayment'+i+'"></div>';
+    
+                    html +=       '<div class="form-group fieldThirdPayment'+i+'"></div>';
+    
+                    html +=       '<div class="form-group fieldFourPayment'+i+'"></div>';
+    
+                    html +=      '</div>';
+    
+                    html += '</div>';
+                    
+                    total = total + parseInt(v.amount);
+    
+                    i++;
+                  });
+    
+                  newRow.append(html);
+    
+                  jumlah = i-1;
+    
+                //   for (var j = 1; j <= jumlah; j++){console.log(j);
+                //     $('input:radio[name=paid'+j+']:checked').trigger("change");
+                //     $('#mitra'+j).trigger('change');
+                //     j++;
+                //   }
+    
+                  // looping ulang untuk menentukan selected
+                  var j = 1;
+                  $.each(data.data, function (k, v) {
+                    $('input:radio[name=paid'+j+']:checked').trigger("change");
+                    $('#mitra'+j).trigger('change');
+                    j++;
+                  });
+    
+                  $('#total').val(total).trigger('keyup');
+                  showLoading(false);
+                }else{        
+                    showLoading(false);
+                   toastr.error(data.message);
+                }
+            },
+            error: function(data){
+                showLoading(false);
+                toastr.error(data.statusText + ' : ' + data.status);
             }
-        },
-        error: function(data){
-            toastr.error(data.statusText + ' : ' + data.status);
-        }
-      });
+          });
+        }, 'Sedang mengambil data');
 
       return false;
     }
@@ -317,13 +315,14 @@
 
       for (var i = 1; i <= jumlah; i++){
         form_data.append('id'+i, $('#id'+i).val());
-        form_data.append('branch'+i, $('input[name="branch'+i+'"]:checked').val());
+        // form_data.append('branch'+i, $('input[name="branch'+i+'"]:checked').val());
         form_data.append('paid'+i, $('input[name="paid'+i+'"]:checked').val());
-        form_data.append('payment'+i, $('#payment'+i).val());
-        form_data.append('secondpayment'+i, $('#secondpayment'+i).val());
-        form_data.append('thirdpayment'+i, $('#thirdpayment'+i).val());
-        form_data.append('fourpayment'+i, $('#fourpayment'+i).val());
-        form_data.append('amount'+i, $('#amount'+i).val().replace(/\./g,''));
+        form_data.append('mitra'+i, $('#mitra'+i+' option:selected').text());
+        form_data.append('amount'+i, $('#amount'+i+' option:selected').text());
+        form_data.append('payment'+i, $('#payment'+i+' option:selected').text());
+        // form_data.append('secondpayment'+i, $('#secondpayment'+i).val());
+        // form_data.append('thirdpayment'+i, $('#thirdpayment'+i).val());
+        // form_data.append('fourpayment'+i, $('#fourpayment'+i).val());
       }
 
       form_data.append('jumlah', jumlah);
@@ -345,9 +344,14 @@
                     window.location.href = url;
                 },1000);
             }else{        
-              var obj = JSON.parse(data.message);
-              for (var i = 0; i < obj.length; i++) {
-                toastr.error(obj[i]); 
+              if(typeof data.message != 'string')
+              {
+                var obj = JSON.parse(data.message);
+                for (var i = 0; i < obj.length; i++) {
+                  toastr.error(obj[i]); 
+                }
+              } else{
+                toastr.error(data.message);
               }
             }
         },
@@ -361,13 +365,55 @@
 
     function getPaidChange(ele, i) {
       var value = ele.value;
+      var mitra = $(ele).data('mitra');
+      var status = $(ele).data('status');
       if (value == 'Cancel' || value == 'Unpaid'){
         resetFieldPayment(i);
-        $('#payment'+i).val($('#payment'+i+' option:first').val()).attr('disabled', true);
+        $('#mitra'+i).attr('disabled', true);
+        $('#payment'+i).attr('disabled', true);
         $('#amount'+i).attr('disabled', true);
       } else{
-        $('#payment'+i).attr('disabled', false);
-        $('#amount'+i).attr('disabled', false);
+        if (status)
+        {
+            $('#mitra'+i).attr('disabled', true);
+            $('#payment'+i).attr('disabled', true);
+            $('#amount'+i).attr('disabled', true);
+        }
+        else
+        {
+            $('#mitra'+i).attr('disabled', false);  
+            $('#payment'+i).attr('disabled', false);
+            $('#amount'+i).attr('disabled', false);
+        }
+        
+        var str = $('#docno').html();
+        var res = str.split("-");
+        
+        $.ajax({
+            url: "{{ route('harga.mitra')}}",
+            data : {
+              jenisrapidid: res[0]
+            },
+            type: 'GET',
+            dataType: 'json',
+            success: function(val) {
+              var k = $('select[name="mitra'+i+'"]');
+              k.empty();
+              k.append('<option value="">Pilih Mitra</option>');
+              $.each(val, function(key, value){
+                var selected = "";
+                if (mitra == value)
+                {
+                  selected = 'selected';
+                }
+                k.append('<option value="'+key+'" '+selected+'>'+value+'</option>');
+              });
+              k.trigger("change");
+            },
+            error: function(data){
+                toastr.error('Error harga mitra : ' + data.message);
+            }
+        });
       }
 
       separatorRibuan('amount'+i);
@@ -375,10 +421,12 @@
 
     function getAmount(ele, i) {
       var amount = $(ele).data('amount');
+      var str = $('#docno').html();
+      var res = str.split("-");
       $.ajax({
         url: "{{ route('harga.amount')}}",
         data : {
-          jenisrapidid: $('#type').html(),
+          jenisrapidid: res[0],
           mitraid: ele.value
         },
         type: 'GET',
@@ -396,6 +444,9 @@
             k.append('<option value="'+key+'" '+selected+'>'+value+'</option>');
           });
           k.trigger("change");
+        },
+        error: function(data){
+            toastr.error('Error harga : ' + data.message);
         }
       });
     }
@@ -423,6 +474,9 @@
           });
           k.trigger("change");
           separatorRibuan('amount'+i);
+        },
+        error: function(data){
+            toastr.error('Error payment method : ' + data.message);
         }
       });
     }
@@ -640,14 +694,18 @@
     }
 
     function resetFieldPayment(i){
-      var newRowSecond  = $(".form-group.fieldSecondPayment"+i);
-      newRowSecond.empty();
-
-      var newRowThird  = $(".form-group.fieldThirdPayment"+i);
-      newRowThird.empty();
-
-      var newRowFour  = $(".form-group.fieldFourPayment"+i);
-      newRowFour.empty();
+        $('select[name="mitra'+i+'"]').empty();
+        $('select[name="amount'+i+'"]').empty();
+        $('select[name="payment'+i+'"]').empty();
+        
+        var newRowSecond  = $(".form-group.fieldSecondPayment"+i);
+        newRowSecond.empty();
+        
+        var newRowThird  = $(".form-group.fieldThirdPayment"+i);
+        newRowThird.empty();
+        
+        var newRowFour  = $(".form-group.fieldFourPayment"+i);
+        newRowFour.empty();
     }
 
     function separatorRibuan(ele){

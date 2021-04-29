@@ -36,14 +36,15 @@
 						  <div class="input-group input-group-sm">
 						    <select id="filter" name="filter" class="form-control">
 						    	<option value="">Pilih Filter</option>
-						    	<option value="Paid">Paid</option>
+						    	<!--<option value="Paid">Paid</option>-->
 						    	<option value="Cash">Pembayaran Cash</option>
 						    	<option value="NonCash">Pembayaran Non-Cash (Mobile Banking, QRIS, etc)</option>
 						    	<option value="Pasien">Pasien Reguler</option>
 						    	<option value="PasienMitra">Pasien Mitra (Traveloka, AirAsia, etc)</option>
-						    	<option value="Antibod">Data Antibodi</option>
+						    	<option value="Antibodi">Data Antibodi</option>
 						    	<option value="Antigen">Data Antigen</option>
-						    	<option value="Total">Data Keseluruhan (Antigen & Antibody)</option>
+						    	<option value="Total">Data Keseluruhan</option>
+						    	<option value="AllTotal">Data Keseluruhan Semua Outlet</option>
 						    </select>
 						  </div>
 						</div>

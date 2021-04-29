@@ -6,8 +6,10 @@ use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use DB;
 use Illuminate\Support\Carbon;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 
-class PembayaranReport implements FromView
+class PembayaranReport implements FromView, WithColumnFormatting
 {
     public function __construct(string $tglawal, string $tglakhir, string $name, int $outletid, string $username, string $filter)
     {
@@ -17,6 +19,13 @@ class PembayaranReport implements FromView
         $this->name = $name;
         $this->username = $username;
         $this->filter = $filter;
+    }
+    
+    public function columnFormats(): array
+    {
+        return [
+            'H' => NumberFormat::FORMAT_NUMBER
+        ];
     }
 
     public function view(): View
@@ -28,7 +37,7 @@ class PembayaranReport implements FromView
             'outletid' => $this->outletid,
             'filter' => $this->filter
         ];
-        $query = "CALL rpt_get_data_pasien(:tglawal,:tglakhir,:name,:outletid,:filter)";
+        $query = "CALL rpt_get_data_pembayaran(:tglawal,:tglakhir,:name,:outletid,:filter)";
 
         $data = DB::SELECT($query,$params);
 

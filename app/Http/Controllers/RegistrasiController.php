@@ -85,7 +85,6 @@ class RegistrasiController extends Controller
 
         return Datatables::of($data)
         ->addColumn("action", function($data){
-
             $action = "";
             if ($data->paid <= 0){
                 if (Gate::allows('isKasir') || Gate::allows('isSuperAdmin')) {
@@ -107,7 +106,10 @@ class RegistrasiController extends Controller
 
             if (Gate::allows('isAdmin') || Gate::allows('isSuperAdmin')) {
                 $action .= '<div onclick="edit('.$data->id.')" class="btn btn-xs btn-secondary no-margin-action" title="Edit Data Pasien" style="margin-right:5px;"><i class="fa fa-edit"></i></div>';
-                $action .= '<div onclick="email('.$data->id.')" class="btn btn-xs btn-info no-margin-action" title="Email" style="margin-right:5px;"><i class="fa fa-mail-bulk"></i></div>';
+                if ($data->status_at)
+                {
+                    $action .= '<div onclick="email('.$data->id.')" class="btn btn-xs btn-info no-margin-action" title="Email" style="margin-right:5px;"><i class="fa fa-mail-bulk"></i></div>';   
+                }
             }
 
             return $action;
@@ -277,7 +279,7 @@ class RegistrasiController extends Controller
                 $rules['job' . $i] = 'required';
                 $rules['country' . $i] = 'required';
                 $rules['email' . $i] = 'required|email';
-                $rules['image' . $i] = 'required|mimes:jpeg,png,jpg|max:2048';
+                $rules['image' . $i] = 'required|mimes:jpeg,png,jpg|max:3048';
         	}
         	
         	$vali = Validator::make($req->all(),$rules);
@@ -293,9 +295,14 @@ class RegistrasiController extends Controller
 
             $month = date('m');
             $type = strip_tags($req->input('type'));
+            $prefix = JenisRapid::where('active', 'Y')->where('name', $type)->first();
+            if ($prefix == null)
+            {
+                throw new \Exception('Code untuk jenis: '.$type.' tidak ditemukan'); 
+            }
             $romawi =  DB::select("CALL f_gen_romawi(:angka)", ['angka' => (int) $month]);
         	$autoNum = DB::select("CALL f_gen_autonum(:prefix,:datatype,:romawi)", [
-                'prefix' => ($type == 'Antibodi Test') ? 'AB' : 'AG',
+                'prefix' => $prefix->code,
                 'datatype' => $type,
                 'romawi' => $romawi[0]->romawi
             ]);
@@ -312,6 +319,7 @@ class RegistrasiController extends Controller
             $registrasi->save();
 
         	for ($i=1; $i <= $jumlah ; $i++) {
+        	    $identityno = strip_tags($req->input('identityno'.$i));
                 $registrasiDetail = new RegistrasiDetail();
                 $registrasiDetail->registrasiid = $registrasi->id;
                 $registrasiDetail->name      = strip_tags($req->input('name'.$i));
@@ -383,9 +391,12 @@ class RegistrasiController extends Controller
                 }
 
                 $registrasi = Registrasi::find($registrasiDetail->registrasiid);
-                $registrasi->status_at = date('Y-m-d H:i:s');
-                $registrasi->status_by = $req->user()->id;
-                $registrasi->save();
+                if ($registrasi->status_at == null)
+                {
+                    $registrasi->status_at = date('Y-m-d H:i:s');
+                    $registrasi->status_by = $req->user()->id;
+                    $registrasi->save();   
+                }
 
                 $registrasiDetail->doctor = strip_tags($req->input('doctor'.$i));
                 $registrasiDetail->status = strip_tags($req->input('status'.$i));
@@ -426,12 +437,13 @@ class RegistrasiController extends Controller
             
             for ($i=1; $i <= $jumlah ; $i++) {
                 $rules['id' . $i] = 'required';
-                $rules['branch' . $i] = 'required';
+                // $rules['branch' . $i] = 'required';
                 $rules['paid' . $i] = 'required';
                 
                 if ($req->input('paid'.$i) == "Paid"){
-                    $rules['payment' . $i] = 'required';
-                    $rules['amount' . $i] = 'required|numeric|gt:0';
+                    $rules['mitra' . $i] = 'required|not_in:Pilih Mitra';
+                    $rules['amount' . $i] = 'required|numeric|gt:0|not_in:Pilih Amount';
+                    $rules['payment' . $i] = 'required|not_in:Pilih Payment Method';
                 }
             }
             
@@ -458,24 +470,25 @@ class RegistrasiController extends Controller
                 $registrasi->paid_by = $req->user()->id;
                 $registrasi->save();
 
-                $registrasiDetail->branch = strip_tags($req->input('branch'.$i));
+                // $registrasiDetail->branch = strip_tags($req->input('branch'.$i));
 
                 $paid = "N";
                 if (strip_tags($req->input('paid'.$i)) == 'Paid'){
                     $paid = "Y";
+                    $registrasiDetail->amount = strip_tags($req->input('amount'.$i));
                 } else{
                     $paid = "C";
                 }
 
                 $registrasiDetail->paid = $paid;
-                $registrasiDetail->amount = strip_tags($req->input('amount'.$i));
                 $registrasiDetail->updatedby = $req->user()->id;
                 $registrasiDetail->save();
 
-                $firstPayment = strip_tags($req->input('payment'.$i));
-                $secondPayment = strip_tags($req->input('secondpayment'.$i));
-                $thirdPayment = strip_tags($req->input('thirdpayment'.$i));
-                $fourPayment = strip_tags($req->input('fourpayment'.$i));
+                $mitra = strip_tags($req->input('mitra'.$i));
+                $paymentMethod = strip_tags($req->input('payment'.$i));
+                // $secondPayment = strip_tags($req->input('secondpayment'.$i));
+                // $thirdPayment = strip_tags($req->input('thirdpayment'.$i));
+                // $fourPayment = strip_tags($req->input('fourpayment'.$i));
 
                 // Delete Insert
                 $checkRegistrasiDetailPayment = RegistrasiDetailPayment::where('registrasidetailid', $id);
@@ -483,45 +496,45 @@ class RegistrasiController extends Controller
                     $checkRegistrasiDetailPayment->delete();
                 }
 
-                if ($firstPayment != 'undefined' && $firstPayment != '' && $firstPayment != null){
+                if ($mitra != 'undefined' && $mitra != '' && $mitra != null){
                     $registrasiDetailPayment = new RegistrasiDetailPayment();
                     $registrasiDetailPayment->registrasiid = $registrasiDetail->registrasiid;
                     $registrasiDetailPayment->registrasidetailid = $id;
-                    $registrasiDetailPayment->name = $firstPayment;
+                    $registrasiDetailPayment->name = $mitra;
                     $registrasiDetailPayment->createdby = $req->user()->id;
                     $registrasiDetailPayment->updatedby = $req->user()->id;
                     $registrasiDetailPayment->save();    
                 }
 
-                if ($secondPayment != 'undefined' && $secondPayment != '' && $secondPayment != null){
+                if ($paymentMethod != 'undefined' && $paymentMethod != '' && $paymentMethod != null){
                     $registrasiDetailPayment = new RegistrasiDetailPayment();
                     $registrasiDetailPayment->registrasiid = $registrasiDetail->registrasiid;
                     $registrasiDetailPayment->registrasidetailid = $id;
-                    $registrasiDetailPayment->name = $secondPayment;
+                    $registrasiDetailPayment->name = $paymentMethod;
                     $registrasiDetailPayment->createdby = $req->user()->id;
                     $registrasiDetailPayment->updatedby = $req->user()->id;
                     $registrasiDetailPayment->save();    
                 }
 
-                if ($thirdPayment != 'undefined' && $thirdPayment != '' && $thirdPayment != null){
-                    $registrasiDetailPayment = new RegistrasiDetailPayment();
-                    $registrasiDetailPayment->registrasiid = $registrasiDetail->registrasiid;
-                    $registrasiDetailPayment->registrasidetailid = $id;
-                    $registrasiDetailPayment->name = $thirdPayment;
-                    $registrasiDetailPayment->createdby = $req->user()->id;
-                    $registrasiDetailPayment->updatedby = $req->user()->id;
-                    $registrasiDetailPayment->save();    
-                }
+                // if ($thirdPayment != 'undefined' && $thirdPayment != '' && $thirdPayment != null){
+                //     $registrasiDetailPayment = new RegistrasiDetailPayment();
+                //     $registrasiDetailPayment->registrasiid = $registrasiDetail->registrasiid;
+                //     $registrasiDetailPayment->registrasidetailid = $id;
+                //     $registrasiDetailPayment->name = $thirdPayment;
+                //     $registrasiDetailPayment->createdby = $req->user()->id;
+                //     $registrasiDetailPayment->updatedby = $req->user()->id;
+                //     $registrasiDetailPayment->save();    
+                // }
 
-                if ($fourPayment != 'undefined' && $fourPayment != '' && $fourPayment != null){
-                    $registrasiDetailPayment = new RegistrasiDetailPayment();
-                    $registrasiDetailPayment->registrasiid = $registrasiDetail->registrasiid;
-                    $registrasiDetailPayment->registrasidetailid = $id;
-                    $registrasiDetailPayment->name = $fourPayment;
-                    $registrasiDetailPayment->createdby = $req->user()->id;
-                    $registrasiDetailPayment->updatedby = $req->user()->id;
-                    $registrasiDetailPayment->save();    
-                }
+                // if ($fourPayment != 'undefined' && $fourPayment != '' && $fourPayment != null){
+                //     $registrasiDetailPayment = new RegistrasiDetailPayment();
+                //     $registrasiDetailPayment->registrasiid = $registrasiDetail->registrasiid;
+                //     $registrasiDetailPayment->registrasidetailid = $id;
+                //     $registrasiDetailPayment->name = $fourPayment;
+                //     $registrasiDetailPayment->createdby = $req->user()->id;
+                //     $registrasiDetailPayment->updatedby = $req->user()->id;
+                //     $registrasiDetailPayment->save();    
+                // }
                 
             }
 
@@ -557,7 +570,7 @@ class RegistrasiController extends Controller
                 $rules['job' . $i] = 'required';
                 $rules['country' . $i] = 'required';
                 $rules['email' . $i] = 'required|email';
-                $rules['image' . $i] = 'required|mimes:jpeg,png,jpg|max:2048';
+                $rules['image' . $i] = 'required|mimes:jpeg,png,jpg|max:3048';
             }
             
             $vali = Validator::make($req->all(),$rules);
@@ -636,7 +649,7 @@ class RegistrasiController extends Controller
         $namafile     = $namasheet."-".uniqid().".pdf";
 
         $view = 'registrasi.pdfswab';
-        if ($registrasi->type == 'Antibodi Test'){
+        if (substr($registrasi->docno,0,2) == 'AB'){
             $view = 'registrasi.pdfrapid';
         }
         
@@ -675,7 +688,7 @@ class RegistrasiController extends Controller
             $namafile     = $namasheet."-".uniqid().".pdf";
 
             $view = 'registrasi.pdfswab';
-            if ($registrasi->type == 'Antibodi Test'){
+            if (substr($registrasi->docno,0,2) == 'AB'){
                 $view = 'registrasi.pdfrapid';
             }
             
@@ -699,14 +712,10 @@ class RegistrasiController extends Controller
 
     public function email(Request $req)
     {
-        // Mail::to("pascalprahardhika@gmail.com")->send(new TaishanalkesEmail());
- 
-        // return "Email telah dikirim";
-
         $id = strip_tags($req->id);
         $registrasiDetail = RegistrasiDetail::where('registrasiid',$id)->get();
 
-        $text = 'Berikut hasil swab test Anda:';
+        $text = 'Berikut hasil rapid test Anda:';
         $recipients  = [];
         foreach ($registrasiDetail as $key => $value)
         {

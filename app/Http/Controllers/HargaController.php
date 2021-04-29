@@ -125,7 +125,7 @@ class HargaController extends Controller
         $harga = [];
         if ($req->jenisrapidid && $req->mitraid)
         {
-            $jenisrapid = JenisRapid::where('name', $req->jenisrapidid)->first();
+            $jenisrapid = JenisRapid::where('code', $req->jenisrapidid)->first();
             $harga = Harga::where('active', 'Y')
                     ->where('jenisrapidid', $jenisrapid->id)
                     ->where('mitraid', $req->mitraid)
@@ -145,5 +145,21 @@ class HargaController extends Controller
         }
 
         return json_encode($payment);
+    }
+    
+    public function getMitraByType(Request $req)
+    {
+        $mitra = [];
+        if ($req->jenisrapidid)
+        {
+            $jenisrapid = JenisRapid::where('code', $req->jenisrapidid)->first();
+            $mitra = Mitra::select('mitra.id','mitra.name')
+                    ->join('harga','harga.mitraid','=','mitra.id')
+                    ->where('mitra.active', 'Y')
+                    ->where('harga.jenisrapidid', $jenisrapid->id)
+                    ->orderBy('name','asc')->pluck('name','id');
+        }
+
+        return json_encode($mitra);
     }
 }

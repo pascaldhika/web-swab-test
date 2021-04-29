@@ -25,7 +25,7 @@
                 <table id="table" class="table table-bordered table-striped">
                   <thead>
                   <tr>
-                    <th>ID</th>
+                    <th>Code</th>
                     <th>Name</th>
                     <th>Active</th>
                     <th>CreatedBy</th>
@@ -58,6 +58,10 @@
         <div class="modal-body">
             <div class="card-body">
                 <input type="hidden" id="id" value="" class="form-control form-clear">
+                <div class="form-group">
+                    <label>Code</label>
+                    <input type="text" class="form-control form-clear sort-tab" id="code" placeholder="Code">
+                </div>
                 <div class="form-group">
                     <label>Name</label>
                     <input type="text" class="form-control form-clear sort-tab" id="name" placeholder="Name">
@@ -93,7 +97,7 @@
             },
             columns: [
                 {
-                    "data" : "id",
+                    "data" : "code",
                     "className": "menufilter textfilter"
                 },
                 {
@@ -137,11 +141,13 @@
 
     function editJenisRapid(id, e){
         @can('isSuperAdmin')
+            var code  = $(e).data('code');
             var name  = $(e).data('name');
             var active  = $(e).data('active');
             clear_column('modalTambahJenisRapid');
             $('#modalTambahJenisRapid #myModalLabel').text("Edit Jenis Rapid");
             $('#modalTambahJenisRapid #id').val(id);
+            $('#modalTambahJenisRapid #code').val(code);
             $('#modalTambahJenisRapid #name').val(name);
             if (active == 'Y'){
                 $('#modalTambahJenisRapid #active').prop('checked', true);  
@@ -155,6 +161,7 @@
 
     function simpanJenisRapid(){
         var id   = $('#modalTambahJenisRapid #id').val();
+        var code = $('#modalTambahJenisRapid #code').val();
         var name = $('#modalTambahJenisRapid #name').val();
         var active = $('.custom-control-input:checked').val();
 
@@ -163,6 +170,7 @@
             url: '{{ route("jenisrapid.simpan") }}',
             data: {
                 id: id,
+                code: code,
                 name: name,
                 active: active,
                 _token: "{{ csrf_token() }}"

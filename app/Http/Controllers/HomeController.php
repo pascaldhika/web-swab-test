@@ -7,6 +7,7 @@ use App\Models\Registrasi;
 use App\Models\RegistrasiDetail;
 use App\Models\Outlet;
 use DB;
+use Illuminate\Support\Facades\Gate;
 
 class HomeController extends Controller
 {
@@ -35,30 +36,50 @@ class HomeController extends Controller
         
         // if ($outletid)
         // {
-            $antibodi = RegistrasiDetail::leftJoin('registrasi', 'registrasidetail.registrasiid', '=', 'registrasi.id')
-                    // ->where('registrasi.outlet_id', $outletid)
-                    ->whereRaw("DATE(docdate) >= CURRENT_DATE")
-                    ->where('type', 'Antibodi Test')
-                    ->where('paid', 'Y')
-                    ->count();
+            $antibodi = RegistrasiDetail::leftJoin('registrasi', 'registrasidetail.registrasiid', '=', 'registrasi.id');
+            
+            if (!Gate::allows('isSuperAdmin'))
+            {
+                $antibodi->where('registrasi.outlet_id', $outletid);    
+            }
+            
+            $antibodi->whereRaw("DATE(docdate) >= CURRENT_DATE");
+            $antibodi->whereRaw("LEFT(docno,2) = 'AB'");
+            $antibodi->where('paid', 'Y');
+            $antibodi = $antibodi->count();
 
-            $antigen = RegistrasiDetail::leftJoin('registrasi', 'registrasidetail.registrasiid', '=', 'registrasi.id')
-                    // ->where('registrasi.outlet_id', $outletid)
-                    ->whereRaw("DATE(docdate) >= CURRENT_DATE")
-                    ->where('type', 'Antigen Test')
-                    ->where('paid', 'Y')
-                    ->count();
+            $antigen = RegistrasiDetail::leftJoin('registrasi', 'registrasidetail.registrasiid', '=', 'registrasi.id');
+            
+            if (!Gate::allows('isSuperAdmin'))
+            {
+                $antigen->where('registrasi.outlet_id', $outletid);
+            }
+            
+            $antigen->whereRaw("DATE(docdate) >= CURRENT_DATE");
+            $antigen->whereRaw("LEFT(docno,2) = 'AG'");
+            $antigen->where('paid', 'Y');
+            $antigen = $antigen->count();
 
-            $total = RegistrasiDetail::leftJoin('registrasi', 'registrasidetail.registrasiid', '=', 'registrasi.id')
-                    // ->where('registrasi.outlet_id', $outletid)
-                    ->whereRaw("DATE(docdate) >= CURRENT_DATE")
-                    ->where('paid', 'Y')
-                    ->count();
+            $total = RegistrasiDetail::leftJoin('registrasi', 'registrasidetail.registrasiid', '=', 'registrasi.id');
+            
+            if (!Gate::allows('isSuperAdmin'))
+            {
+                $total->where('registrasi.outlet_id', $outletid);
+            }
+            
+            $total->whereRaw("DATE(docdate) >= CURRENT_DATE");
+            $total->where('paid', 'Y');
+            $total = $total->count();
 
-            $pasien = RegistrasiDetail::leftJoin('registrasi', 'registrasidetail.registrasiid', '=', 'registrasi.id')
-                    // ->where('registrasi.outlet_id', $outletid)
-                    ->whereRaw("DATE(docdate) >= CURRENT_DATE")
-                    ->count();
+            $pasien = RegistrasiDetail::leftJoin('registrasi', 'registrasidetail.registrasiid', '=', 'registrasi.id');
+            
+            if (!Gate::allows('isSuperAdmin'))
+            {
+                $pasien->where('registrasi.outlet_id', $outletid);
+            }
+            
+            $pasien->whereRaw("DATE(docdate) >= CURRENT_DATE");
+            $pasien = $pasien->count();
         // }
 
         return view('home', compact('antibodi','antigen','total','pasien'));
@@ -77,11 +98,7 @@ class HomeController extends Controller
 
         $ors = [];
         foreach (auth()->user()->akses as $key => $value) {
-            if($key == 0){
-                if (!in_array($value->id, $ors)) $ors[] = $value->id;
-            }else{
-                if (!in_array($value->id, $ors)) $ors[] = $value->id;
-            }
+            if (!in_array($value->id, $ors)) $ors[] = $value->id;
         }
 
         $outlet->whereIn("id", $ors);

@@ -19,7 +19,7 @@ class JenisRapidController extends Controller
     {
         $query = "
             SELECT 
-            	A.id, A.name, B.name AS createdby, C.name AS updatedby,
+            	A.id, A.code, A.name, B.name AS createdby, C.name AS updatedby,
             	A.active, A.created_at, A.updated_at
             FROM jenisrapid A
             LEFT JOIN users B ON A.createdby = B.id
@@ -30,7 +30,7 @@ class JenisRapidController extends Controller
 
         return Datatables::of($data)
         ->addColumn("action", function($data){
-            return '<div onclick="editJenisRapid('.$data->id.', this)" data-name="'.$data->name.'" data-active="'.$data->active.'" class="btn btn-xs btn-warning no-margin-action" title="Edit Jenis Rapid"><i class="fas fa-edit"></i></div>';
+            return '<div onclick="editJenisRapid('.$data->id.', this)" data-code="'.$data->code.'" data-name="'.$data->name.'" data-active="'.$data->active.'" class="btn btn-xs btn-warning no-margin-action" title="Edit Jenis Rapid"><i class="fas fa-edit"></i></div>';
         })
         ->make(true);
     }
@@ -40,6 +40,7 @@ class JenisRapidController extends Controller
     	DB::beginTransaction();
         try{
         	$vali = Validator::make($req->all(),[
+        		'code' => 'required',
         		'name' => 'required',
         	]);
 
@@ -59,6 +60,7 @@ class JenisRapidController extends Controller
             }
 
             $active = strip_tags($req->active);
+            $jenisrapid->code      = strip_tags($req->code);
             $jenisrapid->name      = strip_tags($req->name);
             $jenisrapid->active    = ($active == 'Y') ? $active : 'N';
             $jenisrapid->updatedby = $req->user()->id;

@@ -56,6 +56,7 @@ Route::group(['middleware' => ['auth']],function(){
 	Route::get('/report/pasien/print','ReportController@printPasien')->name('report.pasien.print');
 	Route::get('/report/pembayaran','ReportController@indexPembayaran')->name('report.pembayaran.index');
 	Route::get('/report/pembayaran/print','ReportController@printPembayaran')->name('report.pembayaran.print');
+	Route::get('/report/cetakhasil','RegistrasiController@index')->name('cetakhasil.index');
 
 	// USER
 	Route::get('/security/user','UserController@index')->name('user.index')->middleware('can:isSuperAdmin');
@@ -104,5 +105,6 @@ Route::group(['middleware' => ['auth']],function(){
 	Route::post('/master/harga/simpan','HargaController@simpan')->name('harga.simpan')->middleware('can:isSuperAdmin');
 	Route::get('/master/harga/amount', 'HargaController@getAmountByMitra')->name('harga.amount');
 	Route::get('/master/harga/payment', 'HargaController@getPaymentByHarga')->name('harga.payment');
+	Route::get('/master/harga/mitra', 'HargaController@getMitraByType')->name('harga.mitra');
 
 });

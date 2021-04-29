@@ -38,7 +38,7 @@ class Controller extends BaseController
         $mail->Port       = env('MAIL_PORT');
         $mail->Username   = env('MAIL_USERNAME');
         $mail->Password   = env('MAIL_PASSWORD');
-        $mail->SetFrom("pascalprahardhika@gmail.com", env('APP_NAME'));
+        $mail->SetFrom(env('MAIL_USERNAME'), env('APP_NAME'));
         $mail->Subject    = $subject;
 
         $filepath = storage_path('excel/exports/').$file_name;
@@ -54,9 +54,11 @@ class Controller extends BaseController
            $mail->AddCC($email, $name);
         }
 
-        $bodyContent = 'Email from '.env('APP_NAME');
+        $bodyContent = 'Email from Taishan Alkes Indonesia';
         $bodyContent .= '<br><br>'.$text;
-        $bodyContent .= '<br><br>Address: Jl. Solo-Jogja KM 15 <br><br>Date: '.date('d-m-Y').'<br>Contact Person: 08956535353535';
+        $bodyContent .= '<br><br>Address: Parkir Inap 2, Kawasan Bandara Internasional Soekarno Hatta, Jl. P2 Jl. Raya Bandara Soekarno Hatta, Pajang Benda Kota Tangerang Selatan.';
+        $bodyContent .= '<br><br>Date: '.date('d-m-Y');
+        $bodyContent .= '<br><br>Contact Person: 081389718724';
 
         $mail->Body       = $bodyContent;
         

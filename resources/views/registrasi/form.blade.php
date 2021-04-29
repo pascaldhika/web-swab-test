@@ -4,13 +4,13 @@
 <!-- general form elements -->
 <div class="card card-danger">
   <div class="card-header">
-    <h3 class="card-title">Pilih Jenis Test</h3>
+    <h3 class="card-title">Registrasi Rapid Test</h3>
   </div>
   <div class="card-body">
     <div class="row">
       <div class="col-12">
         <select id="outlet" name="outlet" class="form-control">
-          <option value="">Pilih Outlet</option>
+          <option value="">Pilih Lokasi Rapid Test</option>
           @foreach($outlet as $p => $v)
           <option value="{{$p}}">{{$v}}</option>
           @endforeach
@@ -31,7 +31,8 @@
         <input type="text" id="jumlah" class="form-control" placeholder="Jml Pasien" onkeypress="return hanyaAngka(event)">
       </div>
       <div class="col-2">
-        <button type="button" class="btn btn-success" onclick="proses()">Proses</button>
+          <a onclick="proses()" class="btn btn-success">Proses</a>
+        <!--<button type="button" class="btn btn-success" onclick="proses()">Proses</button>-->
       </div>
     </div>
   </div>
@@ -121,9 +122,9 @@
         html +=         '<input type="text" class="form-control" id="email'+i+'" placeholder="Email">';
         html +=       '</div>';
         html +=       '<div class="form-group">';
-        html +=         '<label for="file'+i+'">Foto KTP/SIM/Passport/KK </label><small style="color: red"> *Max size: 2MB</small>';
+        html +=         '<label for="file'+i+'">Foto KTP/SIM/Passport/KK </label><small style="color: red"> *Gambar akan di resize otomatis</small>';
         html +=         '<div class="custom-file">';
-        html +=           '<input type="file" class="custom-file-input" id="file'+i+'" onChange="resizeImage(this,'+i+')" accept="image/*" capture="camera">';
+        html +=           '<input type="file" class="custom-file-input" id="file'+i+'" onChange="resizeImage(this,'+i+')" accept="image/*">';
         html +=           '<label class="custom-file-label" for="file'+i+'">Pilih Gambar</label>';
         html +=           '<input type="hidden" class="form-control" id="image'+i+'">';
         html +=         '</div>';
@@ -138,6 +139,9 @@
 
       if (jumlah > 0){
         html += '<div class="card-footer">';
+        html +=     '<div class="form-group">';
+        html +=         '<p><small style="color: red"> *</small>Pastikan untuk memeriksa kembali seluruh data dokumen Anda sebelum anda <b><i>Submit</i></b> pendaftaran Anda.</p>';
+        html +=     '</div>';
         html +=   '<button type="submit" class="btn btn-primary" onclick="simpan()">Submit</button>';
         html +=   '<button type="submit" class="btn btn-warning float-right" onclick="back()">Back</button>';
         html += '</div>';
@@ -170,18 +174,31 @@
           {
             if (result.data)
             {
-              // $('#outlet').val(result.data.outlet_id).change();
-              $('#name'+currentIndex).val(result.data.name);
-              $('#address'+currentIndex).val(result.data.address);
-              $('#identityno'+currentIndex).val(result.data.identityno);
-              $('#birthplace'+currentIndex).val(result.data.birthplace);
-              $('#birthdate'+currentIndex).val(result.data.birthdate);
-              $('#gender'+currentIndex).val(result.data.gender);
-              $('#job'+currentIndex).val(result.data.job);
-              $('#country'+currentIndex).val(result.data.country);
-              $('#email'+currentIndex).val(result.data.email);
-              $('#image'+currentIndex).val(result.image);
-              document.getElementById('preview'+currentIndex).src = result.image;
+                // $('#outlet').val(result.data.outlet_id).change();
+                $('#name'+currentIndex).val(result.data.name);
+                $('#address'+currentIndex).val(result.data.address);
+                $('#identityno'+currentIndex).val(result.data.identityno);
+                $('#birthplace'+currentIndex).val(result.data.birthplace);
+                $('#birthdate'+currentIndex).val(result.data.birthdate);
+                $('#gender'+currentIndex).val(result.data.gender);
+                $('#job'+currentIndex).val(result.data.job);
+                $('#country'+currentIndex).val(result.data.country);
+                $('#email'+currentIndex).val(result.data.email);
+                $('#image'+currentIndex).val(result.image);
+                document.getElementById('preview'+currentIndex).src = result.image;
+                document.getElementById("preview"+currentIndex).style.width = "100%"; 
+                document.getElementById("preview"+currentIndex).style.height = "100%"; 
+                
+                $('#name'+currentIndex).attr('disabled', true);
+                $('#address'+currentIndex).attr('disabled', true);
+                $('#identityno'+currentIndex).attr('disabled', true);
+                $('#birthplace'+currentIndex).attr('disabled', true);
+                $('#birthdate'+currentIndex).attr('disabled', true);
+                $('#gender'+currentIndex).attr('disabled', true);
+                $('#job'+currentIndex).attr('disabled', true);
+                $('#country'+currentIndex).attr('disabled', true);
+                $('#email'+currentIndex).attr('disabled', true);
+                $('#file'+currentIndex).attr('disabled', true);
             }
             else
             {
@@ -216,6 +233,17 @@
     $('#email'+currentIndex).val('');
     $('#image'+currentIndex).val('');
     document.getElementById('preview'+currentIndex).src = '';
+    
+    $('#name'+currentIndex).attr('disabled', false);
+    $('#address'+currentIndex).attr('disabled', false);
+    $('#identityno'+currentIndex).attr('disabled', false);
+    $('#birthplace'+currentIndex).attr('disabled', false);
+    $('#birthdate'+currentIndex).attr('disabled', false);
+    $('#gender'+currentIndex).attr('disabled', false);
+    $('#job'+currentIndex).attr('disabled', false);
+    $('#country'+currentIndex).attr('disabled', false);
+    $('#email'+currentIndex).attr('disabled', false);
+    $('#file'+currentIndex).attr('disabled', false);
   }
 
   function simpan(){
@@ -290,6 +318,13 @@
               }
             }
           },
+          complete: function(xhr, textStatus) {
+            console.log(xhr.status);
+            if (xhr.status === 419)
+            {
+                toastr.error('Koneksi Anda tidak stabil. Silahkan refresh halaman ini');
+            }
+          },
           error: function(data){
             showLoading(false);
             toastr.error(data.statusText + ' : ' + data.status);
@@ -311,53 +346,63 @@
 
   function resizeImage(elem, currentIndex)
   {
-    var file, img, width = 0, height = 0;
-
-    if ((file = $("#file"+currentIndex)[0].files[0])) {
-      img = new Image();
-      img.onload = function() {
-        
-        max_size = 400,
-        width = this.width;
-        height = this.height;
-      
-        if (width > height) {
-          if (width > max_size) {
-            height *= max_size / width;
-            width = max_size;
-          }
-        } else {
-          if (height > max_size) {
-            width *= max_size / height;
-            height = max_size;
-          }
-        }
-
-        var reader = new FileReader();
-
-        reader.onload = function(event) {
-          var image = new Image();
-
-          image.onload = function() {
-            var oc = document.createElement('canvas'), octx = oc.getContext('2d');
+      showLoading(true, () => {
+        var file, img, width = 0, height = 0;
+    
+        if ((file = $("#file"+currentIndex)[0].files[0])) {
+          img = new Image();
+          img.onload = function() {
             
-            oc.width = width;
-            oc.height = height;
-            octx.drawImage(image, 0, 0, oc.width, oc.height);
-            
-            $("#image"+currentIndex).val(oc.toDataURL());
-            document.getElementById("preview"+currentIndex).src = oc.toDataURL();
+            max_size = 600,
+            width = this.width;
+            height = this.height;
+          
+            if (width > height) {
+              if (width > max_size) {
+                height *= max_size / width;
+                width = max_size;
+              }
+            } else {
+              if (height > max_size) {
+                width *= max_size / height;
+                height = max_size;
+              }
+            }
+    
+            var reader = new FileReader();
+    
+            reader.onload = function(event) {
+              var image = new Image();
+    
+              image.onload = function() {
+                var oc = document.createElement('canvas'), octx = oc.getContext('2d');
+                
+                oc.width = width;
+                oc.height = height;
+                octx.drawImage(image, 0, 0, oc.width, oc.height);
+                
+                var base64str = oc.toDataURL().split('base64,')[1];
+                var decoded = atob(base64str);
+                
+                console.log("FileSize: " + decoded.length);
+
+                $("#image"+currentIndex).val(oc.toDataURL());
+                document.getElementById("preview"+currentIndex).src = oc.toDataURL();
+                document.getElementById("preview"+currentIndex).style.width = "100%"; 
+                document.getElementById("preview"+currentIndex).style.height = "100%"; 
+              };
+              image.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
           };
-          image.src = event.target.result;
-        };
-
-        reader.readAsDataURL(file);
-      };
-      img.onerror = function() {
-        toastr.error("Bukan tipe gambar yang valid : " + file.type);
-      };
-      img.src = URL.createObjectURL(file);
-    }
+          img.onerror = function() {
+            showLoading(false);
+            toastr.error("Bukan tipe gambar yang valid : " + file.type);
+          };
+          img.src = URL.createObjectURL(file);
+        }
+        showLoading(false);
+      }, 'Sedang resize gambar');
   }
 </script>
 @endpush

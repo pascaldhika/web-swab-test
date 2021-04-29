@@ -35,6 +35,7 @@
         </li>
 
         @if(session('outlet'))
+          @if(!Gate::check('isAdmin'))
           <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-edit"></i>
@@ -44,17 +45,17 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-              @if(Gate::check('isSuperAdmin') || Gate::check('isNakes') || Gate::check('isKasir'))
               <li class="nav-item">
                 <a href="{{ route('registrasi.index') }}" class="nav-link">
                   <i class="nav-icon far fa-circle text-info"></i>
                   <p>Registrasi</p>
                 </a>
               </li>
-              @endif
             </ul>
           </li>
-
+          @endif
+          
+          @if(Gate::check('isSuperAdmin') || Gate::check('isAdmin'))
           <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-book"></i>
@@ -64,35 +65,31 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-              @if(Gate::check('isSuperAdmin') || Gate::check('isAdmin'))
               <li class="nav-item">
                 <a href="{{ route('report.pasien.index') }}" class="nav-link">
                   <i class="nav-icon far fa-circle text-warning"></i>
                   <p>Pasien</p>
                 </a>
               </li>
-              @endif
 
-              @if(Gate::check('isSuperAdmin') || Gate::check('isAdmin'))
               <li class="nav-item">
-                <a href="{{ route('registrasi.index') }}" class="nav-link">
+                <a href="{{ route('cetakhasil.index') }}" class="nav-link">
                   <i class="nav-icon far fa-circle text-warning"></i>
                   <p>Cetak Hasil</p>
                 </a>
               </li>
-              @endif
 
-              @if(Gate::check('isSuperAdmin') || Gate::check('isAdmin'))
               <li class="nav-item">
                 <a href="{{ route('report.pembayaran.index') }}" class="nav-link">
                   <i class="nav-icon far fa-circle text-warning"></i>
                   <p>Rekap Pembayaran</p>
                 </a>
               </li>
-              @endif
             </ul>
           </li>
-
+          @endif
+            
+          @if(Gate::check('isSuperAdmin'))
           <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon far fa-plus-square"></i>
@@ -102,62 +99,52 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-              @if(Gate::check('isSuperAdmin'))
               <li class="nav-item">
                 <a href="{{ route('outlet.index') }}" class="nav-link">
                   <i class="nav-icon far fa-circle text-danger"></i>
                   <p>Outlet</p>
                 </a>
               </li>
-              @endif
 
-              @if(Gate::check('isSuperAdmin'))
               <li class="nav-item">
                 <a href="{{ route('mitra.index') }}" class="nav-link">
                   <i class="nav-icon far fa-circle text-danger"></i>
                   <p>Mitra</p>
                 </a>
               </li>
-              @endif
 
-              @if(Gate::check('isSuperAdmin'))
               <li class="nav-item">
                 <a href="{{ route('payment.index') }}" class="nav-link">
                   <i class="nav-icon far fa-circle text-danger"></i>
                   <p>Payment Metode</p>
                 </a>
               </li>
-              @endif
 
-              @if(Gate::check('isSuperAdmin'))
               <li class="nav-item">
                 <a href="{{ route('dokter.index') }}" class="nav-link">
                   <i class="nav-icon far fa-circle text-danger"></i>
                   <p>Dokter</p>
                 </a>
               </li>
-              @endif
 
-              @if(Gate::check('isSuperAdmin'))
               <li class="nav-item">
                 <a href="{{ route('jenisrapid.index') }}" class="nav-link">
                   <i class="nav-icon far fa-circle text-danger"></i>
                   <p>Jenis Rapid</p>
                 </a>
               </li>
-              @endif
 
-              @if(Gate::check('isSuperAdmin'))
               <li class="nav-item">
                 <a href="{{ route('harga.index') }}" class="nav-link">
                   <i class="nav-icon far fa-circle text-danger"></i>
                   <p>Harga</p>
                 </a>
               </li>
-              @endif
             </ul>
           </li>
-
+          @endif
+          
+          @if(Gate::check('isSuperAdmin'))
           <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-users"></i>
@@ -167,25 +154,22 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-              @if(Gate::check('isSuperAdmin'))
               <li class="nav-item">
                 <a href="{{ route('user.index') }}" class="nav-link">
                   <i class="nav-icon far fa-circle"></i>
                   <p>User</p>
                 </a>
               </li>
-              @endif
 
-              @if(Gate::check('isSuperAdmin'))
               <li class="nav-item">
                 <a href="{{ route('role.index') }}" class="nav-link">
                   <i class="nav-icon far fa-circle"></i>
                   <p>Roles</p>
                 </a>
               </li>
-              @endif
             </ul>
           </li>
+          @endif
         @endif
       </ul>
     </nav>

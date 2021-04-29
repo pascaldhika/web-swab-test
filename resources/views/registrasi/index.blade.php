@@ -83,16 +83,16 @@
 
                 <br>
 
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="input-group mb-3">
-                          <div class="input-group-prepend">
-                            <span class="input-group-text">Total Data Registrasi Pasien hari ini:</span>
-                          </div>
-                          <input type="text" id="total" class="form-control col-sm-2" value="{{ $today }}" placeholder="0" disabled="">
-                        </div>
-                    </div>
-                </div>
+                <!--<div class="row">-->
+                <!--    <div class="col-sm-6">-->
+                <!--        <div class="input-group mb-3">-->
+                <!--          <div class="input-group-prepend">-->
+                <!--            <span class="input-group-text">Total Data Registrasi Pasien hari ini:</span>-->
+                <!--          </div>-->
+                <!--          <input type="text" id="total" class="form-control col-sm-2" value="{{ $today }}" placeholder="0" disabled="">-->
+                <!--        </div>-->
+                <!--    </div>-->
+                <!--</div>-->
 
               </div>
               <!-- /.card-body -->
@@ -213,7 +213,7 @@
                     }
                 }
 
-                @if(Gate::check('isSuperAdmin') || Gate::check('isNakes'))
+                @if(Gate::check('isNakes'))
                     table.column(8).visible(true);
                     table.column(9).visible(true);
                     table.column(10).visible(true);
@@ -241,7 +241,7 @@
                     @endif
                 @endif
 
-                @if(Gate::check('isSuperAdmin') || Gate::check('isAdmin'))
+                @if(Gate::check('isAdmin'))
                     table.column(11).visible(true);
                     table.column(12).visible(true);
                     table.column(13).visible(true);
@@ -443,11 +443,12 @@
     function email(id){
         var base = "{!! route('registrasi.preview') !!}";
         var url = base+'?id='+id ;
-        window.location.href = url;
+        window.open(url);
+        // window.location.href = url;
     }
 
     function ubahStatus(id, e){
-        @can('isNakes')
+        @if(Gate::check('isNakes') || Gate::check('isSuperAdmin'))
             var type  = $(e).data('type');
             var paid = $(e).data('paid');
             var status_at = $(e).data('status_at');
@@ -466,123 +467,130 @@
                 $('#modalUbahStatus #id').val(id);
 
                 hideJenisReaktif(type);
-
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route("registrasi.detail.data") }}',
-                    data: {
-                        id: id,
-                        _token: "{{ csrf_token() }}"
-                    },
-                    dataType: "json",
-                    success: function(data){
-                        if(data.success){
-                          // table2.clear();
-                          var newRow  = $(".field.fieldTEXT");
-                          var html = "";
-                          newRow.empty();
-
-                          var i = 1;
-                          jumlah = 0;
-
-                          $.each(data.data, function (k, v) {
-
-                            if (v.paid == 'Y'){
-                                html += '<div id="field'+i+'" class="card card-secondary">';
-                                html +=    '<div class="card-body">';
-                                html +=       '<input type="hidden" class="form-control" id="id'+i+'" value="'+v.id+'">';
-                                html +=       '<div class="form-group">';
-                                html +=         '<label for="name'+i+'">Nama </label><small style="color: red"> *Sesuai Kartu Identitas</small>';
-                                html +=         '<input type="text" class="form-control" id="name'+i+'" value="'+v.name+'" disabled>';
-                                html +=       '</div>';
-                                html +=       '<div class="form-group">';
-                                html +=         '<label for="address'+i+'">Alamat </label><small style="color: red"> *Sesuai Kartu Identitas</small>';
-                                html +=         '<textarea input type="text" class="form-control" id="address'+i+'" value="'+v.address+'" disabled>'+v.address+'</textarea>';
-                                html +=       '</div>';
-                                html +=       '<div class="form-group">';
-                                html +=         '<label for="identityno'+i+'">No. Identitas KTP/SIM/Passport</label>';
-                                html +=         '<input type="text" class="form-control" id="identityno'+i+'" disabled value="'+v.identityno+'">';
-                                html +=       '</div>';
-                                html +=       '<div class="form-group">';
-                                html +=         '<label for="doctor'+i+'">Doctor</label>';
-                                html +=         '<select id="doctor'+i+'" class="form-control">';
-                                html +=           '<option value="">Pilih Doctor</option>';
-                                html +=           '@foreach($dokter as $p => $v)';
-                                html +=           '<option value="{{$v}}">{{$v}}</option>';
-                                html +=           '@endforeach';
-                                html +=         '</select>';
-                                html +=       '</div>';
-                                html +=       '<div class="form-group">';
-                                html +=         '<label for="status'+i+'">Status</label>';
-                                html +=         '<select id="status'+i+'" class="form-control" data-jenis="'+v.detailstatus+'" onchange="return getJenisReaktif(status'+i+', '+i+')">';
-                                html +=           '<option value="">Pilih Status</option>';
-
-                                if (type == 'Antibodi Test'){
-                                    html +=           '<option value="Reaktif">Reaktif</option>';
-                                    html +=           '<option value="Non Reaktif">Non Reaktif</option></select>';
-                                } else{
-                                    html +=           '<option value="Positif">Positif</option>';
-                                    html +=           '<option value="Negatif">Negatif</option></select>';
+                showLoading(true, () => {
+                    $.ajax({
+                        type: 'POST',
+                        url: '{{ route("registrasi.detail.data") }}',
+                        data: {
+                            id: id,
+                            _token: "{{ csrf_token() }}"
+                        },
+                        dataType: "json",
+                        success: function(data){
+                            showLoading(false);
+                            if(data.success){
+                              // table2.clear();
+                              var newRow  = $(".field.fieldTEXT");
+                              var html = "";
+                              newRow.empty();
+    
+                              var i = 1;
+                              jumlah = 0;
+                              
+                              var str = data.data[0].docno;
+                              var res = str.split("-");
+    
+                              $.each(data.data, function (k, v) {
+    
+                                if (v.paid == 'Y'){
+                                    html += '<div id="field'+i+'" class="card card-secondary">';
+                                    html +=    '<div class="card-body">';
+                                    html +=       '<input type="hidden" class="form-control" id="id'+i+'" value="'+v.id+'">';
+                                    html +=       '<div class="form-group">';
+                                    html +=         '<label for="name'+i+'">Nama </label><small style="color: red"> *Sesuai Kartu Identitas</small>';
+                                    html +=         '<input type="text" class="form-control" id="name'+i+'" value="'+v.name+'" disabled>';
+                                    html +=       '</div>';
+                                    html +=       '<div class="form-group">';
+                                    html +=         '<label for="address'+i+'">Alamat </label><small style="color: red"> *Sesuai Kartu Identitas</small>';
+                                    html +=         '<textarea input type="text" class="form-control" id="address'+i+'" value="'+v.address+'" disabled>'+v.address+'</textarea>';
+                                    html +=       '</div>';
+                                    html +=       '<div class="form-group">';
+                                    html +=         '<label for="identityno'+i+'">No. Identitas KTP/SIM/Passport</label>';
+                                    html +=         '<input type="text" class="form-control" id="identityno'+i+'" disabled value="'+v.identityno+'">';
+                                    html +=       '</div>';
+                                    html +=       '<div class="form-group">';
+                                    html +=         '<label for="doctor'+i+'">Doctor</label>';
+                                    html +=         '<select id="doctor'+i+'" class="form-control">';
+                                    html +=           '<option value="">Pilih Doctor</option>';
+                                    html +=           '@foreach($dokter as $p => $v)';
+                                    html +=           '<option value="{{$v}}">{{$v}}</option>';
+                                    html +=           '@endforeach';
+                                    html +=         '</select>';
+                                    html +=       '</div>';
+                                    html +=       '<div class="form-group">';
+                                    html +=         '<label for="status'+i+'">Status</label>';
+                                    html +=         '<select id="status'+i+'" class="form-control" data-jenis="'+v.detailstatus+'" onchange="return getJenisReaktif(status'+i+', '+i+')">';
+                                    html +=           '<option value="">Pilih Status</option>';
+    
+                                    if (res[0] == 'AB'){
+                                        html +=           '<option value="Reaktif">Reaktif</option>';
+                                        html +=           '<option value="Non Reaktif">Non Reaktif</option></select>';
+                                    } else{
+                                        html +=           '<option value="Positif">Positif</option>';
+                                        html +=           '<option value="Negatif">Negatif</option></select>';
+                                    }
+                                    
+                                    html +=       '</div>';
+    
+                                    html +=       '<div class="form-group fieldJenisReaktif'+i+'"></div>';
+    
+                                    html +=     '</div>';
+                                    html += '</div>';
+    
+                                    // doc = "<select id='doctor' class='mySelect'>" + getDoctorSelectOptions(v.doctor) + "</select>";
+                                    // sts = "<select id='status' class='mySelect1' data-index='"+k+"' data-col='"+type+"'>" + getStatusSelectOptions(type, v.status) + "</select>";
+                                    // dsts = "<select id='jenisreaktif' class='mySelect2'>" + getDetailStatusSelectOptions(v.detailstatus) + "</select>";
+                                    
+                                    // table2.rows.add([{
+                                    //     'id':v.id,
+                                    //     'name':v.name,
+                                    //     'address':v.address,
+                                    //     'identityno':v.identityno,
+                                    //     'doctor':doc,
+                                    //     'status':sts,
+                                    //     'jenisreaktif':dsts,
+                                    // }]);
+    
+                                    i++;
                                 }
-                                
-                                html +=       '</div>';
-
-                                html +=       '<div class="form-group fieldJenisReaktif'+i+'"></div>';
-
-                                html +=     '</div>';
-                                html += '</div>';
-
-                                // doc = "<select id='doctor' class='mySelect'>" + getDoctorSelectOptions(v.doctor) + "</select>";
-                                // sts = "<select id='status' class='mySelect1' data-index='"+k+"' data-col='"+type+"'>" + getStatusSelectOptions(type, v.status) + "</select>";
-                                // dsts = "<select id='jenisreaktif' class='mySelect2'>" + getDetailStatusSelectOptions(v.detailstatus) + "</select>";
-                                
-                                // table2.rows.add([{
-                                //     'id':v.id,
-                                //     'name':v.name,
-                                //     'address':v.address,
-                                //     'identityno':v.identityno,
-                                //     'doctor':doc,
-                                //     'status':sts,
-                                //     'jenisreaktif':dsts,
-                                // }]);
-
-                                i++;
+                              });
+    
+                             // table2.draw();
+    
+                             newRow.append(html);
+    
+                             jumlah = i-1;
+    
+                             for (var i = 1; i <= jumlah; i++){
+                                $('#status'+i).trigger('change');
+                             };
+    
+                             // looping ulang untuk menentukan selected
+                             var j = 1;
+                             $.each(data.data, function (k, v) {
+                                $('#doctor'+j).val(v.doctor).change();
+                                $('#status'+j).val(v.status).change();
+                                j++;
+                             });
+                             
+                             $('#modalUbahStatus').modal("show");
+                              
+                            }else{        
+                               toastr.error(data.message);
                             }
-                          });
-
-                         // table2.draw();
-
-                         newRow.append(html);
-
-                         jumlah = i-1;
-
-                         for (var i = 1; i <= jumlah; i++){
-                            $('#status'+i).trigger('change');
-                         };
-
-                         // looping ulang untuk menentukan selected
-                         i = 1;
-                         $.each(data.data, function (k, v) {
-                            $('#doctor'+i).val(v.doctor).change();
-                            $('#status'+i).val(v.status).change();
-                         });
-                         
-                         $('#modalUbahStatus').modal("show");
-                          
-                        }else{        
-                           toastr.error(data.message);
+                        },
+                        error: function(data){
+                            showLoading(false);
+                            toastr.error(data.statusText + ' : ' + data.status);
                         }
-                    },
-                    error: function(data){
-                        toastr.error(data.statusText + ' : ' + data.status);
-                    }
-                });
+                    });
+                }, 'Sedang mengambil data');
             } else{
                 toastr.error('Tidak bisa ubah status. Pembayaran belum diinput')
             }
         @else
             toastr.error('Anda tidak memiliki HAK AKSES!')
-        @endcan
+        @endif
     }
 
     function getJenisReaktif(ele, i) {
